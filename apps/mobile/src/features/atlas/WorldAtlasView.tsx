@@ -37,6 +37,7 @@ import {
 import { GLView, type ExpoWebGLRenderingContext } from 'expo-gl'
 import { ClaySurface, clayShadow, createThemeStyles, motion, radius, space, text, useReducedMotion, useTheme } from '@worldquest/design'
 import { Icon } from '../../components/Icon.js'
+import { ClayMap } from '../../components/ClayMap.js'
 import { useT } from '../../lib/i18n.js'
 import {
   cameraForFrame,
@@ -83,6 +84,18 @@ const TAP_MS = 350
 /** Longest camera move, degrees of arc, that animates; farther ones cut, so no flights. */
 const MAX_ANIMATED_TRAVEL = 70
 
+/** Apply the current disclosure-safe scene before its first complete frame. */
+function applyScene(renderer: GlobeRenderer, geometry: AtlasGeometry | null, spec: AtlasSceneSpec): void {
+  const byRaster = new Map<number, HighlightState>()
+  for (const highlight of spec.highlights) {
+    const country = ATLAS_COUNTRIES[highlight.countryId]
+    if (country !== undefined) byRaster.set(country.rasterId, highlight.state)
+  }
+  renderer.setHighlights(byRaster)
+  const outlined = spec.highlights.find(highlight => highlight.state !== 'context')
+  const country = geometry?.countries.get(outlined?.countryId ?? '')
+  renderer.setOutline(country === undefined ? null : outlineSegments(country))
+}
 
 export function WorldAtlasView({
   spec,
@@ -103,6 +116,7 @@ export function WorldAtlasView({
   const [size, setSize] = useState<{ width: number; height: number } | null>(null)
   const [camera, setCamera] = useState<Camera>(WORLD_CAMERA)
   const [status, setStatus] = useState<AtlasStatus>('loading')
+  const statusRef = useRef<AtlasStatus>('loading')
   // Bumped to throw away a lost context and mount a fresh GLView.
   const [generation, setGeneration] = useState(0)
 
@@ -122,6 +136,7 @@ export function WorldAtlasView({
   drawCallback.current = onDraw
 
   const report = useCallback((next: AtlasStatus, error?: Error) => {
+    statusRef.current = next
     setStatus(next)
     statusCallback.current?.(next, error)
   }, [])
@@ -129,8 +144,13 @@ export function WorldAtlasView({
   // A context that never initializes must not leave a spinner covering Explore forever.
   useEffect(() => {
     if (status !== 'loading') return
-    const timer = setTimeout(() => report('error', new Error('atlas: loading timed out')), 12000)
-    return () => clearTimeout(timer)
+    let active = true
+    const timer = setTimeout(() => {
+      // Native shader work can delay an already queued timer until after the first
+      // frame. The synchronous status ref wins even before React cleans up this effect.
+      if (active && statusRef.current === 'loading') report('error', new Error('atlas: loading timed out'))
+    }, 12000)
+    return () => { active = false; clearTimeout(timer) }
   }, [status, report])
 
   const settle = useRef(0)
@@ -154,7 +174,8 @@ export function WorldAtlasView({
       }
       try {
         const started = performance.now()
-        r.render(cameraRef.current, s)
+        const submitted = r.render(cameraRef.current, s)
+        if (submitted && statusRef.current === 'loading') report('ready')
         drawCallback.current?.(performance.now() - started, started)
         // A resize clears the canvas, and on the web it happens AFTER this frame: the
         // GLView resizes its canvas in an effect of its own. Until the drawing buffer
@@ -239,15 +260,7 @@ export function WorldAtlasView({
   useEffect(() => {
     const r = renderer.current
     if (r === null) return
-    const byRaster = new Map<number, HighlightState>()
-    for (const h of spec.highlights) {
-      const country = ATLAS_COUNTRIES[h.countryId]
-      if (country !== undefined) byRaster.set(country.rasterId, h.state)
-    }
-    r.setHighlights(byRaster)
-    const outlined = spec.highlights.find((h) => h.state !== 'context')
-    const g = geometry.current?.countries.get(outlined?.countryId ?? '')
-    r.setOutline(g === undefined ? null : outlineSegments(g))
+    applyScene(r, geometry.current, spec)
     requestDraw()
   }, [spec.highlights, status, requestDraw])
 
@@ -312,7 +325,7 @@ export function WorldAtlasView({
         created.setSurface(surface)
         created.setCountryIds(ids, ATLAS_RASTER.width, ATLAS_RASTER.height)
         geometry.current = rings
-        report('ready')
+        applyScene(created, rings, specRef.current)
         requestDraw()
       } catch (error) {
         if (renderer.current === created) report('error', error instanceof Error ? error : new Error(String(error)))
@@ -426,6 +439,12 @@ export function WorldAtlasView({
         role="img"
         accessibilityLabel={spec.summary}
       >
+      {/* The native surface stays transparent until its first complete frame. Keep a
+          matching still underneath so shader warmup never exposes a blank map. The
+          scene's focus is already disclosed; this image adds no names or answer pins. */}
+      <View style={StyleSheet.absoluteFill} pointerEvents="none" testID="atlas-preview">
+        <ClayMap name={spec.focus.kind === 'country' ? spec.focus.countryId : spec.focus.kind === 'region' ? `region-${spec.focus.regionId}` : 'world'} style={StyleSheet.absoluteFill} />
+      </View>
       <View style={StyleSheet.absoluteFill} {...responder.panHandlers}>
         <GLView key={generation} style={StyleSheet.absoluteFill} onContextCreate={onContextCreate} />
       </View>

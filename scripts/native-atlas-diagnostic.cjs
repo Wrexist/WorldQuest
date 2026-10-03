@@ -19,6 +19,7 @@ let report = { version: 1, sessions: [session] }
 let nextView = 0
 const frames = new Map()
 const snapshots = new Set()
+const limitedEvents = new Map()
 // Preserve quiz evidence when Maestro terminates and relaunches before Explore.
 let writes = FileSystem.readAsStringAsync(destination).then(text => {
   const previous = JSON.parse(text)
@@ -33,6 +34,12 @@ function record(kind, fields = {}) {
 }
 function safeError(error) {
   return { name: error?.name || 'Error', message: String(error?.message || error).slice(0, 240).replace(/file:\\/\\/\\S+/g, '[local file]') }
+}
+function limited(kind, fields = {}) {
+  const key = kind + ':' + (fields.viewId || fields.contextId || fields.control || '')
+  const count = (limitedEvents.get(key) || 0) + 1
+  limitedEvents.set(key, count)
+  if (count <= 12) record(kind, { ...fields, count })
 }
 function context(gl) {
   return { contextId: gl.contextId, width: gl.drawingBufferWidth, height: gl.drawingBufferHeight }
@@ -68,7 +75,7 @@ function drawEnd(gl, ready) {
   }, delay)
 }
 record('initialized')
-module.exports = { record, safeError, context, mount, drawStart, drawEnd }
+module.exports = { record, limited, safeError, context, mount, drawStart, drawEnd }
 `
 }
 
@@ -132,8 +139,8 @@ function prepareNativeAtlasDiagnostic(workspaceRoot = path.resolve(__dirname, '.
   const viewPath = path.join(projectRoot, 'src/features/atlas/WorldAtlasView.tsx')
   const rendererPath = path.join(projectRoot, 'src/features/atlas/render/GlobeRenderer.ts')
   const glPath = nativeGLPath || path.join(path.dirname(require.resolve('expo-gl/package.json', { paths: [projectRoot] })), 'ios/GLView.swift')
-  let view = fs.readFileSync(viewPath, 'utf8')
-  let renderer = fs.readFileSync(rendererPath, 'utf8')
+  let view = fs.readFileSync(viewPath, 'utf8').replace(/\r\n/g, '\n')
+  let renderer = fs.readFileSync(rendererPath, 'utf8').replace(/\r\n/g, '\n')
   const nativeOriginal = fs.readFileSync(glPath, 'utf8')
   if ([view, renderer, nativeOriginal].some(source => source.includes('WQ_ATLAS_DIAGNOSTIC'))) throw new Error('Atlas diagnostic already installed')
   const native = instrumentNativeGL(nativeOriginal)
@@ -152,13 +159,36 @@ const atlasDiagnostic = require('../../../${RUNTIME}')`, 'view import')
     atlasDiagnostic.record('outer-layout', { viewId: diagnosticId, ...event.nativeEvent.layout })`, 'outer layout')
   view = replaceOnce(view, '<GLView key={generation} style={StyleSheet.absoluteFill} onContextCreate={onContextCreate} />', `<GLView key={generation} style={StyleSheet.absoluteFill} onContextCreate={onContextCreate}
           onLayout={event => atlasDiagnostic.record('gl-view-layout', { viewId: diagnosticId, ...event.nativeEvent.layout })} />`, 'GL layout')
+  view = replaceOnce(view, '    if (frame.current !== null) return', `    atlasDiagnostic.limited('draw-request', { viewId: diagnosticId, pendingFrame: frame.current, hasRenderer: renderer.current !== null, hasSize: sizeRef.current !== null })
+    if (frame.current !== null) return`, 'draw scheduling')
+  view = replaceOnce(view, '      frame.current = null', `      atlasDiagnostic.limited('draw-callback', { viewId: diagnosticId })
+      frame.current = null`, 'draw callback')
+  view = replaceOnce(view, '      cameraRef.current = next', `      atlasDiagnostic.limited('camera-change', { viewId: diagnosticId, distance: next.distance })
+      cameraRef.current = next`, 'camera change')
+  view = replaceOnce(view, '    if (animation.current !== null) cancelAnimationFrame(animation.current)', `    atlasDiagnostic.limited('stop-animation', { viewId: diagnosticId, pendingAnimation: animation.current })
+    if (animation.current !== null) cancelAnimationFrame(animation.current)`, 'animation cancellation')
+  view = replaceOnce(view, '    (target: Camera) => {\n      stopAnimation()', `    (target: Camera) => {
+      atlasDiagnostic.record('fly-to', { viewId: diagnosticId, reducedMotion: reduceMotion, fromDistance: cameraRef.current.distance, targetDistance: target.distance })
+      stopAnimation()`, 'fly entry')
+  view = replaceOnce(view, '        const progress = Math.min(1, (Date.now() - start) / duration)', `        const progress = Math.min(1, (Date.now() - start) / duration)
+        atlasDiagnostic.limited('camera-animation-frame', { viewId: diagnosticId, progress })`, 'camera RAF')
+  view = replaceOnce(view, "      if (state === 'active') requestDraw()", `      atlasDiagnostic.record('app-state', { viewId: diagnosticId, state })
+      if (state === 'active') requestDraw()`, 'app state')
+  view = replaceOnce(view, '<Pressable role="button" aria-label={label} onPress={onPress} style=', `<Pressable role="button" aria-label={label}
+      onPressIn={() => atlasDiagnostic.record('control-press-in', { control: kind })}
+      onPressOut={() => atlasDiagnostic.record('control-press-out', { control: kind })}
+      onPress={() => { atlasDiagnostic.record('control-press', { control: kind }); onPress() }} style=`, 'control touch callbacks')
 
   renderer = replaceOnce(renderer, "import { toVec3 } from '../geo/sphere.js'", `import { toVec3 } from '../geo/sphere.js'
 // WQ_ATLAS_DIAGNOSTIC: only counters, GL inspection and framebuffer capture.
 const atlasDiagnostic = require('../../../../${RUNTIME}')`, 'renderer import')
-  renderer = replaceOnce(renderer, '    if (width === 0 || height === 0) return', `    atlasDiagnostic.drawStart(gl, { viewportWidth: viewport.width, viewportHeight: viewport.height, ready: this.ready, distance: camera.distance })
-    if (width === 0 || height === 0) return`, 'draw start')
-  renderer = replaceOnce(renderer, '      gl.endFrameEXP?.()\n      return', '      gl.endFrameEXP?.()\n      atlasDiagnostic.drawEnd(gl, false)\n      return', 'pre-texture draw')
+  renderer = replaceOnce(renderer, '    if (width === 0 || height === 0) return false', `    atlasDiagnostic.drawStart(gl, { viewportWidth: viewport.width, viewportHeight: viewport.height, ready: this.ready, distance: camera.distance })
+    if (width === 0 || height === 0) return false`, 'draw start')
+  renderer = replaceOnce(renderer, '    const mvp = viewProjection(camera, width / height)', `    atlasDiagnostic.limited('halo-submitted', atlasDiagnostic.context(gl))
+    const mvp = viewProjection(camera, width / height)`, 'halo phase')
+  renderer = replaceOnce(renderer, '    gl.drawElements(gl.TRIANGLES, this.indexCount, gl.UNSIGNED_SHORT, 0)', `    atlasDiagnostic.limited('globe-uniforms-ready', atlasDiagnostic.context(gl))
+    gl.drawElements(gl.TRIANGLES, this.indexCount, gl.UNSIGNED_SHORT, 0)
+    atlasDiagnostic.limited('globe-submitted', atlasDiagnostic.context(gl))`, 'globe phase')
   renderer = replaceOnce(renderer, '    gl.flush()\n    gl.endFrameEXP?.()', '    gl.flush()\n    gl.endFrameEXP?.()\n    atlasDiagnostic.drawEnd(gl, true)', 'completed draw')
   renderer = replaceOnce(renderer, '    this.disposed = true', `    atlasDiagnostic.record('renderer-dispose', atlasDiagnostic.context(this.gl))
     this.disposed = true`, 'dispose')

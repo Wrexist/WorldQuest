@@ -139,6 +139,10 @@ jobs:
           export PATH="$RUNNER_TEMP/maestro/maestro/bin:$PATH"
           cd "$GITHUB_WORKSPACE"
           maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/native-flow" apps/mobile/e2e/native-smoke.yaml
+      - name: Verify rendered native globe zoom
+        run: |
+          node --test scripts/verify-native-globe-zoom.test.cjs
+          node scripts/verify-native-globe-zoom.cjs "$RUNNER_TEMP/native-flow" "$RUNNER_TEMP/native-globe-zoom.json"
       - name: Collect native deep link diagnostic
         if: ${{ always() && inputs.link_diagnostics }}
         run: |
@@ -190,6 +194,7 @@ jobs:
             ${{ runner.temp }}/native-atlas-diagnostic.json
             ${{ runner.temp }}/native-atlas-native.jsonl
             ${{ runner.temp }}/native-atlas-frame-*.png
+            ${{ runner.temp }}/native-globe-zoom.json
             ${{ runner.temp }}/native-flow/
             apps/mobile/ios/WorldQuest/AppDelegate.swift
             apps/mobile/native-link-diagnostic-AppDelegate.original.swift

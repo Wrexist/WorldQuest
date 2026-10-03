@@ -1,0 +1,105 @@
+#!/usr/bin/env node
+/* Verify pixels, not only accessibility labels: native zoom controls can be present
+ * while the GL surface is blank or a press never changes the rendered camera. */
+const fs = require('node:fs')
+const path = require('node:path')
+const { PNG } = require('pngjs')
+
+function geometryFromLog(log) {
+  const start = log.indexOf('Scrolling DOWN until id: explore-globe')
+  const end = log.indexOf('centering enabled COMPLETED', start)
+  if (start < 0 || end < 0) throw new Error('Missing completed globe viewport scroll')
+  const scroll = log.slice(start, end)
+  const screens = [...scroll.matchAll(/DeviceWidth: (\d+), DeviceWidth: (\d+)/g)]
+  const bounds = [...scroll.matchAll(/Element bounds: Bounds\(x=(-?[\d.]+), y=(-?[\d.]+), width=([\d.]+), height=([\d.]+)\)/g)]
+  const tap = log.slice(end).match(/Tapping on element:.*accessibilityText=Zoom in,.*?bounds=\[(-?[\d.]+),(-?[\d.]+)\]\[(-?[\d.]+),(-?[\d.]+)\]/)
+  if (!screens.length || !bounds.length || !tap) throw new Error('Missing globe or zoom tap geometry')
+  const [, width, height] = screens.at(-1).map(Number)
+  const [, x, y, globeWidth, globeHeight] = bounds.at(-1).map(Number)
+  return { screen: { width, height }, globe: { x, y, width: globeWidth, height: globeHeight }, controlsTop: Number(tap[2]) }
+}
+
+function compareZoom(before, after, geometry) {
+  if (before.width !== after.width || before.height !== after.height) throw new Error('Zoom screenshots have different dimensions')
+  const { screen, globe, controlsTop } = geometry
+  const scale = before.width / screen.width
+  if (!Number.isFinite(scale) || scale <= 0 || Math.abs(before.height / screen.height - scale) > 0.02) throw new Error('Screenshot and device dimensions disagree')
+  // The scroll can clip the top of the globe. Keep only its visible interior, above
+  // the control row; the 10% screen band excludes the status bar on this iOS flow.
+  const pointCrop = {
+    left: Math.max(0, globe.x + globe.width * 0.1),
+    top: Math.max(screen.height * 0.1, globe.y + globe.height * 0.1),
+    right: Math.min(screen.width, globe.x + globe.width * 0.9),
+    bottom: Math.min(controlsTop - 8, globe.y + globe.height * 0.9, screen.height * 0.8),
+  }
+  if (pointCrop.right - pointCrop.left < 80 || pointCrop.bottom - pointCrop.top < 48) throw new Error('Too little unobscured globe area to verify zoom')
+  const crop = Object.fromEntries(Object.entries(pointCrop).map(([key, value]) => [key, Math.round(value * scale)]))
+  const baseline = { sum: [0, 0, 0], square: [0, 0, 0], colors: new Set() }
+  const zoomed = { sum: [0, 0, 0], square: [0, 0, 0], colors: new Set() }
+  let changed = 0
+  let count = 0
+  let absoluteDifference = 0
+  for (let y = crop.top; y < crop.bottom; y++) for (let x = crop.left; x < crop.right; x++) {
+    const offset = (y * before.width + x) * 4
+    let maximum = 0
+    for (let c = 0; c < 3; c++) {
+      const a = before.data[offset + c], b = after.data[offset + c]
+      baseline.sum[c] += a; baseline.square[c] += a * a
+      zoomed.sum[c] += b; zoomed.square[c] += b * b
+      maximum = Math.max(maximum, Math.abs(a - b))
+      absoluteDifference += Math.abs(a - b)
+    }
+    baseline.colors.add((before.data[offset] >> 4) * 256 + (before.data[offset + 1] >> 4) * 16 + (before.data[offset + 2] >> 4))
+    zoomed.colors.add((after.data[offset] >> 4) * 256 + (after.data[offset + 1] >> 4) * 16 + (after.data[offset + 2] >> 4))
+    if (maximum >= 8) changed++
+    count++
+  }
+  const texture = sample => ({
+    channelDeviation: sample.sum.reduce((total, sum, c) => total + Math.sqrt(Math.max(0, sample.square[c] / count - (sum / count) ** 2)), 0) / 3,
+    colorBins: sample.colors.size,
+  })
+  const baselineTexture = texture(baseline), zoomedTexture = texture(zoomed)
+  const baselineHasTexture = baselineTexture.channelDeviation >= 12 && baselineTexture.colorBins >= 24
+  const zoomedHasTexture = zoomedTexture.channelDeviation >= 12 && zoomedTexture.colorBins >= 24
+  const changedFraction = changed / count
+  return {
+    passed: baselineHasTexture && zoomedHasTexture && changedFraction >= 0.05,
+    crop, pointCrop, sampledPixels: count, changedPixels: changed, changedFraction,
+    meanChannelDifference: absoluteDifference / (count * 3),
+    baselineHasTexture, zoomedHasTexture, baselineTexture, zoomedTexture,
+    thresholds: { channelDelta: 8, changedFraction: 0.05, textureDeviation: 12, textureColorBins: 24 },
+  }
+}
+
+function filesUnder(directory) {
+  return fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
+    const file = path.join(directory, entry.name)
+    return entry.isDirectory() ? filesUnder(file) : [file]
+  })
+}
+
+function verify(directory) {
+  const files = filesUnder(directory)
+  const unique = name => {
+    const found = files.filter(file => path.basename(file) === name)
+    if (found.length !== 1) throw new Error(`Expected one ${name}, found ${found.length}`)
+    return found[0]
+  }
+  const beforePath = unique('native-explore-globe.png')
+  const afterPath = unique('native-explore-zoomed.png')
+  const logPath = path.join(path.dirname(path.dirname(beforePath)), 'logs', 'maestro.log')
+  const geometry = geometryFromLog(fs.readFileSync(logPath, 'utf8'))
+  return { ...compareZoom(PNG.sync.read(fs.readFileSync(beforePath)), PNG.sync.read(fs.readFileSync(afterPath)), geometry), geometry }
+}
+
+if (require.main === module) {
+  const [directory, reportPath] = process.argv.slice(2)
+  if (!directory || !reportPath) throw new Error('Usage: node scripts/verify-native-globe-zoom.cjs <native-flow-directory> <report.json>')
+  let report
+  try { report = verify(directory) } catch (error) { report = { passed: false, error: error.message } }
+  fs.writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n')
+  console.log(JSON.stringify(report))
+  if (!report.passed) process.exitCode = 1
+}
+
+module.exports = { geometryFromLog, compareZoom, verify }

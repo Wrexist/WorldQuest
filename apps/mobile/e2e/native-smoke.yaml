@@ -77,7 +77,15 @@ appId: com.wrexist.worldquest
     id: "explore-map-fallback"
 - takeScreenshot: native-explore-globe
 - tapOn: "Zoom in"
+- waitForAnimationToEnd:
+    timeout: 10000
 - assertVisible: "Zoom out"
+- assertVisible:
+    id: "explore-globe"
+- assertNotVisible:
+    id: "atlas-fallback"
+- assertNotVisible:
+    id: "explore-map-fallback"
 - takeScreenshot: native-explore-zoomed
 # Start the first link from a stopped app, as in Maestro's deep-link recipe.
 - stopApp
