@@ -33,5 +33,5 @@
   "country:attribute.artist": "Konstnär",
   "country:attribute.landmark": "Sevärdhet",
   "country:attribute.club": "Idrottsklubb",
-  "country:attribute.highest-point": "Högsta punkt"
+  "country:attribute.highestPoint": "Högsta punkt"
 }

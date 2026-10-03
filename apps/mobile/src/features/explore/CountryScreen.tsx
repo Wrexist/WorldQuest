@@ -78,7 +78,7 @@ const ATTRIBUTE_LABEL: Record<string, TranslationKey> = {
   'artist': 'country:attribute.artist',
   'landmark': 'country:attribute.landmark',
   'club': 'country:attribute.club',
-  'highest-point': 'country:attribute.highest-point',
+  'highest-point': 'country:attribute.highestPoint',
 }
 
 /*

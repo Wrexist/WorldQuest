@@ -299,7 +299,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "attribute.artist": "Artist",
       "attribute.landmark": "Landmark",
       "attribute.club": "Sports club",
-      "attribute.highest-point": "Highest point"
+      "attribute.highestPoint": "Highest point"
     },
     "course": {
       "firstWeek.title": "World foundations",
@@ -1398,7 +1398,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "attribute.artist": "Konstnär",
       "attribute.landmark": "Sevärdhet",
       "attribute.club": "Idrottsklubb",
-      "attribute.highest-point": "Högsta punkt"
+      "attribute.highestPoint": "Högsta punkt"
     },
     "course": {
       "firstWeek.title": "Världen från grunden",

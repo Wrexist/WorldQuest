@@ -56,7 +56,7 @@
   "country:attribute.artist": "Artist",
   "country:attribute.landmark": "Landmark",
   "country:attribute.club": "Sports club",
-  "country:attribute.highest-point": "Highest point",
+  "country:attribute.highestPoint": "Highest point",
   "country:attribute.company__note": "Label for an authored fact in the full country reference. Names and fact values come from the content catalogue.",
   "country:attribute.athlete__note": "Label for an authored fact in the full country reference. Names and fact values come from the content catalogue.",
   "country:attribute.musician__note": "Label for an authored fact in the full country reference. Names and fact values come from the content catalogue.",
@@ -66,5 +66,5 @@
   "country:attribute.artist__note": "Label for an authored fact in the full country reference. Names and fact values come from the content catalogue.",
   "country:attribute.landmark__note": "Label for an authored fact in the full country reference. Names and fact values come from the content catalogue.",
   "country:attribute.club__note": "Label for an authored fact in the full country reference. Names and fact values come from the content catalogue.",
-  "country:attribute.highest-point__note": "Label for an authored fact in the full country reference. Names and fact values come from the content catalogue."
+  "country:attribute.highestPoint__note": "Label for an authored fact in the full country reference. Names and fact values come from the content catalogue."
 }

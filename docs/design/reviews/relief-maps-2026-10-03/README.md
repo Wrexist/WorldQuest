@@ -9,6 +9,8 @@ are browser evidence, not iPhone screenshots or physical GPU performance measure
 | Sweden, full 130-fact scope and shared relief map | [Dark](sweden-dark.png) |
 | Europe, 2,778-fact scope and relief banner | [Dark](europe-dark.png) |
 | Interactive Explore globe | [Light](explore-light.png) |
+| Quiz opens without study answers | [Dark](quiz-dark.png) |
+| Optional study using the same question set | [Dark](study-dark.png) |
 
 Independent review covered 14 screenshots across light/dark country top and
 footer, region, Explore globe and region tiles, question entry and opt-in study.
