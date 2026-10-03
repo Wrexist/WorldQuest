@@ -1,0 +1,58 @@
+{
+  "passed": true,
+  "crop": {
+    "left": 159,
+    "top": 262,
+    "right": 1047,
+    "bottom": 777
+  },
+  "pointCrop": {
+    "left": 53,
+    "top": 87.4,
+    "right": 349,
+    "bottom": 259
+  },
+  "sampledPixels": 457320,
+  "changedPixels": 405703,
+  "changedFraction": 0.8871315490247529,
+  "meanChannelDifference": 37.59618866439255,
+  "baselineHasTexture": true,
+  "zoomedHasTexture": true,
+  "baselineTexture": {
+    "channelDeviation": 52.81329338129027,
+    "colorBins": 322
+  },
+  "zoomedTexture": {
+    "channelDeviation": 38.730081268816946,
+    "colorBins": 239
+  },
+  "thresholds": {
+    "channelDelta": 8,
+    "changedFraction": 0.05,
+    "textureDeviation": 12,
+    "textureColorBins": 24
+  },
+  "geometry": {
+    "screen": {
+      "width": 402,
+      "height": 874
+    },
+    "globe": {
+      "x": 16,
+      "y": -54,
+      "width": 370,
+      "height": 382
+    },
+    "controlsTop": 267
+  },
+  "presentation": {
+    "available": false
+  },
+  "gesture": {
+    "available": true,
+    "passed": true,
+    "globeChangedFraction": 0.889794891979358,
+    "pageChangedDuringDrag": 0,
+    "pageChangedOutsideGlobe": 0.9694650227654603
+  }
+}

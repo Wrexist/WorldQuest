@@ -1,6 +1,6 @@
 {
   "fixture": true,
-  "description": "Real startup component with injected booting, slow, and failed props; safe-area fixture. Not a measured launch timing.",
+  "description": "Real startup components with injected phases and safe-area fixture; not native launch timing. Includes a 320x568 CSS 200% text failure/retry reachability check.",
   "layouts": [],
   "interactions": [],
   "errors": []
