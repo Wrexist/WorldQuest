@@ -22,7 +22,8 @@
       "image-size@1.2.1": "patches/image-size@1.2.1.patch",
       "decode-uri-component@0.2.2": "patches/decode-uri-component@0.2.2.patch",
       "expo-secure-store@15.0.8": "patches/expo-secure-store@15.0.8.patch",
-      "node-forge@1.4.0": "patches/node-forge@1.4.0.patch"
+      "node-forge@1.4.0": "patches/node-forge@1.4.0.patch",
+      "braces@3.0.3": "patches/braces@3.0.3.patch"
     }
   },
   "engines": {

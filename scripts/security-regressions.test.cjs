@@ -46,6 +46,151 @@ function bounded(source) {
   assert.equal(result.status, 0, result.stderr)
 }
 
+test('braces APIs reject excessive nesting below the input length limit', () => {
+  bounded(`
+    const assert = require('node:assert/strict');
+    const braces = require('braces');
+    const patterns = [
+      '{'.repeat(4000) + 'x' + '}'.repeat(4000),
+      '('.repeat(4000) + 'x' + ')'.repeat(4000),
+      '{('.repeat(2000) + 'x' + ')}'.repeat(2000),
+      '{'.repeat(4000) + 'x',
+    ];
+    for (const pattern of patterns) {
+      assert.ok(pattern.length < 10000);
+      for (const api of ['main', 'create', 'parse', 'compile', 'expand', 'stringify']) {
+        const run = api === 'main' ? braces : braces[api];
+        assert.throws(() => run(pattern), {
+          name: 'SyntaxError', message: /exceeds max depth/,
+        }, api + ' must reject nested input before exhausting the stack');
+      }
+    }
+  `)
+})
+
+test('braces AST walkers enforce depth limits without relying on the parser', () => {
+  bounded(`
+    const assert = require('node:assert/strict');
+    const braces = require('braces');
+    // Construct each AST iteratively, without the guarded parser. A single value
+    // per level exercises recursion without introducing exponential expansion.
+    const makeAst = depth => {
+      let child = { type: 'text', value: 'x' };
+      for (let i = 0; i < depth; i++) {
+        const node = {
+          type: 'brace', open: true, close: true, commas: 0, ranges: 0,
+          nodes: [{ type: 'open', value: '{' }, child, { type: 'close', value: '}' }],
+        };
+        node.nodes.forEach(child => { child.parent = node; });
+        child = node;
+      }
+      const root = { type: 'root', nodes: [child] };
+      child.parent = root;
+      return root;
+    };
+    for (const api of ['compile', 'expand', 'stringify']) {
+      for (const depth of [101, 4000]) {
+        for (const maxDepth of [undefined, Infinity, Number.MAX_SAFE_INTEGER, NaN]) {
+          for (const subtree of [false, true]) {
+            const ast = makeAst(depth);
+            assert.throws(() => braces[api](subtree ? ast.nodes[0] : ast, { maxDepth }), {
+              name: 'RangeError', message: /exceeds max depth/,
+            }, api + ' must guard caller-supplied ASTs');
+          }
+        }
+      }
+      assert.throws(() => braces[api](makeAst(4), { maxDepth: 3 }), {
+        name: 'RangeError', message: /exceeds max depth/,
+      });
+      for (const depth of [3, 100]) {
+        const literal = '{'.repeat(depth) + 'x' + '}'.repeat(depth);
+        const expected = api === 'expand' ? [literal] : literal;
+        assert.deepEqual(braces[api](makeAst(depth), { maxDepth: depth }), expected);
+      }
+    }
+  `)
+})
+
+test('braces accepts the depth boundary and allows only stricter depth options', () => {
+  bounded(`
+    const assert = require('node:assert/strict');
+    const braces = require('braces');
+    for (const api of ['main', 'create', 'parse', 'compile', 'expand', 'stringify']) {
+      const run = api === 'main' ? braces : braces[api];
+      for (const maxDepth of [undefined, Infinity, Number.MAX_SAFE_INTEGER, NaN]) {
+        const pattern = '{'.repeat(101) + 'x' + '}'.repeat(101);
+        assert.throws(() => run(pattern, { maxDepth }), {
+          name: 'SyntaxError', message: /exceeds max depth/,
+        }, api + ' must retain the hard depth ceiling');
+      }
+      assert.throws(() => run('{{{{x}}}}', { maxDepth: 3 }), {
+        name: 'SyntaxError', message: /exceeds max depth/,
+      });
+      for (const [pattern, maxDepth] of [
+        ['{'.repeat(100) + 'x' + '}'.repeat(100), 100],
+        ['('.repeat(100) + 'x' + ')'.repeat(100), 100],
+        ['{('.repeat(50) + 'x' + ')}'.repeat(50), 100],
+        ['{{{x}}}', 3],
+        ['{x}(y)'.repeat(110), 1],
+      ]) {
+        const result = run(pattern, { maxDepth });
+        if (api === 'parse') assert.equal(braces.stringify(result), pattern);
+        else assert.deepEqual(result, api === 'main' || api === 'expand' ? [pattern] : pattern);
+      }
+    }
+  `)
+})
+
+test('braces preserves nested globs, ranges and escaped or quoted literals', () => {
+  const braces = require('braces')
+  const pattern = 'src/{client,{shared,server}}/*.{js,ts}'
+  const compiled = 'src/(client|(shared|server))/*.(js|ts)'
+  const expanded = [
+    'src/client/*.js', 'src/client/*.ts', 'src/shared/*.js',
+    'src/shared/*.ts', 'src/server/*.js', 'src/server/*.ts',
+  ]
+  assert.deepEqual(braces(pattern), [compiled])
+  assert.equal(braces.create(pattern), compiled)
+  assert.equal(braces.compile(pattern), compiled)
+  assert.deepEqual(braces(pattern, { expand: true }), expanded)
+  assert.deepEqual(braces.create(pattern, { expand: true }), expanded)
+  assert.deepEqual(braces.expand(pattern), expanded)
+  assert.equal(braces.stringify(braces.parse(pattern)), pattern)
+  assert.deepEqual(braces.expand('file-{01..03}'), ['file-01', 'file-02', 'file-03'])
+  assert.equal(braces.compile('file-{01..03}'), 'file-(0[1-3])')
+  assert.deepEqual(braces.expand('{a..c}'), ['a', 'b', 'c'])
+  const literal = '{'.repeat(101) + 'x' + '}'.repeat(101)
+  for (const input of ['\\{'.repeat(101) + 'x' + '\\}'.repeat(101), '"' + literal + '"']) {
+    assert.deepEqual(braces(input, { maxDepth: 0 }), [literal])
+    assert.deepEqual(braces.expand(input, { maxDepth: 0 }), [literal])
+    assert.equal(braces.stringify(input, { maxDepth: 0 }), literal)
+  }
+})
+
+test('micromatch resolves guarded braces and retains ordinary glob behavior', () => {
+  bounded(`
+    const assert = require('node:assert/strict');
+    const { createRequire } = require('node:module');
+    const requireMicromatch = createRequire(require.resolve('micromatch'));
+    assert.equal(requireMicromatch.resolve('braces'), require.resolve('braces'));
+    const micromatch = require('micromatch');
+    const pattern = '{'.repeat(4000) + 'x' + '}'.repeat(4000);
+    for (const api of ['braces', 'braceExpand']) {
+      assert.throws(() => micromatch[api](pattern), {
+        name: 'SyntaxError', message: /exceeds max depth/,
+      });
+    }
+    assert.deepEqual(micromatch.braces('src/{client,{shared,server}}/*.ts'),
+      ['src/(client|(shared|server))/*.ts']);
+    assert.deepEqual(micromatch.braceExpand('src/{client,{shared,server}}/*.ts'),
+      ['src/client/*.ts', 'src/shared/*.ts', 'src/server/*.ts']);
+    assert.deepEqual(micromatch(
+      ['src/client/a.ts', 'src/shared/b.ts', 'src/server/c.js', 'test/a.ts'],
+      'src/{client,{shared,server}}/*.ts'
+    ), ['src/client/a.ts', 'src/shared/b.ts']);
+  `)
+})
+
 test('Metro image parser rejects zero, short, oversized and truncated ICNS entries', () => {
   bounded(`
     const assert = require('node:assert/strict');
