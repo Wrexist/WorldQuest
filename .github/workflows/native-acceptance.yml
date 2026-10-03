@@ -110,6 +110,10 @@ jobs:
           fi
           xcrun simctl spawn "$DEVICE_ID" launchctl list | grep com.wrexist.worldquest
           xcrun simctl terminate "$DEVICE_ID" com.wrexist.worldquest
+          # A second fresh install exercises startup without retained app storage.
+          # Maestro separately verifies a normal terminate/relaunch after onboarding.
+          xcrun simctl uninstall "$DEVICE_ID" com.wrexist.worldquest
+          xcrun simctl install "$DEVICE_ID" "$RUNNER_TEMP/wq-ios/Build/Products/Release-iphonesimulator/WorldQuest.app"
           xcrun simctl launch "$DEVICE_ID" com.wrexist.worldquest
           sleep 10
           xcrun simctl io "$DEVICE_ID" screenshot "$RUNNER_TEMP/ios-second-startup.png"
@@ -163,5 +167,8 @@ jobs:
             native-daily-goal.png
             native-region.png
             native-first-lesson.png
+            native-optional-study.png
+            native-explore-globe.png
+            native-explore-zoomed.png
           if-no-files-found: ignore
           retention-days: 7

@@ -13,7 +13,7 @@
 
 import { useSyncExternalStore } from 'react'
 import type { MemoryState } from '@worldquest/engines'
-import { isRecord, onStorageScopeChange, readJson } from './storage.js'
+import { captureStorage, isRecord, onStorageScopeChange, readJson } from './storage.js'
 
 export const MEMORY_KEY = 'd1.memory.v1'
 
@@ -24,6 +24,28 @@ const isMemoryList = (value: unknown): boolean =>
 export function cachedMemory(): Map<string, MemoryState> {
   const list = readJson<MemoryState[]>(MEMORY_KEY, isMemoryList) ?? []
   return new Map(list.map((m) => [m.factId, m]))
+}
+
+let memorySnapshot: Map<string, MemoryState> | null = null
+let memoryScope: string | null = null
+const memoryListeners = new Set<() => void>()
+const memoryState = () => {
+  const scope = captureStorage().id
+  if (scope !== memoryScope) { memoryScope = scope; memorySnapshot = null }
+  return memorySnapshot ??= cachedMemory()
+}
+function announceMemory(): void {
+  memorySnapshot = null
+  for (const listener of memoryListeners) listener()
+}
+function subscribeMemory(listener: () => void): () => void {
+  memoryListeners.add(listener)
+  const off = onStorageScopeChange(announceMemory)
+  return () => { memoryListeners.delete(listener); off() }
+}
+/** Mounted Explore screens follow acknowledged lessons and account changes. */
+export function useCachedMemory(): ReadonlyMap<string, MemoryState> {
+  return useSyncExternalStore(subscribeMemory, memoryState, memoryState)
 }
 
 // ── finished lessons per chosen focus — what a course path follows ──────────
@@ -75,6 +97,7 @@ export function cachedNodeFinished(): readonly NodeFinished[] {
 
 /** Called by the writer after a fetch, so the path redraws with what the server said. */
 export function announceFocusFinished(): void {
+  announceMemory()
   focusSnapshot = null
   nodeSnapshot = null
   for (const listener of focusListeners) listener()

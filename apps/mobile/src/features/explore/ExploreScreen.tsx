@@ -22,12 +22,11 @@ import {
 } from '@worldquest/design'
 import type { WorldProgress } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
-import { AdventureArt } from '../../components/AdventureArt.js'
+import { ClayMap } from '../../components/ClayMap.js'
 import { AtlasCompanion } from '../../components/AtlasCompanion.js'
 import { SceneEntrance } from '../../components/SceneEntrance.js'
 import { TopBar } from '../../components/TopBar.js'
 import { DaylightIllustration } from '../../components/DaylightIllustration.js'
-import type { ArtName } from '../../lib/art.generated.js'
 import { Flag } from '../../components/Flag.js'
 import type { CountryRow } from './RegionScreen.js'
 import { Icon } from '../../components/Icon.js'
@@ -36,27 +35,6 @@ import type { AtlasNames } from '../atlas/useAtlasNames.js'
 
 export const REGIONS = ['EU', 'AS', 'AF', 'NA', 'SA', 'OC', 'AN'] as const
 export type RegionCode = (typeof REGIONS)[number]
-const DESTINATION = { EU: 'europe', AS: 'asia', AF: 'africa', NA: 'north-america', SA: 'south-america', OC: 'oceania', AN: 'antarctica' } as const
-
-export const CONTINENT_ART: Record<RegionCode, ArtName> = {
-  EU: 'continents/EU',
-  AS: 'continents/AS',
-  AF: 'continents/AF',
-  NA: 'continents/NA',
-  SA: 'continents/SA',
-  OC: 'continents/OC',
-  AN: 'continents/AN',
-}
-
-
-export const CONTINENT_SILHOUETTE: Partial<Record<RegionCode, ArtName>> = {
-  EU: 'continents-silhouette/EU',
-  AS: 'continents-silhouette/AS',
-  AF: 'continents-silhouette/AF',
-  NA: 'continents-silhouette/NA',
-  SA: 'continents-silhouette/SA',
-  OC: 'continents-silhouette/OC',
-}
 
 export const continentArtSize = (width: number, height: number) => Math.ceil(Math.max(width, height * 1.5))
 
@@ -389,7 +367,7 @@ function ContinentTile({
       >
         <ClaySurface radius={radius.lg} />
         <View style={styles.tileShape} pointerEvents="none" aria-hidden>
-          <AdventureArt name={DESTINATION[region]} style={{ width: '100%', height: 116 }} />
+          <ClayMap name={`region-${region}`} style={{ width: '100%', height: 116 }} cover />
         </View>
 
         <Text style={styles.regionName}>{t(REGION_NAME[region])}</Text>

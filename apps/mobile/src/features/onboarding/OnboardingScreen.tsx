@@ -42,12 +42,12 @@ import { DAILY_GOALS, type DailyGoal, type LanguageChoice } from '../settings/us
 import { LANGUAGE_CHOICES } from '../settings/usePreferences.js'
 import { LOCALE_ENDONYM, type Locale } from '@worldquest/i18n'
 import {
-  CONTINENT_SILHOUETTE,
   REGION_NAME,
   REGIONS,
   type RegionCode,
 } from '../explore/ExploreScreen.js'
 import { Art } from '../../components/Art.js'
+import { ClayMap } from '../../components/ClayMap.js'
 import { IslandStage, SceneryBanner, type SceneryName } from '../../components/Scenery.js'
 import { Icon } from '../../components/Icon.js'
 import { CloudBackdrop } from '../../components/CloudBackdrop.js'
@@ -1039,8 +1039,7 @@ export function OnboardingScreen({
                     onPress={() => { if (!chosen) hapticSelect(); setStartRegion(code) }}
                     style={[styles.regionCell, largeText && styles.regionCellLarge, chosen && styles.choiceOn]}>
                     <View style={styles.regionArt}>
-                      {CONTINENT_SILHOUETTE[code] !== undefined &&
-                        <Art name={CONTINENT_SILHOUETTE[code]} size={REGION_ART} frame="bleed" />}
+                      <ClayMap name={`region-${code}`} style={{ width: REGION_ART, height: Math.round(REGION_ART * 3 / 4) }} cover />
                     </View>
                     <Text style={styles.regionLabel}>{t(REGION_NAME[code])}</Text>
                     {chosen && <View style={styles.regionCheck}>

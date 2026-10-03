@@ -26,6 +26,12 @@ vi.mock('@react-navigation/native', async () => ({
   NavigationContext: (await import('react')).createContext(undefined),
 }))
 
+// Native window insets must be verified in the simulator. Keep study content mountable
+// in jsdom without importing the safe-area package's native view implementation.
+vi.mock('react-native-safe-area-context', async () => ({
+  SafeAreaView: (await import('react-native')).View,
+}))
+
 // Native Keychain/Keystore itself is exercised by the isolated native proof build.
 vi.mock('expo-secure-store', () => {
   const values = new Map<string, string>()

@@ -252,7 +252,6 @@ export function LessonScreen({
   onExit,
   onLeave,
   mode = 'normal',
-  showIntroduction = false,
   coins = 0,
   isTaster = false,
   focus,
@@ -261,7 +260,6 @@ export function LessonScreen({
   length,
   placement,
 }: {
-  showIntroduction?: boolean
   onExit: (summary: LessonExit) => void
   /**
    * Leave a lesson that never started — offline with nothing saved, a failure, or a focus
@@ -335,7 +333,7 @@ export function LessonScreen({
   const t = useT()
   const dailyGoal = useDailyGoal()
   const { index, memory, status, reload, isOffline } = useContent()
-  const [introduced, setIntroduced] = useState(false)
+  const [studying, setStudying] = useState(false)
   const [screen, setScreen] = useState<ScreenState>('loading')
   // "Report a problem" open over the answer just given. Only where a backend takes
   // reports (the Worker): a link that could only fail is a link not to show.
@@ -769,7 +767,7 @@ export function LessonScreen({
     if (source === 'offline') return setScreen('offline-start')
     if (source === 'too-narrow' || questions.length === 0) return setScreen('empty')
     setScreen('ready')
-    if (lesson.state.phase === 'idle' && (!showIntroduction || introduced || mode === 'speed' || !questions.some(question => question.isNew))) {
+    if (lesson.state.phase === 'idle') {
       // The ticket's id on D1: it is the idempotency key the server issued under.
       lesson.start(remoteLessons && remote.lesson ? remote.lesson.lessonId : makeUuid())
       track('lesson_started', {
@@ -780,7 +778,7 @@ export function LessonScreen({
         was_offline: isOffline,
       })
     }
-  }, [status, questions, lesson, isOffline, remoteLessons, remote.status, remote.lesson, showIntroduction, introduced, mode])
+  }, [status, questions, lesson, isOffline, remoteLessons, remote.status, remote.lesson])
 
   if (screen === 'loading') return <LoadingState />
   if (screen === 'error') return <ErrorState onRetry={remoteLessons ? remote.retry : reload} onLeave={onLeave} />
@@ -788,8 +786,11 @@ export function LessonScreen({
   if (screen === 'offline-start') return <OfflineStartState onRetry={remote.retry} onLeave={onLeave} />
   if (screen === 'empty') return <EmptyState onLeave={onLeave} />
 
-  if (showIntroduction && !introduced && mode !== 'speed' && questions.some(question => question.isNew)) {
-    return <LessonIntroduction questions={questions} onBegin={() => setIntroduced(true)} onLeave={onLeave} />
+  if (studying) {
+    return <LessonIntroduction questions={lesson.state.questions} onBegin={() => {
+      setStudying(false)
+      lesson.resume()
+    }} />
   }
 
   if (lesson.state.phase === 'summary' || lesson.state.phase === 'abandoned') {
@@ -865,6 +866,10 @@ export function LessonScreen({
   const questionScene = `${lesson.state.lessonId}:${lesson.state.index}`
 
   const answered = lesson.state.phase === 'answered'
+  // Study is an explicit choice before the first answer, never a placement answer key.
+  // Pause/resume preserves this exact lesson and keeps study time out of grading.
+  const canStudy = mode === 'normal' && placement !== true &&
+    lesson.state.phase === 'presenting' && lesson.state.index === 0 && lesson.state.answers.length === 0
 
   /**
    * Whether the ANSWERS are pictures — which changes the layout of half this screen.
@@ -982,13 +987,13 @@ export function LessonScreen({
         <ProgressBar
           current={lesson.progress.current}
           total={lesson.progress.total}
-          label={t('lesson:progress.label')}
+          accessibilityLabel={t('lesson:progress.label')}
           valueText={t('lesson:progress.value', {
             current: lesson.progress.current,
             total: lesson.progress.total,
           })}
           tone={correctRun >= STREAK_PRAISE ? 'streak' : 'progress'}
-          style={styles.flex}
+          style={styles.lessonProgress}
         />
         <Stat
           kind="hearts"
@@ -1002,6 +1007,19 @@ export function LessonScreen({
             running={lesson.state.phase === 'presenting'}
           />
         )}
+        {canStudy && <Pressable
+          role="button"
+          aria-label={t('lesson:intro.open')}
+          onPress={() => {
+            hapticSelect()
+            lesson.pause()
+            setStudying(true)
+          }}
+          style={styles.study}
+          testID="lesson-study"
+        >
+          <Text style={styles.studyLabel}>{t('lesson:intro.open')}</Text>
+        </Pressable>}
       </View>
 
       <ScrollView
@@ -1696,7 +1714,16 @@ const useThemeValues = createThemeStyles((colors) => {
   screen: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[3] },
   centered: { alignItems: 'center', justifyContent: 'center' },
   flex: { flex: 1 },
-  header: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  lessonProgress: { flex: 1, minWidth: space[8] + space[4] },
+  header: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space[3] },
+  study: {
+    minHeight: 44, minWidth: 44, marginStart: 'auto',
+    paddingHorizontal: space[2], paddingVertical: space[2],
+    justifyContent: 'center', alignItems: 'center',
+    borderRadius: radius.full, borderWidth: 1, borderColor: colors.border.subtle,
+    backgroundColor: colors.bg.surface,
+  },
+  studyLabel: { ...text('caption'), color: colors.text.primary },
   // `flexGrow` + `center` so a question shorter than the screen sits in the middle of
   // it rather than jammed under the progress bar with half the display empty beneath.
   // On a tablet that empty half was 45 % of the screen; on a phone the content is

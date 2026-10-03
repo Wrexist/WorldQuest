@@ -13,14 +13,14 @@ import { entityProgress, worldProgress } from '@worldquest/engines'
 import { ExploreScreen } from '../../src/features/explore/ExploreScreen.js'
 import { ContentGate } from '../../src/components/ContentGate.js'
 import { currentLocale } from '../../src/lib/i18n.js'
-import { useContent } from '../../src/lib/content.js'
+import { useReferenceContent } from '../../src/lib/referenceContent.js'
 import { useOptimisticProgress } from '../../src/features/home/useOptimisticProgress.js'
 import { useAtlasEnabled } from '../../src/features/atlas/atlasAvailability.js'
 import { useAtlasNames } from '../../src/features/atlas/useAtlasNames.js'
 
 export default function ExploreRoute() {
   const router = useRouter()
-  const { index, memory, status, reload, isOffline } = useContent()
+  const { index, memory, status, reload, isOffline } = useReferenceContent()
   // The bar at the top reports, so it shows what Home shows: the server's figures plus
   // any lesson it has not seen yet. Reading the server's alone put "1 day" on Home and
   // "no days yet" here after the same lesson. The Shop's wallet card is where coins are

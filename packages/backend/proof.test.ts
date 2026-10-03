@@ -230,6 +230,49 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     expect((await call('/v1/learning/history?through=99999', a.token)).status).toBe(400)
     expect((await call('/v1/learning/history?slot=999', a.token)).status).toBe(400)
   })
+  it('pages more than 1000 facts coherently, scopes every page, and restarts after a concurrent revision', async () => {
+    const vault = new Map<string, string>()
+    const storage = { getItem: async (key: string) => vault.get(key) ?? null,
+      setItem: async (key: string, value: string) => { vault.set(key, value) }, removeItem: async (key: string) => { vault.delete(key) } }
+    let owner = '', changeBetweenPages = false
+    const pageSizes: number[] = []
+    const transport: AuthFetch = async (url, init) => {
+      if (changeBetweenPages && url.includes('after=')) {
+        changeBetweenPages = false
+        await db.prepare('UPDATE accounts SET revision=revision+1 WHERE id=?').bind(owner).run()
+      }
+      const response = await mf.dispatchFetch(url, { method: init.method ?? 'GET', headers: Object.fromEntries(new Headers(init.headers).entries()),
+        ...(init.body ? { body: String(init.body) } : {}) })
+      const value = await response.json() as { memories?: unknown[] }
+      if (value.memories) pageSizes.push(value.memories.length)
+      return { status: response.status, ok: response.ok, json: async () => value }
+    }
+    const auth = createD1AuthClient({ baseURL: 'http://localhost', storage, clearCredentials: async () => { vault.clear() }, fetch: transport })
+    const account = await auth.startGuest()
+    owner = account.userId
+    const ids = [...learningContent.facts.keys()].sort().slice(0, 1005)
+    const memories = ids.map(factId => ({ factId, stability: 20, difficulty: 5, reps: 3, lapses: 0,
+      lastReviewAt: 1000, dueAt: 100000, suspended: false }))
+    await db.prepare(`INSERT INTO memories(account_id,fact_id,state,revision)
+      SELECT ?,json_extract(value,'$.factId'),value,0 FROM json_each(?)`).bind(owner, JSON.stringify(memories)).run()
+    const first = await (await call('/v1/learning/state?paged=1', account.token)).json() as { memories: MemoryState[]; next: { after: string; revision: number } }
+    expect(first.memories).toHaveLength(250)
+    const cursor = `?paged=1&after=${first.next.after}&revision=${first.next.revision}`
+    const other = await guest()
+    expect(await (await call('/v1/learning/state' + cursor, other.token)).json()).toMatchObject({ memories: [], next: null })
+    expect((await call('/v1/learning/state?after=foreign', account.token)).status).toBe(400)
+    expect((await call('/v1/learning/state?paged=1&limit=999999', account.token)).status).toBe(400)
+    // The old response contract fails explicitly instead of returning a partial snapshot.
+    expect((await call('/v1/learning/state', account.token)).status).toBe(409)
+    const client = createD1LearningClient({ auth, owner, isCurrent: () => true, fetch: transport })
+    changeBetweenPages = true
+    const complete = await client.state()
+    expect(complete.revision).toBe(1)
+    expect(complete.memories).toEqual(memories)
+    expect(pageSizes).toEqual([250, 250, 250, 250, 250, 5])
+    expect((await call('/v1/learning/state' + cursor, account.token)).status).toBe(409)
+    expect(await (await call('/v1/learning/state?paged=1', other.token)).json()).toMatchObject({ memories: [], next: null })
+  })
   it('fails closed when the application API is disabled', async () => {
     await mf.setOptions(convertV4MiniflareOptions({ modules: true, script, compatibilityDate: '2026-09-13', compatibilityFlags: ['nodejs_compat'], d1Databases: ['DB'], bindings: { API_ENABLED: 'false' } }))
     expect((await call('/health')).status).toBe(200)

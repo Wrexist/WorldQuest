@@ -30,10 +30,20 @@ appId: com.wrexist.worldquest
 - tapOn: "Continue"
 - tapOn: "Start learning"
 - assertVisible:
+    id: "lesson-check"
+- assertNotVisible:
     id: "lesson-introduction"
+- takeScreenshot: native-first-lesson
+- tapOn:
+    id: "lesson-study"
+- assertVisible:
+    id: "lesson-introduction"
+- assertVisible: "Learn first"
+- takeScreenshot: native-optional-study
 - tapOn:
     id: "lesson-begin"
-- takeScreenshot: native-first-lesson
+- assertVisible:
+    id: "lesson-check"
 - tapOn: "Pause the lesson"
 - tapOn: "Finish here"
 - tapOn: "Continue"
@@ -45,6 +55,19 @@ appId: com.wrexist.worldquest
 - assertVisible:
     id: "path-node-current"
 - takeScreenshot: native-relaunch
+- tapOn: "Explore"
+# Zoom controls exist only after the native renderer reports ready.
+- extendedWaitUntil:
+    visible: "Zoom in"
+    timeout: 30000
+- assertVisible:
+    id: "explore-globe"
+- assertNotVisible:
+    id: "atlas-fallback"
+- takeScreenshot: native-explore-globe
+- tapOn: "Zoom in"
+- assertVisible: "Zoom out"
+- takeScreenshot: native-explore-zoomed
 # Start the first link from a stopped app, as in Maestro's deep-link recipe.
 - stopApp
 - openLink: "worldquest://country/%53%45"

@@ -2,6 +2,8 @@
 
 Captured on 2026-10-03 from commit `47f99d98`, on an **iPhone 16 Pro simulator running iOS 18.5**. This run used the normal app entry, with asset diagnostics off, English, light appearance and default text size. These are native simulator captures, not browser or physical-device evidence.
 
+**Later runs reproduced first-install image corruption.** The clean captures below establish only this individual run's result. [The lifecycle diagnostic](image-lifecycle.md) records correct image loads followed by stale shop-image dimensions on recycled onboarding views, and explains the synchronous tab startup guard and its remaining native verification scope.
+
 The native acceptance workflow does not set production `EXPO_PUBLIC_*` API values. The app therefore selects the unconfigured backend (`kind: 'none'` in [backendConfig.ts](../../../../../apps/mobile/src/lib/backendConfig.ts)) and composes lessons locally from [bundled content packs](../../../../../apps/mobile/src/lib/content.ts). This run verifies native UI, local storage and core navigation; it does not exercise the production network end to end. The separate real hosted guest smoke documented in the [main review](../README.md) covers production authentication/lesson parsing and question delivery.
 
 | Capture | Visible result |

@@ -23,5 +23,15 @@
   "country:attribute.tld": "Webbdomän",
   "country:attribute.alpha3": "ISO-kod",
   "country:attribute.currencyCode": "Valutakod",
-  "country:attribute.nativeName": "Eget namn"
+  "country:attribute.nativeName": "Eget namn",
+  "country:attribute.company": "Företag",
+  "country:attribute.athlete": "Idrottare",
+  "country:attribute.musician": "Musiker",
+  "country:attribute.actor": "Skådespelare",
+  "country:attribute.scientist": "Forskare",
+  "country:attribute.writer": "Författare",
+  "country:attribute.artist": "Konstnär",
+  "country:attribute.landmark": "Sevärdhet",
+  "country:attribute.club": "Idrottsklubb",
+  "country:attribute.highest-point": "Högsta punkt"
 }

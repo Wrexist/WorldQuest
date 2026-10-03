@@ -9,7 +9,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useOnline } from './connectivity.js'
 import { isD1 } from './backendConfig.js'
-import { cachedMemory } from './d1-memory.js'
+import { useCachedMemory } from './d1-memory.js'
 import { useScreenReader } from './screenReader.js'
 import { currentLocale } from './i18n.js'
 import {
@@ -99,6 +99,7 @@ export type LoadedContent = {
  * when it adds its renderer.
  */
 const PRESENTABLE = ['text', 'image', 'map'] as const
+const NO_MEMORY: ReadonlyMap<string, MemoryState> = new Map()
 
 /**
  * How many countries this build actually ships.
@@ -187,7 +188,8 @@ export function useContent() {
   // actually know; the server composes every issued lesson from its own copy anyway.
   // Still empty on a legacy build, which has no memory read-back (L01/B06 stays open
   // there, and D1 is the release path).
-  const memory = useMemo(() => (isD1() ? cachedMemory() : new Map<string, MemoryState>()), [])
+  const storedMemory = useCachedMemory()
+  const memory = isD1() ? storedMemory : NO_MEMORY
 
   const index = useMemo<LoadedContent | null>(() => {
     try {

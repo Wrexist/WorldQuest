@@ -11,12 +11,13 @@ import { createThemeStyles } from '@worldquest/design'
  * ADR. The five are the information architecture, and the IA is the product.
  */
 
-import { Tabs } from 'expo-router'
+import { Redirect, Tabs } from 'expo-router'
 import { View } from 'react-native'
 import { TabBar, depth, layout } from '@worldquest/design'
 import { Icon } from '../../src/components/Icon.js'
 import type { IconName } from '../../src/lib/icons.generated.js'
 import { useT, type TranslationKey } from '../../src/lib/i18n.js'
+import { readOnboarding } from '../../src/features/onboarding/useOnboarding.js'
 
 /**
  * Route name → tab identity.
@@ -50,6 +51,14 @@ const TABS: readonly { name: string; icon: IconName; labelKey: TranslationKey }[
 /** The icon is decorative — the tab is already labelled and announces its own name. */
 
 export default function TabsLayout() {
+  // The root effect redirects other routes too, but runs after children mount.
+  // Mounting Home and its tab icons for one frame lets pending native image loads
+  // reach recycled onboarding image views on a fresh install. Decide locally first.
+  if (!readOnboarding().completed) return <Redirect href="/onboarding" />
+  return <CompletedTabsLayout />
+}
+
+function CompletedTabsLayout() {
   const { colors } = useThemeValues()
   const t = useT()
 

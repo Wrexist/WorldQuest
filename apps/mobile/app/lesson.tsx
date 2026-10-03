@@ -130,7 +130,6 @@ export default function LessonRoute() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg.canvas }}>
     <LessonScreen
-      showIntroduction
       mode={mode === 'speed' ? 'speed' : 'normal'}
       {...(focus ? { focus } : {})}
       // A place, topic or band in the link is the learner's choice; quest facts and

@@ -16,6 +16,7 @@ import { useEffect, useMemo, useState, type Ref } from 'react'
 import { I18nManager, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ViewProps } from 'react-native'
 import { ClaySurface, clayShadow, createThemeStyles, layout, radius, space, text } from '@worldquest/design'
 import { Flag } from '../../components/Flag.js'
+import { ClayMap } from '../../components/ClayMap.js'
 import { Icon } from '../../components/Icon.js'
 import { SceneEntrance } from '../../components/SceneEntrance.js'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
@@ -60,6 +61,7 @@ export function ExploreAtlas({ countries, names, selected, onSelect, region, onR
   const { width, height, fontScale } = useWindowDimensions()
   const largeText = fontScale >= 1.5
   const [browseExpanded, setBrowseExpanded] = useState(false)
+  const [globeFailed, setGlobeFailed] = useState(false)
   useEffect(() => { if (!showBrowse) setBrowseExpanded(false) }, [showBrowse])
   const globeHeight = Math.round(Math.min(width * 0.95, height * 0.46, 420))
 
@@ -83,8 +85,11 @@ export function ExploreAtlas({ countries, names, selected, onSelect, region, onR
         ))}
       </ScrollView>
 
-      <WorldAtlasView
+      {globeFailed ? <View testID="explore-map-fallback">
+        <ClayMap name={selected ?? (region ? `region-${region}` : 'world')} style={{ width: '100%', height: globeHeight }} />
+      </View> : <WorldAtlasView
         spec={spec}
+        onStatusChange={status => { if (status === 'error') setGlobeFailed(true) }}
         controls
         style={{ height: globeHeight }}
         testID="explore-globe"
@@ -94,7 +99,7 @@ export function ExploreAtlas({ countries, names, selected, onSelect, region, onR
           if (event.sceneKey !== spec.sceneKey) return
           if (event.type === 'countrySelected') onSelect(event.countryId)
         }}
-      />
+      />}
 
       {country !== undefined && (
         <SceneEntrance replayKey={country.id} style={styles.card} testID="explore-atlas-card" accessibilityLiveRegion="polite">

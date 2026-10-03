@@ -790,6 +790,16 @@ describe('question construction', () => {
     )
   })
 
+  it('prefers a Swedish country name before an English article-bearing sentence form', () => {
+    for (const code of ['GB', 'NL']) {
+      const capital = index.itemsByFact.get(`geo.${code}.capital`)!.find(item => item.templateId === 'tpl.capital.mc4')!
+      expect(buildQuestion(index, capital, 'sv', seededRng(2))!.promptParams['entityName'])
+        .toBe(index.entities.get(code)!.names.sv)
+      expect(buildQuestion(index, capital, 'en', seededRng(2))!.promptParams['entityName'])
+        .toBe(index.entities.get(code)!.namesInSentence!.en)
+    }
+  })
+
   it('draws visually-similar distractors from the `like:` tag alone', () => {
     // This matched any shared tag except `core`, which meant it matched `flag` —
     // carried by every flag fact — so "visually similar" meant "any country". Five

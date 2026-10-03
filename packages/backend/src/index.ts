@@ -224,7 +224,17 @@ export function createWorker(mail?: MailDelivery, clock: Clock = Date.now) { ret
         return json(await fileReport(env.DB, account.id, tokenHash, parsed.data, now), 202)
       }
       if (request.method === 'GET' && path === '/v1/quest/today') return json(await todayQuest(env.DB, account.id, tokenHash, now))
-      if (request.method === 'GET' && path === '/v1/learning/state') return json(await learningState(env.DB, account.id, tokenHash))
+      if (request.method === 'GET' && path === '/v1/learning/state') {
+        const params = new URL(request.url).searchParams
+        const parsed = z.object({ paged: z.literal('1').optional(),
+          after: z.string().regex(/^[a-zA-Z0-9._-]{1,120}$/).optional(),
+          revision: z.coerce.number().int().min(0).max(Number.MAX_SAFE_INTEGER).optional() }).strict()
+          .refine(value => (value.after === undefined && value.revision === undefined)
+            || (value.paged === '1' && value.after !== undefined && value.revision !== undefined))
+          .safeParse(Object.fromEntries(params))
+        if (!parsed.success) throw new ApiError('INVALID_CURSOR', 400)
+        return json(await learningState(env.DB, account.id, tokenHash, parsed.data))
+      }
       if (request.method === 'GET' && path === '/v1/learning/history') {
         const params = new URL(request.url).searchParams
         const parsed = z.object({ revision: z.coerce.number().int().min(0).max(Number.MAX_SAFE_INTEGER).default(0),

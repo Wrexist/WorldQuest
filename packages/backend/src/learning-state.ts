@@ -2,17 +2,21 @@ import { ApiError } from './contracts'
 import type { MemoryState } from '@worldquest/engines'
 
 /** Current projection and wallet share a coherent D1 snapshot. No unbounded scans. */
-export async function learningState(db: D1Database, owner: string, tokenHash: string) {
+export type StateCursor = { paged?: '1' | undefined; after?: string | undefined; revision?: number | undefined }
+const MEMORY_PAGE_SIZE = 250
+export async function learningState(db: D1Database, owner: string, tokenHash: string, cursor: StateCursor = {}) {
+  const limit = cursor.paged ? MEMORY_PAGE_SIZE : 1000
   const rows = await db.batch<Record<string, unknown>>([
     db.prepare(`SELECT a.revision,a.xp,a.coins,a.time_zone,a.streak_current,a.streak_longest,a.streak_last_day,a.freezes_held
       FROM accounts a JOIN sessions s ON s.account_id=a.id
       WHERE a.id=? AND a.deleted_at IS NULL AND s.token_hash=? AND s.expires_at>?`).bind(owner, tokenHash, Date.now()),
-    db.prepare('SELECT state FROM memories WHERE account_id=? ORDER BY fact_id LIMIT 1001').bind(owner),
+    db.prepare('SELECT fact_id,state FROM memories WHERE account_id=? AND fact_id>? ORDER BY fact_id LIMIT ?')
+      .bind(owner, cursor.after ?? '', limit + 1),
     // Finished lessons per focus the learner chose — a course step, a country — from the
     // tickets the Worker issued and the receipts it wrote. What lets a course path follow
     // the account to another phone without the path being stored anywhere: it is derived
     // from records the server already keeps and already decided ("finished" is its rule).
-    db.prepare(`SELECT json_extract(t.request_json,'$.focus') AS focus, count(*) AS finished
+    ...(!cursor.after ? [db.prepare(`SELECT json_extract(t.request_json,'$.focus') AS focus, count(*) AS finished
       FROM receipts r JOIN tickets t ON t.account_id=r.account_id AND t.lesson_id=r.lesson_id
       WHERE r.account_id=? AND json_extract(r.result,'$.finished')=1
         AND json_extract(t.request_json,'$.focus') IS NOT NULL
@@ -29,16 +33,25 @@ export async function learningState(db: D1Database, owner: string, tokenHash: st
       FROM receipts r JOIN tickets t ON t.account_id=r.account_id AND t.lesson_id=r.lesson_id
       WHERE r.account_id=? AND json_extract(r.result,'$.finished')=1
         AND json_extract(t.request_json,'$.node') IS NOT NULL
-      GROUP BY json_extract(t.request_json,'$.node') ORDER BY finished DESC LIMIT ?`).bind(owner, MAX_FOCUSES),
+      GROUP BY json_extract(t.request_json,'$.node') ORDER BY finished DESC LIMIT ?`).bind(owner, MAX_FOCUSES)] : []),
   ])
   const account = rows[0]?.results[0]
   if (!account) throw new ApiError('SESSION_EXPIRED', 401)
-  const memory = rows[1]?.results ?? []
-  if (memory.length > 1000) throw new ApiError('STATE_REQUIRES_PAGING', 409)
+  // Pages are only combined at the same account revision. A concurrent lesson/spend
+  // makes the client restart, never merge two different authoritative snapshots.
+  if (cursor.revision !== undefined && cursor.revision !== account.revision) throw new ApiError('STATE_CHANGED', 409)
+  const allMemory = rows[1]?.results ?? []
+  if (!cursor.paged && allMemory.length > limit) throw new ApiError('STATE_REQUIRES_PAGING', 409)
+  const memory = allMemory.slice(0, limit)
+  const memoryPage = { memories: memory.map(row => JSON.parse(String(row.state)) as MemoryState),
+    ...(cursor.paged ? { next: allMemory.length > limit ? { after: String(memory.at(-1)!.fact_id), revision: account.revision } : null } : {}) }
+  // Totals/history are coherent first-page metadata; continuation reads only account
+  // revision and the next bounded memory range, not every receipt aggregation again.
+  if (cursor.after) return { revision: account.revision, ...memoryPage }
   return { revision: account.revision, xp: account.xp, coins: account.coins, timeZone: account.time_zone,
     streak: { current: account.streak_current, longest: account.streak_longest, lastActiveDate: account.streak_last_day,
       freezesHeld: account.freezes_held },
-    memories: memory.map(row => JSON.parse(String(row.state)) as MemoryState),
+    ...memoryPage,
     finishedByFocus: (rows[2]?.results ?? []).map(row => ({ focus: JSON.parse(String(row.focus)) as unknown, finished: Number(row.finished) })),
     finishedByDay: (rows[3]?.results ?? []).map(row => ({ day: String(row.day), finished: Number(row.finished) })),
     finishedByNode: (rows[4]?.results ?? []).map(row => ({ node: String(row.node), finished: Number(row.finished) })) }

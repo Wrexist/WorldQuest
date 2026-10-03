@@ -32,7 +32,7 @@
   },
   "scripts": {
     "dev": "pnpm --filter @worldquest/mobile start",
-    "generate": "pnpm design:tokens && pnpm i18n:types && pnpm edge:build",
+    "generate": "pnpm content:reference && pnpm design:tokens && pnpm i18n:types && pnpm edge:build",
     "prepare": "pnpm generate",
     "verify": "pnpm generate && pnpm status:check && pnpm typecheck && pnpm check:backend-boundaries && pnpm test && pnpm content:validate && pnpm content:crosscheck && pnpm content:preview --quiet && pnpm i18n:check && pnpm design:contrast && pnpm lint:a11y && pnpm escape-hatches && pnpm reachability && pnpm check:sql && pnpm five-states && pnpm scrollable && pnpm engines:simulate && pnpm check:eas && pnpm check:workflows",
     "typecheck": "pnpm -r --filter \"./packages/*\" --filter \"./apps/*\" --fail-if-no-match typecheck && pnpm typecheck:edge",
@@ -88,7 +88,9 @@
     "status:generate": "node scripts/project-inventory.cjs",
     "status:check": "node scripts/project-inventory.cjs --check",
     "check:backend-boundaries": "node scripts/backend-boundaries.cjs",
-    "backend:inventory": "node scripts/backend-inventory.cjs"
+    "backend:inventory": "node scripts/backend-inventory.cjs",
+    "content:reference": "tsx scripts/build-reference-catalogue.ts",
+    "build:clay-maps": "node scripts/build-clay-maps.cjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

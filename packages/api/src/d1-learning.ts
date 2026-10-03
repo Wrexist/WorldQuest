@@ -151,6 +151,37 @@ export function createD1LearningClient(options: {
         return value
       } finally { clearTimeout(timeout) }
   }
+  async function stateSnapshot() {
+    const value = await request('/v1/learning/state?paged=1')
+    if (!object(value) || !integer(value.revision) || !integer(value.xp) || !integer(value.coins)
+      || !Array.isArray(value.memories) || value.memories.length > 1000) throw new D1AuthError('INVALID_RESPONSE')
+    const memories = value.memories.map(parseD1Memory)
+    const ids = new Set(memories.map(memory => memory.factId))
+    if (ids.size !== memories.length) throw new D1AuthError('INVALID_RESPONSE')
+    let page = value, previous = ''
+    // Bounded network work. Even a broken server/cursor cannot loop indefinitely.
+    for (let pages = 1; page.next !== undefined && page.next !== null; pages++) {
+      const next = page.next
+      if (pages >= 100 || !object(next) || next.revision !== value.revision || typeof next.after !== 'string'
+        || !/^[a-zA-Z0-9._-]{1,120}$/.test(next.after) || next.after <= previous
+        || next.after !== memories.at(-1)?.factId) throw new D1AuthError('INVALID_RESPONSE')
+      previous = next.after
+      const response = await request(`/v1/learning/state?paged=1&after=${encodeURIComponent(next.after)}&revision=${value.revision}`)
+      if (!object(response) || response.revision !== value.revision || !Array.isArray(response.memories)
+        || response.memories.length > 250 || response.memories.length === 0) throw new D1AuthError('INVALID_RESPONSE')
+      const additional = response.memories.map(parseD1Memory)
+      for (const memory of additional) {
+        if (ids.has(memory.factId) || memory.factId <= previous) throw new D1AuthError('INVALID_RESPONSE')
+        ids.add(memory.factId)
+        memories.push(memory)
+      }
+      page = response
+    }
+    return { revision: value.revision, xp: value.xp, coins: value.coins, memories,
+      ...(value.streak === undefined ? {} : { streak: streakState(value.streak) }), timeZone: typeof value.timeZone === 'string' ? value.timeZone : 'UTC',
+      finishedByFocus: finishedByFocus(value.finishedByFocus), finishedByDay: finishedByDay(value.finishedByDay),
+      finishedByNode: finishedByNode(value.finishedByNode) }
+  }
   return {
     owner: options.owner,
     prepare: async (input: D1PrepareInput) => {
@@ -159,13 +190,11 @@ export function createD1LearningClient(options: {
       return value
     },
     state: async () => {
-      const value = await request('/v1/learning/state')
-      if (!object(value) || !integer(value.revision) || !integer(value.xp) || !integer(value.coins) || !Array.isArray(value.memories)
-        || value.memories.length > 1000) throw new D1AuthError('INVALID_RESPONSE')
-      return { revision: value.revision, xp: value.xp, coins: value.coins, memories: value.memories.map(parseD1Memory),
-        ...(value.streak === undefined ? {} : { streak: streakState(value.streak) }), timeZone: typeof value.timeZone === 'string' ? value.timeZone : 'UTC',
-        finishedByFocus: finishedByFocus(value.finishedByFocus), finishedByDay: finishedByDay(value.finishedByDay),
-        finishedByNode: finishedByNode(value.finishedByNode) }
+      for (let attempt = 0; ; attempt++) {
+        try { return await stateSnapshot() } catch (error) {
+          if (!(error instanceof D1AuthError) || error.code !== 'STATE_CHANGED' || attempt >= 2) throw error
+        }
+      }
     },
     submit: async (input: D1Submission): Promise<D1Receipt> => {
         const parsed = submission(input), result = receipt(await request('/v1/lessons/submit', parsed))

@@ -66,6 +66,11 @@ countdown).
 ### 5. Lesson runner ★
 The most important screen in the app. Close button · progress bar · item counter
 (`2 / 10`) · hearts · the question · answer options.
+The question opens directly. Before the first answer, **Learn first** opens optional
+study cards from this exact quiz; returning preserves the question and selection.
+Study time is paused and records no answer. Level checks and speed rounds do not
+offer study. The scrollable study view keeps its heading and return action within
+the native safe area.
 **Question types (v1.0):** tap-the-country (map) · flag → country · country → capital ·
 landmark → country · speed round.
 **Interaction rules:** options are ≥ 56 pt tall; tapping an option **selects** it

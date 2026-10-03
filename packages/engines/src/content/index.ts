@@ -528,7 +528,8 @@ function resolveShallow(
     // in "the capital of the Netherlands", not in a list of four countries.
     if (param === 'entityName') {
       promptParams[param] =
-        nameOf(entity.namesInSentence) ?? nameOf(entity.names) ?? entity.id
+        entity.namesInSentence?.[locale] ?? entity.names[locale]
+        ?? entity.namesInSentence?.['en'] ?? entity.names['en'] ?? entity.id
     }
     if (param === 'valueName') promptParams[param] = displayValue(fact.value, locale) ?? ''
     if (param === 'description') promptParams[param] = displayValue(fact.value, locale) ?? ''

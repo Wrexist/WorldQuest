@@ -12,18 +12,19 @@ import { createHash } from 'node:crypto'
 import { join } from 'node:path'
 import { render } from '@testing-library/react'
 import { CountryMap } from './CountryMap.js'
+import { CLAY_MAPS } from '../lib/clay-maps.generated.js'
 import { MAP_BY_PATH } from '../lib/maps.generated.js'
 import { mapHeight, mapSource } from '../lib/maps.js'
 
 const imgs = (container: HTMLElement) => Array.from(container.querySelectorAll('img'))
 
 describe('CountryMap', () => {
-  it('draws the country over the land around it, from real bundled artwork', () => {
+  it('draws the relief and highlight together from the shared globe renderer', () => {
     const { container } = render(
       <CountryMap path="geo/countries/SE.png" contextPath="geo/context/SE.png" width={240} />,
     )
     // Two layers, both resolving to a file we actually ship — not a placeholder.
-    expect(imgs(container)).toHaveLength(2)
+    expect(imgs(container)).toHaveLength(1)
     for (const img of imgs(container)) expect(img.getAttribute('src')).toBeTruthy()
   })
 
@@ -60,14 +61,20 @@ describe('CountryMap', () => {
     expect(imgs(container).filter((i) => /geo\//.test(i.getAttribute('src') ?? ''))).toHaveLength(0)
   })
 
-  it('keeps both layers the same size, because that is what registers them', () => {
-    // The two PNGs are rasterised in one projection per country. If the boxes differ,
-    // the highlight lands somewhere the country is not — a wrong fact drawn.
-    const { container } = render(
-      <CountryMap path="geo/countries/JP.png" contextPath="geo/context/JP.png" width={240} />,
-    )
-    const sizes = imgs(container).map((i) => i.parentElement?.getAttribute('style') ?? '')
-    expect(new Set(sizes).size).toBe(1)
+  it('uses the exact country preview and never falls back to a different country', () => {
+    const { container, rerender } = render(<CountryMap path="geo/countries/JP.png" contextPath="geo/context/JP.png" width={240} />)
+    expect(imgs(container)[0]?.getAttribute('src')).toBe(CLAY_MAPS['JP'])
+    rerender(<CountryMap path="geo/countries/XX.png" contextPath={undefined} width={240} />)
+    expect(imgs(container).some(i => i.getAttribute('src')?.includes('/geo/clay/'))).toBe(false)
+  })
+
+  it('covers every declared country locator with a relief preview', () => {
+    const pack = require('@worldquest/content/packs/geography/entities.countries.v1.json') as {
+      items: { id: string; assets?: { map?: { path: string } } }[]
+    }
+    for (const entity of pack.items) {
+      if (entity.assets?.map) expect(CLAY_MAPS[entity.id], entity.id).toBeTruthy()
+    }
   })
 })
 

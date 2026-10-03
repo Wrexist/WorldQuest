@@ -1,4 +1,5 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Card, createThemeStyles, space, text } from '@worldquest/design'
 import type { Question } from '@worldquest/engines'
 import { CountryMap } from '../../components/CountryMap.js'
@@ -7,18 +8,20 @@ import { WorldMascot } from '../../components/WorldMascot.js'
 import { tContent, useT } from '../../lib/i18n.js'
 
 /** Only associations from the exact issued/composed lesson; no parallel quiz data. */
-export function LessonIntroduction({ questions, onBegin, onLeave }: {
-  questions: readonly Question[]; onBegin: () => void; onLeave?: (() => void) | undefined
+export function LessonIntroduction({ questions, onBegin }: {
+  questions: readonly Question[]; onBegin: () => void
 }) {
   const { styles } = useStyles()
   const t = useT()
   const seen = new Set<string>()
-  const unfamiliar = questions.filter(question => {
-    if (!question.isNew || seen.has(question.item.factId)) return false
+  const associations = questions.filter(question => {
+    if (seen.has(question.item.factId)) return false
     seen.add(question.item.factId)
     return true
   })
-  return <View style={styles.screen} testID="lesson-introduction">
+  // Native full-screen modal content can extend beneath the status bar. Only this
+  // scrollable study surface owns these insets; the quiz keeps its answer viewport.
+  return <SafeAreaView style={styles.screen} edges={['top', 'bottom']} testID="lesson-introduction">
     <ScrollView contentContainerStyle={styles.content}>
       <View style={styles.heading}>
         <WorldMascot mood="encouraging" style={{ width: 80, height: 88 }} />
@@ -28,7 +31,7 @@ export function LessonIntroduction({ questions, onBegin, onLeave }: {
         </View>
       </View>
       <Text style={styles.body}>{t('lesson:intro.body')}</Text>
-      {unfamiliar.map(question => {
+      {associations.map(question => {
         const answer = question.options.find(option => option.isCorrect)
         const flag = question.promptAsset ?? answer?.asset ?? question.revealAsset
         return <Card key={question.item.factId} style={styles.card}>
@@ -41,9 +44,8 @@ export function LessonIntroduction({ questions, onBegin, onLeave }: {
     </ScrollView>
     <View style={styles.footer}>
       <Button label={t('lesson:intro.begin')} onPress={onBegin} testID="lesson-begin" />
-      {onLeave && <Button variant="ghost" label={t('lesson:intro.leave')} onPress={onLeave} />}
     </View>
-  </View>
+  </SafeAreaView>
 }
 
 const useStyles = createThemeStyles(colors => ({ styles: StyleSheet.create({

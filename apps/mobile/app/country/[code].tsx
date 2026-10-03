@@ -17,7 +17,7 @@ import {
 } from '../../src/features/explore/CountryScreen.js'
 import { collapseRelations } from '../../src/features/explore/collapseRelations.js'
 import { ContentGate } from '../../src/components/ContentGate.js'
-import { useContent } from '../../src/lib/content.js'
+import { useReferenceContent } from '../../src/lib/referenceContent.js'
 import { useFavourites } from '../../src/features/favourites/useFavourites.js'
 import { currentLocale } from '../../src/lib/i18n.js'
 import { track } from '../../src/lib/analytics.js'
@@ -27,7 +27,7 @@ const isRegion = (value: string | undefined): value is RegionCode =>
 
 export default function CountryRoute() {
   const { code } = useLocalSearchParams<{ code: string }>()
-  const { index, memory, status, reload, isOffline } = useContent()
+  const { index, memory, status, reload, isOffline } = useReferenceContent()
   const { isFavourite, toggle } = useFavourites()
 
   const view = useMemo(() => {

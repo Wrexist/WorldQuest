@@ -51,7 +51,8 @@ import {
 import { countryAt, outlineSegments, type AtlasGeometry } from './geo/geometry.js'
 import type { Camera, Viewport } from './geo/types.js'
 import { ATLAS_COUNTRIES, ATLAS_RASTER } from './data/atlas.generated.js'
-import { GlobeRenderer, hexToRgb, type GL, type GlobeQuality, type GlobeTheme } from './render/GlobeRenderer.js'
+import { GlobeRenderer, type GL, type GlobeQuality } from './render/GlobeRenderer.js'
+import { atlasTheme } from './render/atlasTheme.js'
 import { loadAtlasGeometry, loadCountryIdTexture, loadSurfaceTexture } from './render/atlasResources.js'
 import type { AtlasEvent, AtlasSceneSpec, HighlightState } from './scene/types.js'
 import { LABEL_MAX_SCALE, layoutLabels, markerBox } from './labels.js'
@@ -82,29 +83,6 @@ const TAP_MS = 350
 /** Longest camera move, degrees of arc, that animates; farther ones cut, so no flights. */
 const MAX_ANIMATED_TRAVEL = 70
 
-function themeFor(colors: ReturnType<typeof useTheme>['colors'], mode: 'light' | 'dark'): GlobeTheme {
-  const m = colors.map
-  return {
-    background: hexToRgb(colors.bg.canvas),
-    halo: hexToRgb(m.atlasHalo),
-    border: hexToRgb(m.atlasBorder),
-    borderAlpha: mode === 'dark' ? 0.45 : 0.6,
-    rim: hexToRgb(m.atlasHalo),
-    states: {
-      subject: hexToRgb(m.atlasSubject),
-      selected: hexToRgb(m.atlasSelected),
-      correct: hexToRgb(m.atlasCorrect),
-      incorrect: hexToRgb(m.atlasIncorrect),
-      context: hexToRgb(m.atlasContext),
-    },
-    flat: false,
-    flatLand: hexToRgb(m.atlasFlatLand),
-    flatWater: hexToRgb(m.atlasFlatWater),
-    saturation: mode === 'dark' ? 1.0 : 1.3,
-    water: hexToRgb(m.atlasWater),
-    shadow: hexToRgb(m.atlasShadow),
-  }
-}
 
 export function WorldAtlasView({
   spec,
@@ -147,6 +125,13 @@ export function WorldAtlasView({
     setStatus(next)
     statusCallback.current?.(next, error)
   }, [])
+
+  // A context that never initializes must not leave a spinner covering Explore forever.
+  useEffect(() => {
+    if (status !== 'loading') return
+    const timer = setTimeout(() => report('error', new Error('atlas: loading timed out')), 12000)
+    return () => clearTimeout(timer)
+  }, [status, report])
 
   const settle = useRef(0)
   const requestDrawRef = useRef<() => void>(() => {})
@@ -267,7 +252,7 @@ export function WorldAtlasView({
   }, [spec.highlights, status, requestDraw])
 
   useEffect(() => {
-    renderer.current?.setTheme(themeFor(colors, mode))
+    renderer.current?.setTheme(atlasTheme(colors, mode))
     requestDraw()
   }, [colors, mode, requestDraw])
 
@@ -307,8 +292,8 @@ export function WorldAtlasView({
 
   // Read through refs so a theme or quality change reaches the live renderer without
   // recreating the context (which would re-decode both textures).
-  const initial = useRef({ theme: themeFor(colors, mode), quality })
-  initial.current = { theme: themeFor(colors, mode), quality }
+  const initial = useRef({ theme: atlasTheme(colors, mode), quality })
+  initial.current = { theme: atlasTheme(colors, mode), quality }
   const onContextCreate = useCallback(
     async (gl: ExpoWebGLRenderingContext) => {
       let created: GlobeRenderer

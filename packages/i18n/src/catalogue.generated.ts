@@ -289,7 +289,17 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "attribute.tld": "Web domain",
       "attribute.alpha3": "ISO code",
       "attribute.currencyCode": "Currency code",
-      "attribute.nativeName": "Local name"
+      "attribute.nativeName": "Local name",
+      "attribute.company": "Company",
+      "attribute.athlete": "Athlete",
+      "attribute.musician": "Musician",
+      "attribute.actor": "Actor",
+      "attribute.scientist": "Scientist",
+      "attribute.writer": "Writer",
+      "attribute.artist": "Artist",
+      "attribute.landmark": "Landmark",
+      "attribute.club": "Sports club",
+      "attribute.highest-point": "Highest point"
     },
     "course": {
       "firstWeek.title": "World foundations",
@@ -671,10 +681,11 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "journey.home": "Back to my journey",
       "journey.complete": "You explored the whole course!",
       "feedback.correct.discovery": "One more fact explored!",
-      "intro.title": "Meet your next discoveries",
+      "intro.open": "Learn first",
+      "intro.title": "Learn first",
       "intro.count": "{count, plural, one {# question in this lesson} other {# questions in this lesson}}",
-      "intro.body": "Take a look at these new associations before you practise. Your lesson starts when you are ready.",
-      "intro.begin": "Start lesson",
+      "intro.body": "Study the associations in this quiz. Return to the first question when you are ready.",
+      "intro.begin": "Back to quiz",
       "intro.leave": "Back"
     },
     "nav": {
@@ -1377,7 +1388,17 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "attribute.tld": "Webbdomän",
       "attribute.alpha3": "ISO-kod",
       "attribute.currencyCode": "Valutakod",
-      "attribute.nativeName": "Eget namn"
+      "attribute.nativeName": "Eget namn",
+      "attribute.company": "Företag",
+      "attribute.athlete": "Idrottare",
+      "attribute.musician": "Musiker",
+      "attribute.actor": "Skådespelare",
+      "attribute.scientist": "Forskare",
+      "attribute.writer": "Författare",
+      "attribute.artist": "Konstnär",
+      "attribute.landmark": "Sevärdhet",
+      "attribute.club": "Idrottsklubb",
+      "attribute.highest-point": "Högsta punkt"
     },
     "course": {
       "firstWeek.title": "Världen från grunden",
@@ -1759,10 +1780,11 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "journey.home": "Tillbaka till min resa",
       "journey.complete": "Du har utforskat hela kursen!",
       "feedback.correct.discovery": "Ännu en upptäckt!",
-      "intro.title": "Lär känna nästa upptäckter",
+      "intro.open": "Lär dig först",
+      "intro.title": "Lär dig först",
       "intro.count": "{count, plural, one {# fråga i den här lektionen} other {# frågor i den här lektionen}}",
-      "intro.body": "Titta på de nya sambanden innan du övar. Lektionen börjar när du är redo.",
-      "intro.begin": "Starta lektion",
+      "intro.body": "Läs på om sambanden i quizet. Gå tillbaka till första frågan när du är redo.",
+      "intro.begin": "Tillbaka till quizet",
       "intro.leave": "Tillbaka"
     },
     "nav": {
