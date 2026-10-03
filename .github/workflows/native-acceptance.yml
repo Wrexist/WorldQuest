@@ -53,6 +53,8 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '17' }
       - run: pnpm install --frozen-lockfile
+      - name: Add image source diagnostic to the simulator entry
+        run: node scripts/native-asset-diagnostic.cjs
       - run: pnpm --filter @worldquest/mobile exec expo prebuild --platform ios --no-install
       - run: pod install
         working-directory: apps/mobile/ios
@@ -81,6 +83,11 @@ jobs:
           sleep 10
           xcrun simctl io "$DEVICE_ID" screenshot "$RUNNER_TEMP/ios-startup.png"
           xcrun simctl spawn "$DEVICE_ID" launchctl list | grep com.wrexist.worldquest
+      - name: Collect native image source diagnostic
+        run: |
+          set -euo pipefail
+          APP_DATA_CONTAINER=$(xcrun simctl get_app_container "$DEVICE_ID" com.wrexist.worldquest data)
+          cp "$APP_DATA_CONTAINER/Documents/native-asset-diagnostic.json" "$RUNNER_TEMP/native-asset-diagnostic.json"
       - name: Exercise native storage, navigation and decoding
         run: |
           set -euo pipefail
@@ -97,13 +104,16 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ios-native-evidence
+          include-hidden-files: true
           path: |
             ${{ runner.temp }}/ios-build.log
             ${{ runner.temp }}/ios-startup.png
+            ${{ runner.temp }}/native-asset-diagnostic.json
             ${{ runner.temp }}/native-flow/
             native-relaunch.png
             native-country.png
             native-daily-goal.png
             native-region.png
+            native-first-lesson.png
           if-no-files-found: ignore
           retention-days: 7

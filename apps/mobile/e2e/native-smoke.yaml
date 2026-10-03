@@ -29,6 +29,11 @@ appId: com.wrexist.worldquest
 - assertVisible: "Here is your plan."
 - tapOn: "Continue"
 - tapOn: "Start learning"
+- assertVisible:
+    id: "lesson-introduction"
+- tapOn:
+    id: "lesson-begin"
+- takeScreenshot: native-first-lesson
 - tapOn: "Pause the lesson"
 - tapOn: "Finish here"
 - tapOn: "Continue"
