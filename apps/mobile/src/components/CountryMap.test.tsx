@@ -7,6 +7,9 @@
  */
 
 import { describe, expect, it } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { join } from 'node:path'
 import { render } from '@testing-library/react'
 import { CountryMap } from './CountryMap.js'
 import { MAP_BY_PATH } from '../lib/maps.generated.js'
@@ -69,6 +72,33 @@ describe('CountryMap', () => {
 })
 
 describe('the map registry', () => {
+  it('preserves every declared layer and its exact PNG bytes in the packed registry', () => {
+    const pack = require('@worldquest/content/packs/geography/entities.countries.v1.json') as {
+      items: { assets?: Record<string, { path: string }> }[]
+    }
+    const paths = pack.items.flatMap(item => ['map', 'mapContext'].flatMap(key => {
+      const asset = item.assets?.[key]
+      return asset ? [asset.path] : []
+    }))
+    expect(Object.keys(MAP_BY_PATH).sort()).toEqual([...paths].sort())
+    const assetRoot = join(import.meta.dirname, '../../assets')
+    const hashes = new Map<string, string>()
+    const hash = (path: string) => {
+      if (!hashes.has(path)) hashes.set(path, createHash('sha256').update(readFileSync(join(assetRoot, path))).digest('hex'))
+      return hashes.get(path)
+    }
+    for (const path of paths) {
+      const bundled = MAP_BY_PATH[path]
+      expect(typeof bundled, path).toBe('string')
+      if (typeof bundled !== 'string') throw new Error(`Missing bundled layer: ${path}`)
+      expect(bundled).toContain('/assets/')
+      // Byte-identical masks may share an imported PNG. Verify content rather than
+      // filename, so that optimization remains valid and an index shift fails.
+      expect(hash(bundled.split('/assets/')[1]!), path).toBe(hash(path))
+      expect(mapSource(path)).toEqual({ uri: bundled })
+    }
+  })
+
   it('resolves every path the content pack promises', () => {
     // The pack is the contract; this is the assertion that we ship what it names.
     const pack = require('@worldquest/content/packs/geography/entities.countries.v1.json') as {

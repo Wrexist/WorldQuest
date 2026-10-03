@@ -1,4 +1,4 @@
-import { createThemeStyles } from '../theme.js'
+import { useTheme } from '../theme.js'
 /**
  * The layer that makes text over artwork readable.
  *
@@ -76,7 +76,7 @@ const MIDDLE = 'BF' // 75 %
 const BOTTOM = 'E6' // 90 %
 
 export function ArtScrim({ style, blend = false }: { style?: StyleProp<ViewStyle>; blend?: boolean }) {
-  const { colors } = useThemeValues()
+  const { colors } = useTheme()
   const Gradient = loadGradient()
   const canvas = blend ? colors.journey.sand : colors.bg.canvas
 
@@ -99,9 +99,4 @@ export function ArtScrim({ style, blend = false }: { style?: StyleProp<ViewStyle
 
 const styles = StyleSheet.create({
   fill: { ...StyleSheet.absoluteFillObject },
-})
-
-const useThemeValues = createThemeStyles((colors) => {
-
-  return { colors }
 })

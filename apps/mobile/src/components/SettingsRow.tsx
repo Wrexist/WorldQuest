@@ -15,6 +15,9 @@ import { createThemeStyles } from '@worldquest/design'
 
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native'
 import {
+  ClaySurface,
+  clayShadow,
+  depth,
   layout,
   radius,
   space,
@@ -52,7 +55,7 @@ export function Section({
           {title}
         </Text>
       )}
-      <View style={styles.card}>{children}</View>
+      <View style={styles.card}><ClaySurface tone="ice" radius={radius['2xl']} />{children}</View>
     </View>
   )
 }
@@ -99,7 +102,7 @@ export function SwitchRow({
       aria-disabled={disabled}
       disabled={disabled}
       onPress={() => onChange(!value)}
-      style={styles.row}
+      style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
     >
       <View style={styles.rowText}>
         <Text style={styles.rowLabel}>{label}</Text>
@@ -177,8 +180,9 @@ export function ChoiceRow<T extends string>({
               // and a radio carrying it announces nothing useful.
               aria-checked={selected}
               onPress={() => onChange(choice.value)}
-              style={[styles.choice, selected && styles.choiceSelected]}
+              style={({ pressed }) => [styles.choice, selected && styles.choiceSelected, pressed && styles.pressed]}
             >
+              <ClaySurface tone={selected ? 'sky' : 'ice'} radius={radius.full} />
               <Text style={[styles.choiceLabel, selected && styles.choiceLabelSelected]}>
                 {choice.label}
               </Text>
@@ -273,8 +277,9 @@ function StepperButton({
       aria-disabled={disabled}
       disabled={disabled}
       onPress={onPress}
-      style={[styles.stepperButton, disabled && styles.stepperButtonOff]}
+      style={({ pressed }) => [styles.stepperButton, disabled && styles.stepperButtonOff, pressed && styles.pressed]}
     >
+      <ClaySurface tone="ice" radius={radius.full} />
       <Icon
         name={glyph}
         size={18}
@@ -319,7 +324,7 @@ export function LinkRow({
       aria-label={label}
       aria-disabled={false}
       onPress={onPress}
-      style={styles.row}
+      style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
     >
       {content}
     </Pressable>
@@ -346,12 +351,12 @@ const useThemeValues = createThemeStyles((colors) => {
   section: { gap: space[3], flexShrink: 0 },
   sectionTitle: { ...text('overline'), color: colors.text.tertiary, paddingHorizontal: space[1] },
   card: {
-    backgroundColor: colors.bg.surface,
-    borderWidth: 2,
-    borderColor: colors.border.subtle,
-    borderRadius: radius.lg,
+    backgroundColor: colors.clay.ice.bottom,
+    borderWidth: 1,
+    borderColor: colors.clay.ice.rim,
+    borderRadius: radius['2xl'],
     ...squircle,
-    overflow: 'hidden',
+    ...clayShadow(colors),
   },
 
   row: {
@@ -361,12 +366,15 @@ const useThemeValues = createThemeStyles((colors) => {
     paddingHorizontal: space[4],
     paddingVertical: space[3],
     minHeight: layout.minTouchTarget,
+    borderRadius: radius.xl,
   },
   rowStacked: {
     gap: space[2],
     paddingHorizontal: space[4],
     paddingVertical: space[3],
   },
+  rowPressed: { backgroundColor: colors.clay.ice.bottom },
+  pressed: { transform: [{ translateY: depth.chip }] },
   rowText: { flex: 1, gap: space[1] },
   rowLabel: { ...text('bodyStrong'), color: colors.text.primary },
   rowHelp: { ...text('caption'), color: colors.text.secondary },
@@ -379,9 +387,10 @@ const useThemeValues = createThemeStyles((colors) => {
     paddingHorizontal: space[4],
     paddingVertical: space[2],
     borderRadius: radius.full,
-    backgroundColor: colors.bg.surfaceRaised,
+    backgroundColor: colors.clay.ice.bottom,
     borderWidth: 1,
-    borderColor: colors.border.subtle,
+    borderColor: colors.clay.ice.rim,
+    ...clayShadow(colors),
     minHeight: layout.minTouchTarget,
     // And the same floor on the OTHER axis. The height was pinned and the width was left
     // to the padding, which is fine for a word and fails for a character: the practice
@@ -394,11 +403,11 @@ const useThemeValues = createThemeStyles((colors) => {
     justifyContent: 'center',
   },
   choiceSelected: {
-    backgroundColor: colors.action.secondary,
-    borderColor: colors.action.secondary,
+    backgroundColor: colors.clay.sky.bottom,
+    borderColor: colors.clay.sky.rim,
   },
-  choiceLabel: { ...text('caption', { weight: '600' }), color: colors.text.secondary },
-  choiceLabelSelected: { color: colors.text.onStatus },
+  choiceLabel: { ...text('caption', { weight: '600' }), color: colors.clay.ice.ink },
+  choiceLabelSelected: { color: colors.clay.sky.ink },
 
   stepper: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   stepperButton: {
@@ -410,9 +419,10 @@ const useThemeValues = createThemeStyles((colors) => {
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radius.full,
-    backgroundColor: colors.bg.surfaceRaised,
+    backgroundColor: colors.clay.ice.bottom,
     borderWidth: 1,
-    borderColor: colors.border.subtle,
+    borderColor: colors.clay.ice.rim,
+    ...clayShadow(colors),
   },
   stepperButtonOff: { opacity: 0.4 },
   stepperValue: {

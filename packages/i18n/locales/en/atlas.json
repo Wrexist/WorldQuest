@@ -35,6 +35,8 @@
   "atlas:explore.close__note": "Icon button that closes the Explore country card. Screen-reader label.",
   "atlas:explore.all": "All",
   "atlas:explore.all__note": "Region filter chip that shows every continent. Max 10 characters.",
+  "atlas:explore.browse": "Browse countries ({count, number})",
+  "atlas:explore.browse__note": "Disclosure that expands or collapses the accessible country list. {count} is the number of countries in the current region filter, or all countries when unfiltered.",
   "atlas:explore.listLabel": "Countries on the map",
   "atlas:explore.listLabel__note": "Screen-reader name of the list that mirrors the globe, for anyone who cannot use the map by touch."
 }

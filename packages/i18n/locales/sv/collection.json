@@ -19,5 +19,11 @@
   "collection:empty.action": "Starta en lektion",
   "collection:search": "Sök länder…",
   "collection:search.none.title": "Ingen träff för ”{query}”",
-  "collection:search.none.body": "Kolla stavningen, eller bläddra per kontinent."
+  "collection:search.none.body": "Kolla stavningen, eller bläddra per kontinent.",
+  "collection:guide.start": "En värld att samla! Öva på länder och fyll din samling.",
+  "collection:guide.start__note": "Atlas speech beside the collection before any country is mastered. Explains how collecting works, without promising a reward for a tap or single lesson.",
+  "collection:guide.progress": "Dina upptäckter blir fler. Välj ett land att utforska!",
+  "collection:guide.progress__note": "Atlas speech when at least one tile is mastered. A warm invitation to open a country.",
+  "collection:browse": "Utforska länder",
+  "collection:browse__note": "Button clears the search and selected filter to show all countries."
 }

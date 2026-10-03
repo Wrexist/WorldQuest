@@ -23,8 +23,8 @@ import { createThemeStyles } from '@worldquest/design'
  * the only thing seven bars can honestly say.
  */
 
-import { StyleSheet, Text, View } from 'react-native'
-import { radius, space, squircle, text } from '@worldquest/design'
+import { Animated, StyleSheet, Text, View } from 'react-native'
+import { ClaySurface, clayShadow, radius, space, text, useAnimatedTo } from '@worldquest/design'
 import { useT } from '../lib/i18n.js'
 
 export type WeekActivity = readonly { readonly day: string; readonly count: number }[]
@@ -81,12 +81,8 @@ export function WeekStrip({ week, emptyLabel }: WeekStripProps) {
           style={styles.day}
         >
           <View style={styles.track}>
-            <View
-              style={[
-                styles.bar,
-                { height: `${day.count === 0 ? 0 : Math.max(MIN_BAR_PERCENT, (day.count / peak) * 100)}%` },
-              ]}
-            />
+            <ClaySurface tone="sky" radius={radius.lg} />
+            <ActivityFill fraction={day.count === 0 ? 0 : Math.max(MIN_BAR_PERCENT / 100, day.count / peak)} />
           </View>
           <Text style={styles.label}>{day.day}</Text>
         </View>
@@ -95,11 +91,21 @@ export function WeekStrip({ week, emptyLabel }: WeekStripProps) {
   )
 }
 
+/** Keep the true day labels immediate; only a changed fill travels, from its base. */
+function ActivityFill({ fraction }: { fraction: number }) {
+  const { styles } = useThemeValues()
+  const fill = useAnimatedTo(fraction, 'expressive')
+  return <Animated.View testID="week-activity-fill" pointerEvents="none" aria-hidden
+    accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
+    style={[styles.bar, { transform: [{ scaleY: fill }] }]}>
+    <ClaySurface tone="lime" radius={radius.lg} />
+  </Animated.View>
+}
 
 
 const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
-  week: { flexDirection: 'row', justifyContent: 'space-between', gap: space[2], height: STRIP_HEIGHT },
+  week: { flexDirection: 'row', justifyContent: 'space-between', gap: space[2] },
   day: { flex: 1, alignItems: 'center', gap: space[1] },
   /**
    * The track is DRAWN, not just reserved.
@@ -115,15 +121,13 @@ const useThemeValues = createThemeStyles((colors) => {
    * here reads as the same "nothing yet" an empty bar does on Explore.
    */
   track: {
-    flex: 1,
+    height: STRIP_HEIGHT,
     width: '100%',
     justifyContent: 'flex-end',
-    borderRadius: radius.sm,
-    ...squircle,
-    backgroundColor: colors.status.progressTrack,
-    overflow: 'hidden',
+    borderRadius: radius.lg,
+    ...clayShadow(colors),
   },
-  bar: { width: '100%', borderRadius: radius.sm, backgroundColor: colors.status.progress, ...squircle },
+  bar: { width: '100%', height: '100%', transformOrigin: 'center bottom', borderRadius: radius.lg, overflow: 'hidden' },
   label: { ...text('overline'), color: colors.text.tertiary },
   empty: { ...text('body'), color: colors.text.secondary },
 })

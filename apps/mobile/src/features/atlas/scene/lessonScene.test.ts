@@ -73,6 +73,7 @@ describe('capital name', () => {
   it.each(['question', 'selected', 'submitting'] as const)('hides the capital while %s', (phase) => {
     const spec = buildLessonScene(input({ policy: capital, entityId: 'ES', phase }))!
     expect(spec.markers).toEqual([])
+    expect(spec.labels).toEqual([])
     expect(disclosed(spec)).not.toContain('Madrid')
     expect(spec.highlights).toEqual([{ countryId: 'ES', state: 'subject' }])
     expect(spec.interaction.selectable).toEqual([])
@@ -82,6 +83,7 @@ describe('capital name', () => {
     const spec = buildLessonScene(input({ policy: capital, entityId: 'ES', phase: 'revealed' }))!
     const place = placeForFact('geo.ES.capital')!
     expect(spec.markers).toEqual([{ placeId: place.id, lat: place.lat, lon: place.lon, label: 'Madrid', emphasis: 'answer' }])
+    expect(spec.labels).toEqual([])
     // Verified, not illustrated: within a few km of Puerta del Sol.
     expect(Math.abs(place.lat - 40.4168)).toBeLessThan(0.05)
     expect(Math.abs(place.lon - -3.7038)).toBeLessThan(0.05)

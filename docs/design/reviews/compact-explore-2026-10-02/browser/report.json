@@ -1,0 +1,205 @@
+{
+  "source": "C:\\Users\\IsacC\\WorldQuest\\node_modules\\.cache\\wq-compact-explore-web-v1",
+  "baseline": false,
+  "realApp": true,
+  "seededAccount": false,
+  "cases": [
+    {
+      "name": "selected Spain",
+      "width": 390,
+      "metrics": {
+        "height": 74,
+        "width": 358,
+        "overflow": [],
+        "text": "SpainCapital: Madrid",
+        "targets": [
+          {
+            "label": "Open Spain",
+            "width": 280,
+            "height": 48
+          },
+          {
+            "label": "Clear selection",
+            "width": 44,
+            "height": 44
+          }
+        ]
+      },
+      "focusAfterBrowseSelection": {
+        "tag": "BODY",
+        "label": null
+      },
+      "collapsedAfterSelection": true,
+      "globeRetained": true
+    },
+    {
+      "name": "selected Spain",
+      "width": 320,
+      "metrics": {
+        "height": 74,
+        "width": 288,
+        "overflow": [],
+        "text": "SpainCapital: Madrid",
+        "targets": [
+          {
+            "label": "Open Spain",
+            "width": 210,
+            "height": 48
+          },
+          {
+            "label": "Clear selection",
+            "width": 44,
+            "height": 44
+          }
+        ]
+      },
+      "focusAfterBrowseSelection": {
+        "tag": "BODY",
+        "label": null
+      },
+      "collapsedAfterSelection": true,
+      "globeRetained": true
+    },
+    {
+      "name": "selected Spain",
+      "width": 768,
+      "metrics": {
+        "height": 74,
+        "width": 568,
+        "overflow": [],
+        "text": "SpainCapital: Madrid",
+        "targets": [
+          {
+            "label": "Open Spain",
+            "width": 490,
+            "height": 48
+          },
+          {
+            "label": "Clear selection",
+            "width": 44,
+            "height": 44
+          }
+        ]
+      },
+      "focusAfterBrowseSelection": {
+        "tag": "BODY",
+        "label": null
+      },
+      "collapsedAfterSelection": true,
+      "globeRetained": true
+    },
+    {
+      "name": "selected Spain",
+      "width": 390,
+      "metrics": {
+        "height": 74,
+        "width": 358,
+        "overflow": [],
+        "text": "SpainCapital: Madrid",
+        "targets": [
+          {
+            "label": "Open Spain",
+            "width": 280,
+            "height": 48
+          },
+          {
+            "label": "Clear selection",
+            "width": 44,
+            "height": 44
+          }
+        ]
+      },
+      "focusAfterBrowseSelection": {
+        "tag": "BODY",
+        "label": null
+      },
+      "collapsedAfterSelection": true,
+      "globeRetained": true
+    },
+    {
+      "name": "behavior",
+      "euCount": 45,
+      "asiaCount": 46,
+      "fullCountryCount": 45,
+      "expandedSearchCount": 186,
+      "resultBeforeGlobe": true,
+      "queryCleared": true,
+      "outsideFilterResets": true,
+      "keyboardOpen": true,
+      "closeIndependent": true,
+      "globeRetained": true,
+      "openFocusRetained": true,
+      "focusAfterSearchSelection": {
+        "tag": "BODY",
+        "label": null
+      }
+    },
+    {
+      "name": "Swedish dark enlarged glyphs reduced motion",
+      "width": 320,
+      "metrics": {
+        "height": 194,
+        "width": 288,
+        "overflow": [],
+        "text": "StorbritannienHuvudstad: London",
+        "targets": [
+          {
+            "label": "Öppna Storbritannien",
+            "width": 210,
+            "height": 168
+          },
+          {
+            "label": "Rensa val",
+            "width": 44,
+            "height": 44
+          }
+        ]
+      }
+    },
+    {
+      "name": "Swedish dark enlarged glyphs reduced motion",
+      "width": 390,
+      "metrics": {
+        "height": 194,
+        "width": 358,
+        "overflow": [],
+        "text": "StorbritannienHuvudstad: London",
+        "targets": [
+          {
+            "label": "Öppna Storbritannien",
+            "width": 280,
+            "height": 168
+          },
+          {
+            "label": "Rensa val",
+            "width": 44,
+            "height": 44
+          }
+        ]
+      }
+    },
+    {
+      "name": "Swedish dark enlarged glyphs reduced motion",
+      "width": 768,
+      "metrics": {
+        "height": 110,
+        "width": 568,
+        "overflow": [],
+        "text": "StorbritannienHuvudstad: London",
+        "targets": [
+          {
+            "label": "Öppna Storbritannien",
+            "width": 490,
+            "height": 84
+          },
+          {
+            "label": "Rensa val",
+            "width": 44,
+            "height": 44
+          }
+        ]
+      }
+    }
+  ],
+  "errors": []
+}

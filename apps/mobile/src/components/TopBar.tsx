@@ -30,7 +30,7 @@ import { createThemeStyles } from '@worldquest/design'
  */
 
 import { StyleSheet, View, Pressable, Text, useWindowDimensions } from 'react-native'
-import { Avatar, layout, radius, space, text } from '@worldquest/design'
+import { Avatar, ClaySurface, clayShadow, layout, radius, space, text } from '@worldquest/design'
 import { Art } from './Art.js'
 import { HeaderJewel } from './HeaderJewel.js'
 
@@ -87,6 +87,7 @@ export function TopBar({
 
   return (
     <View style={styles.bar}>
+      <ClaySurface tone="navy" radius={radius['2xl']} />
       {/* Pressable ONLY when it goes somewhere. `Avatar` is already an accessibility
           element with its own name, so wrapping it in a button that does nothing would
           add a second focus stop announcing the same thing. */}
@@ -113,6 +114,7 @@ export function TopBar({
           {/* Named by the Pressable, so the chip inside it is silent, like the avatar.
               The muted number indicates a pending day; the label explains it in words. */}
           <View style={styles.counter} aria-hidden>
+            <ClaySurface tone="navy" transparent radius={radius.lg} />
             <HeaderJewel name="flame" size={36} />
             <Text style={[styles.value, !countedToday && styles.pending]}>{streak}</Text>
           </View>
@@ -121,6 +123,7 @@ export function TopBar({
 
       {coins !== undefined && (
         <View accessible aria-label={t('home:stats.coins', { amount: coins })} style={styles.counter}>
+          <ClaySurface tone="navy" transparent radius={radius.lg} />
           <HeaderJewel name="coins" size={36} />
           <Text style={styles.value}>{coins}</Text>
         </View>
@@ -134,6 +137,7 @@ export function TopBar({
           style={styles.chrome}
           hitSlop={8}
         >
+          <ClaySurface tone="navy" radius={radius.lg} />
           <Icon name="settings" size={GLYPH} color={colors.chrome.text} />
         </Pressable>
       )}
@@ -146,6 +150,7 @@ export function TopBar({
 const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
   bar: {
+    ...clayShadow(colors),
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'center',
@@ -153,19 +158,20 @@ const useThemeValues = createThemeStyles((colors) => {
     padding: space[3],
     borderRadius: radius['2xl'],
     backgroundColor: colors.chrome.surface,
-    borderBottomWidth: space[1],
+    borderWidth: 1,
     borderColor: colors.chrome.edge,
   },
   spacer: { flex: 1 },
   brand: { ...text('bodyStrong'), color: colors.chrome.text, flexShrink: 1 },
   counter: {
+    ...clayShadow(colors),
     minHeight: 48,
     flexDirection: 'row',
     alignItems: 'center',
     gap: space[1],
     paddingHorizontal: space[1],
     borderRadius: radius.lg,
-    borderBottomWidth: space[1],
+    borderWidth: 1,
     backgroundColor: colors.chrome.counter,
     borderColor: colors.chrome.counterEdge,
   },
@@ -175,6 +181,7 @@ const useThemeValues = createThemeStyles((colors) => {
   // which iOS never focuses and no finger can reliably hit.
 
   chrome: {
+    borderRadius: radius.lg,
     width: layout.minTouchTarget,
     height: layout.minTouchTarget,
     alignItems: 'center',

@@ -3,13 +3,13 @@ import a0 from '../../assets/art/adventure/africa.webp'
 import a1 from '../../assets/art/adventure/antarctica.webp'
 import a2 from '../../assets/art/adventure/asia.webp'
 import a3 from '../../assets/art/adventure/europe.webp'
-import a4 from '../../assets/art/adventure/explorer.webp'
+import a4 from '../../assets/art/atlas-globe/welcome.webp'
 import a5 from '../../assets/art/adventure/island.webp'
 import a6 from '../../assets/art/adventure/north-america.webp'
 import a7 from '../../assets/art/adventure/oceania.webp'
 import a8 from '../../assets/art/adventure/passport.webp'
 import a9 from '../../assets/art/adventure/south-america.webp'
-import a10 from '../../assets/art/adventure/treasure.webp'
+import a10 from '../../assets/art/explorer-chest/closed.webp'
 export const ADVENTURE_ART = {
   'africa': a0,
   'antarctica': a1,

@@ -13,17 +13,18 @@
  */
 
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
+import { AccessibilityInfo, Animated } from 'react-native'
+import { withFullMotion } from '../test/setup.js'
 import { WeekStrip } from './WeekStrip.js'
 
 const week = (...counts: readonly number[]) =>
   ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => ({ day, count: counts[i] ?? 0 }))
 
-/** The filled bar inside each day — the only node with a percentage height. */
+/** The visible fraction, independent of the track's fixed layout height. */
 const bars = (container: HTMLElement) =>
-  Array.from(container.querySelectorAll('*'))
-    .map((node) => (node as HTMLElement).style.height)
-    .filter((height) => height.endsWith('%'))
+  Array.from(container.querySelectorAll('[data-testid="week-activity-fill"]'))
+    .map((node) => `${Number((node as HTMLElement).style.transform.match(/scaleY\(([^)]+)\)/)?.[1]) * 100}%`)
 
 describe('WeekStrip', () => {
   it('scales heights to the best day of the week, not to a goal', () => {
@@ -67,6 +68,26 @@ describe('WeekStrip', () => {
   it('names every day for a screen reader, including the empty ones', () => {
     render(<WeekStrip week={week(0, 3)} />)
     expect(screen.getAllByLabelText(/lesson/i)).toHaveLength(7)
+  })
+
+  it('updates the actual counts immediately while changed day fills catch up', async () => {
+    const preference = vi.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false)
+    const timing = vi.spyOn(Animated, 'timing').mockImplementation(() => ({ start: vi.fn(), stop: vi.fn(), reset: vi.fn() }))
+    try {
+      await withFullMotion(async () => {
+        const view = render(<WeekStrip week={week(5, 10)} />)
+        await act(async () => { await Promise.resolve() })
+        // Restored history is already accurate; opening Profile is not a new reward.
+        expect(timing).not.toHaveBeenCalled()
+        view.rerender(<WeekStrip week={week(5, 20)} />)
+        expect(screen.getByLabelText(/20 lessons/)).toBeTruthy()
+        expect(timing).toHaveBeenCalledOnce()
+        expect(timing.mock.calls[0]?.[1]).toMatchObject({ toValue: 0.25, useNativeDriver: true })
+        // Layout, labels and the unchanged peak stay put during the transition.
+        expect(bars(view.container).slice(0, 2)).toEqual(['50%', '100%'])
+        view.unmount()
+      })
+    } finally { timing.mockRestore(); preference.mockRestore() }
   })
 
   it('shows the empty label instead of a flat week, when given one', () => {

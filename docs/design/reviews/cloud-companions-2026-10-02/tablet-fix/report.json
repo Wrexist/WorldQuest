@@ -1,0 +1,502 @@
+{
+  "source": "C:\\Users\\IsacC\\WorldQuest\\node_modules\\.cache\\wq-clouds-final-v3",
+  "realApp": true,
+  "seededAccount": false,
+  "cases": [
+    {
+      "name": "/quests",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 218,
+              "width": 358,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 358,
+                "renderedHeight": 119.328125,
+                "renderedTop": 98.671875,
+                "renderedLeft": 16
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 218,
+              "width": 112,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "welcome-sheet.aabd38dd978ad869b8616bff8db17bc4.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 672,
+                "renderedHeight": 672,
+                "renderedTop": -230,
+                "renderedLeft": -298
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "cloudHeaderClearance": 8.671875,
+      "chest": {
+        "top": 302,
+        "bottom": 560,
+        "width": 358,
+        "height": 258,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueBeforeScroll": {
+        "top": 685,
+        "bottom": 742,
+        "width": 358,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 685,
+        "bottom": 742,
+        "width": 358,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 218,
+              "width": 358,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 358,
+                "renderedHeight": 119.328125,
+                "renderedTop": 98.671875,
+                "renderedLeft": 16
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 218,
+              "width": 112,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "proud-sheet.0709a1245a8618e716b1203ab3d8b4fc.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 672,
+                "renderedHeight": 672,
+                "renderedTop": -230,
+                "renderedLeft": 262
+              }
+            ]
+          },
+          {
+            "bounds": {
+              "top": 745,
+              "bottom": 861,
+              "width": 96,
+              "height": 116,
+              "viewportContained": false,
+              "clipped": true,
+              "fullyVisible": false
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "proud-sheet.0709a1245a8618e716b1203ab3d8b4fc.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 576,
+                "renderedHeight": 576,
+                "renderedTop": 467,
+                "renderedLeft": 33
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "cloudHeaderClearance": 8.671875,
+      "coin-wallet": {
+        "top": 234,
+        "bottom": 454,
+        "width": 358,
+        "height": 220,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 339,
+        "bottom": 445,
+        "width": 340,
+        "height": 106,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 558,
+        "bottom": 668,
+        "width": 358,
+        "height": 110,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 218,
+              "width": 384,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 384,
+                "renderedHeight": 128,
+                "renderedTop": 90,
+                "renderedLeft": 284
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 218,
+              "width": 112,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "welcome-sheet.aabd38dd978ad869b8616bff8db17bc4.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 672,
+                "renderedHeight": 672,
+                "renderedTop": -230,
+                "renderedLeft": -4
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "cloudHeaderClearance": 0,
+      "chest": {
+        "top": 302,
+        "bottom": 560,
+        "width": 568,
+        "height": 258,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueBeforeScroll": {
+        "top": 865,
+        "bottom": 922,
+        "width": 568,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 865,
+        "bottom": 922,
+        "width": 568,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 218,
+              "width": 384,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 384,
+                "renderedHeight": 128,
+                "renderedTop": 90,
+                "renderedLeft": 284
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 218,
+              "width": 112,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "proud-sheet.0709a1245a8618e716b1203ab3d8b4fc.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 672,
+                "renderedHeight": 672,
+                "renderedTop": -118,
+                "renderedLeft": -4
+              }
+            ]
+          },
+          {
+            "bounds": {
+              "top": 703,
+              "bottom": 819,
+              "width": 96,
+              "height": 116,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "proud-sheet.0709a1245a8618e716b1203ab3d8b4fc.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 576,
+                "renderedHeight": 576,
+                "renderedTop": 425,
+                "renderedLeft": 117
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "cloudHeaderClearance": 0,
+      "coin-wallet": {
+        "top": 234,
+        "bottom": 454,
+        "width": 568,
+        "height": 220,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 339,
+        "bottom": 445,
+        "width": 550,
+        "height": 106,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 534,
+        "bottom": 626,
+        "width": 568,
+        "height": 92,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    }
+  ],
+  "errors": [],
+  "limitations": [
+    "Chromium and react-native-web, not a physical device.",
+    "The accessibility mode doubles rendered glyphs; native fontScale branches need separate fixture/device proof."
+  ],
+  "firstCloudFrame": {
+    "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+    "decoded": true,
+    "width": 1536,
+    "height": 512,
+    "renderedWidth": 358,
+    "renderedHeight": 119.328125,
+    "renderedTop": 98.671875,
+    "renderedLeft": 16
+  }
+}

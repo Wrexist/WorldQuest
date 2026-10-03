@@ -1,0 +1,1375 @@
+{
+  "source": "C:\\Users\\IsacC\\WorldQuest\\node_modules\\.cache\\wq-liquid-clay-web",
+  "realApp": true,
+  "seededAccount": false,
+  "cases": [
+    {
+      "name": "/",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "currentChallenge": {
+        "bounds": {
+          "top": 257,
+          "bottom": 314,
+          "width": 262,
+          "height": 57,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "label": "Start challenge →"
+      }
+    },
+    {
+      "name": "/explore",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "searchInput": {
+        "value": "Spain",
+        "position": "relative",
+        "bounds": {
+          "top": 159,
+          "bottom": 207,
+          "width": 198,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        }
+      },
+      "countrySelection": {
+        "openLabel": "Open Spain",
+        "bounds": {
+          "top": 354,
+          "bottom": 402,
+          "width": 210,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "searchCleared": true
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "chest": {
+        "top": 270,
+        "bottom": 528,
+        "width": 288,
+        "height": 258,
+        "viewportContained": true,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "continueBeforeScroll": {
+        "top": 409,
+        "bottom": 466,
+        "width": 288,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 409,
+        "bottom": 466,
+        "width": 288,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "guestStart": {
+        "top": 413,
+        "bottom": 470,
+        "width": 254,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "coin-wallet": {
+        "top": 202,
+        "bottom": 422,
+        "width": 288,
+        "height": 220,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 307,
+        "bottom": 413,
+        "width": 270,
+        "height": 106,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 526,
+        "bottom": 654,
+        "width": 288,
+        "height": 128,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      }
+    },
+    {
+      "name": "/settings",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      }
+    },
+    {
+      "name": "/lesson",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      }
+    },
+    {
+      "name": "/",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "currentChallenge": {
+        "bounds": {
+          "top": 701,
+          "bottom": 758,
+          "width": 332,
+          "height": 57,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "label": "Start challenge →"
+      }
+    },
+    {
+      "name": "/explore",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "searchInput": {
+        "value": "Spain",
+        "position": "relative",
+        "bounds": {
+          "top": 159,
+          "bottom": 207,
+          "width": 268,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        }
+      },
+      "countrySelection": {
+        "openLabel": "Open Spain",
+        "bounds": {
+          "top": 603,
+          "bottom": 651,
+          "width": 280,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "searchCleared": true
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "chest": {
+        "top": 270,
+        "bottom": 528,
+        "width": 358,
+        "height": 258,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueBeforeScroll": {
+        "top": 685,
+        "bottom": 742,
+        "width": 358,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 685,
+        "bottom": 742,
+        "width": 358,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "guestStart": {
+        "top": 413,
+        "bottom": 470,
+        "width": 315.6875,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "coin-wallet": {
+        "top": 202,
+        "bottom": 422,
+        "width": 358,
+        "height": 220,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 307,
+        "bottom": 413,
+        "width": 340,
+        "height": 106,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 526,
+        "bottom": 636,
+        "width": 358,
+        "height": 110,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    },
+    {
+      "name": "/settings",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    },
+    {
+      "name": "/lesson",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    },
+    {
+      "name": "/",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "currentChallenge": {
+        "bounds": {
+          "top": 781,
+          "bottom": 838,
+          "width": 542,
+          "height": 57,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "label": "Start challenge →"
+      }
+    },
+    {
+      "name": "/explore",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "searchInput": {
+        "value": "Spain",
+        "position": "relative",
+        "bounds": {
+          "top": 159,
+          "bottom": 207,
+          "width": 478,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        }
+      },
+      "countrySelection": {
+        "openLabel": "Open Spain",
+        "bounds": {
+          "top": 737,
+          "bottom": 785,
+          "width": 490,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "searchCleared": true
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "chest": {
+        "top": 270,
+        "bottom": 528,
+        "width": 568,
+        "height": 258,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueBeforeScroll": {
+        "top": 865,
+        "bottom": 922,
+        "width": 568,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 865,
+        "bottom": 922,
+        "width": 568,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "guestStart": {
+        "top": 413,
+        "bottom": 470,
+        "width": 315.6875,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "coin-wallet": {
+        "top": 202,
+        "bottom": 422,
+        "width": 568,
+        "height": 220,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 307,
+        "bottom": 413,
+        "width": 550,
+        "height": 106,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 502,
+        "bottom": 594,
+        "width": 568,
+        "height": 92,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      }
+    },
+    {
+      "name": "/settings",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      }
+    },
+    {
+      "name": "/lesson",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      }
+    },
+    {
+      "name": "navigation and protected state",
+      "chestNudgeTransform": "matrix(0.99205, -0.125846, 0.125846, 0.99205, 0, -5.08333)",
+      "questProgressUnchanged": true,
+      "tasksUnchanged": true,
+      "achievementsOpens": true,
+      "freezeOpensStreak": true,
+      "unaffordablePurchasesDisabled": true,
+      "unlockUnchanged": true,
+      "levelTitleWorn": true
+    },
+    {
+      "name": "profile after actual UI lesson",
+      "width": 320,
+      "populated": true,
+      "passport": {
+        "top": 154,
+        "bottom": 376,
+        "width": 288,
+        "height": 222,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      }
+    },
+    {
+      "name": "profile after actual UI lesson",
+      "width": 390,
+      "populated": true,
+      "passport": {
+        "top": 106,
+        "bottom": 328,
+        "width": 358,
+        "height": 222,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    },
+    {
+      "name": "profile after actual UI lesson",
+      "width": 768,
+      "populated": true,
+      "passport": {
+        "top": 106,
+        "bottom": 328,
+        "width": 568,
+        "height": 222,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      }
+    },
+    {
+      "name": "/",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "currentChallenge": {
+        "bounds": {
+          "top": 205,
+          "bottom": 365,
+          "width": 262,
+          "height": 160,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "label": "Starta utmaningen →"
+      }
+    },
+    {
+      "name": "/explore",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "searchInput": {
+        "value": "Spanien",
+        "position": "relative",
+        "bounds": {
+          "top": 197,
+          "bottom": 245,
+          "width": 198,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        }
+      },
+      "countrySelection": {
+        "openLabel": "Öppna Spanien",
+        "bounds": {
+          "top": 356,
+          "bottom": 524,
+          "width": 210,
+          "height": 168,
+          "viewportContained": true,
+          "clipped": true,
+          "fullyVisible": false
+        },
+        "searchCleared": true
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "chest": {
+        "top": 580,
+        "bottom": 1078,
+        "width": 288,
+        "height": 498,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "continueBeforeScroll": {
+        "top": 350.796875,
+        "bottom": 462.796875,
+        "width": 288,
+        "height": 112,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 350.796875,
+        "bottom": 462.796875,
+        "width": 288,
+        "height": 112,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "guestStart": {
+        "top": 931,
+        "bottom": 1043,
+        "width": 254,
+        "height": 112,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "coin-wallet": {
+        "top": 204,
+        "bottom": 530,
+        "width": 288,
+        "height": 326,
+        "viewportContained": true,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "shop-next-unlock": {
+        "top": 357,
+        "bottom": 521,
+        "width": 270,
+        "height": 164,
+        "viewportContained": true,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "shop-freeze": {
+        "top": 802,
+        "bottom": 1182,
+        "width": 288,
+        "height": 380,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      }
+    },
+    {
+      "name": "/settings",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      }
+    },
+    {
+      "name": "/lesson",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      }
+    },
+    {
+      "name": "/",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "currentChallenge": {
+        "bounds": {
+          "top": 602,
+          "bottom": 714,
+          "width": 332,
+          "height": 112,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "label": "Starta utmaningen →"
+      }
+    },
+    {
+      "name": "/explore",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "searchInput": {
+        "value": "Spanien",
+        "position": "relative",
+        "bounds": {
+          "top": 251,
+          "bottom": 299,
+          "width": 268,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        }
+      },
+      "countrySelection": {
+        "openLabel": "Öppna Spanien",
+        "bounds": {
+          "top": 600,
+          "bottom": 720,
+          "width": 280,
+          "height": 120,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "searchCleared": true
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "chest": {
+        "top": 562,
+        "bottom": 944,
+        "width": 358,
+        "height": 382,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "continueBeforeScroll": {
+        "top": 626.796875,
+        "bottom": 738.796875,
+        "width": 358,
+        "height": 112,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 626.796875,
+        "bottom": 738.796875,
+        "width": 358,
+        "height": 112,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "guestStart": {
+        "top": 691,
+        "bottom": 755,
+        "width": 324,
+        "height": 64,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "coin-wallet": {
+        "top": 204,
+        "bottom": 530,
+        "width": 358,
+        "height": 326,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 357,
+        "bottom": 521,
+        "width": 340,
+        "height": 164,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 754,
+        "bottom": 1014,
+        "width": 358,
+        "height": 260,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    },
+    {
+      "name": "/settings",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    },
+    {
+      "name": "/lesson",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    },
+    {
+      "name": "/",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "currentChallenge": {
+        "bounds": {
+          "top": 830,
+          "bottom": 894,
+          "width": 542,
+          "height": 64,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "label": "Starta utmaningen →"
+      }
+    },
+    {
+      "name": "/explore",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "searchInput": {
+        "value": "Spanien",
+        "position": "relative",
+        "bounds": {
+          "top": 197,
+          "bottom": 245,
+          "width": 478,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        }
+      },
+      "countrySelection": {
+        "openLabel": "Öppna Spanien",
+        "bounds": {
+          "top": 777,
+          "bottom": 861,
+          "width": 490,
+          "height": 84,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "searchCleared": true
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "chest": {
+        "top": 352,
+        "bottom": 734,
+        "width": 568,
+        "height": 382,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueBeforeScroll": {
+        "top": 854.796875,
+        "bottom": 918.796875,
+        "width": 568,
+        "height": 64,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 854.796875,
+        "bottom": 918.796875,
+        "width": 568,
+        "height": 64,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "guestStart": {
+        "top": 587,
+        "bottom": 651,
+        "width": 530.90625,
+        "height": 64,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "coin-wallet": {
+        "top": 204,
+        "bottom": 530,
+        "width": 568,
+        "height": 326,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 357,
+        "bottom": 521,
+        "width": 550,
+        "height": 164,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 706,
+        "bottom": 894,
+        "width": 568,
+        "height": 188,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      }
+    },
+    {
+      "name": "/settings",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      }
+    },
+    {
+      "name": "/lesson",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "limitations": [
+    "Chromium and react-native-web, not a physical device.",
+    "The accessibility mode doubles rendered glyphs; native fontScale branches need separate fixture/device proof."
+  ],
+  "lesson": {
+    "answered": 35,
+    "completed": true,
+    "summary": "Lesson complete.\nThe tricky ones are the ones that stick.\n+60\nXP\n25%\nAccuracy\n1:24\nTime\n+25\nCoins\n5\nFacts stronger\nYour daily goal\n1 / 5 lessons\nOne step closer. Your next adventure is waiting on the path.\nWHERE YOU JUST WERE\nA little more of the world is yours. Keep exploring?\nContinue adventure"
+  }
+}

@@ -38,6 +38,7 @@ import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-na
 import { radius, space } from '../tokens.js'
 import { squircle } from '../shape.js'
 import { text } from '../typography.js'
+import { ClaySurface } from './ClaySurface.js'
 
 export type SpeechBubbleProps = {
   /** The line Atlas says. A whole sentence — never assembled from fragments. */
@@ -75,6 +76,7 @@ export function SpeechBubble({ children, from = 'start', style }: SpeechBubblePr
       {/* `accessible` so the sentence lands as one node. Without it a reader walks the
           Text and the tail separately, and the question arrives in pieces. */}
       <View style={styles.body} accessible>
+        <ClaySurface radius={radius.xl} />
         <Text style={styles.line}>{children}</Text>
       </View>
     </View>
@@ -93,9 +95,9 @@ const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
   wrap: { alignSelf: 'stretch', position: 'relative' },
   body: {
-    backgroundColor: colors.journey.sky,
-    borderWidth: 2,
-    borderColor: colors.action.secondary,
+    backgroundColor: colors.bg.surface,
+    borderWidth: 1,
+    borderColor: colors.clay.ice.rim,
     borderRadius: radius.xl,
     ...squircle,
     paddingVertical: space[4],
@@ -111,9 +113,9 @@ const useThemeValues = createThemeStyles((colors) => {
     position: 'absolute',
     width: TAIL,
     height: TAIL,
-    backgroundColor: colors.journey.sky,
-    borderWidth: 2,
-    borderColor: colors.action.secondary,
+    backgroundColor: colors.bg.surface,
+    borderWidth: 1,
+    borderColor: colors.clay.ice.rim,
     transform: [{ rotate: '45deg' }],
   },
   // Half the square sits outside the body; the body's own fill hides the inner half,
@@ -127,5 +129,5 @@ const useThemeValues = createThemeStyles((colors) => {
   top: styles.tailTop,
   bottom: styles.tailBottom,
 } as const
-  return { colors, styles, TAIL_AT }
+  return { styles, TAIL_AT }
 })

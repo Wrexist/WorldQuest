@@ -12,7 +12,8 @@ import { createThemeStyles } from '@worldquest/design'
  */
 
 import { Tabs } from 'expo-router'
-import { TabBar, layout} from '@worldquest/design'
+import { View } from 'react-native'
+import { TabBar, depth, layout } from '@worldquest/design'
 import { Icon } from '../../src/components/Icon.js'
 import type { IconName } from '../../src/lib/icons.generated.js'
 import { useT, type TranslationKey } from '../../src/lib/i18n.js'
@@ -73,7 +74,7 @@ export default function TabsLayout() {
             // Tinted per state rather than dimmed with opacity: the inactive colour
             // is a token that passes contrast on the bar's own background, and an
             // opacity would quietly take it below the floor.
-            icon: (active: boolean) => <Icon name={tab.icon} size={24} color={active ? colors.action.primary : colors.text.tertiary} />,
+            icon: (active: boolean) => <TabGlyph name={tab.icon} active={active} />,
             label: t(tab.labelKey),
           }))}
           activeKey={state.routes[state.index]?.name ?? 'index'}
@@ -98,6 +99,16 @@ export default function TabsLayout() {
       ))}
     </Tabs>
   )
+}
+
+/** Three copies of the same mask give the navigation glyph a small sculpted edge. */
+function TabGlyph({ name, active }: { name: IconName; active: boolean }) {
+  const { colors } = useThemeValues()
+  return <View pointerEvents="none" aria-hidden style={{ width: 28, height: 28 }}>
+    <View style={{ position: 'absolute', top: depth.chip, start: 0 }}><Icon name={name} size={28} color={colors.clay.shadow} /></View>
+    <View style={{ position: 'absolute', top: -depth.chip, start: 0 }}><Icon name={name} size={28} color={colors.clay.ice.rim} /></View>
+    <Icon name={name} size={28} color={active ? colors.action.secondary : colors.text.secondary} />
+  </View>
 }
 
 const useThemeValues = createThemeStyles((colors) => {

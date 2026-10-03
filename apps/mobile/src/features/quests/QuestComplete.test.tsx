@@ -12,6 +12,20 @@ import { QuestComplete } from './QuestComplete.js'
  * — an invented reward number on one screen, and "0 day streak" as a first impression.
  */
 describe('QuestComplete', () => {
+  it('keeps the treasure closed when a direct route visit has no completed quest', () => {
+    const view = render(<QuestComplete done={0} total={0} onDone={() => {}} />)
+    expect(screen.getByTestId('explorer-chest-opened').style.opacity).toBe('0')
+    expect(screen.queryByText('0 of 0 done')).toBeNull()
+
+    view.rerender(<QuestComplete done={2} total={5} onDone={() => {}} />)
+    expect(screen.getByTestId('explorer-chest-opened').style.opacity).toBe('0')
+    expect(screen.queryByText('2 of 5 done')).toBeNull()
+
+    view.rerender(<QuestComplete done={5} total={5} onDone={() => {}} />)
+    expect(screen.getByTestId('explorer-chest-opened').style.opacity).toBe('1')
+    expect(screen.getByText('5 of 5 done')).toBeTruthy()
+  })
+
   it('states the score and the bonus the server actually pays', () => {
     render(<QuestComplete done={5} total={5} onDone={() => {}} />)
 

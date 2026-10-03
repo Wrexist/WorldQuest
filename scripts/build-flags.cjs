@@ -106,7 +106,6 @@ function flagIconsDir() {
  */
 function writeIndex(codes) {
   const imports = codes.map((c) => `import ${c} from '../../assets/flags/${c}.png'`).join('\n')
-  const entries = codes.map((c) => `  'flags/${c}.png': ${c},`).join('\n')
 
   writeFileSync(
     INDEX,
@@ -126,10 +125,12 @@ ${imports}
  */
 export type AssetModule = number | string
 
-/** Content-pack asset path → the bundled image. */
-export const FLAG_BY_PATH: Readonly<Record<string, AssetModule>> = {
-${entries}
-}
+// Keep every static asset import, but avoid repeating full path keys in Hermes.
+// Both lists come from the same content-pack order; the public mapping is unchanged.
+const codes = '${codes.join(' ')}'.split(' ')
+export const FLAG_BY_PATH: Readonly<Record<string, AssetModule>> = Object.fromEntries(
+  [${codes.join(', ')}].map((asset, index) => ['flags/' + codes[index] + '.png', asset]),
+)
 `,
   )
 }
@@ -152,6 +153,15 @@ ${entries}
         '  Expected "flags/<ID>.png" for each. Fix the pack, not this script.',
     )
     process.exit(1)
+  }
+
+  // Regenerate the mapping without re-rasterising unchanged, already shipped art.
+  if (process.argv.includes('--index-only')) {
+    const missing = codes.filter(code => !existsSync(join(OUT, `${code}.png`)))
+    if (missing.length) throw new Error(`Missing shipped flag assets: ${missing.join(', ')}`)
+    writeIndex(codes)
+    console.log(`Flag index regenerated: ${codes.length} unchanged static imports`)
+    return
   }
 
   mkdirSync(OUT, { recursive: true })

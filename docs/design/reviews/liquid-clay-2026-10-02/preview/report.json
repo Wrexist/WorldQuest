@@ -1,0 +1,294 @@
+{
+  "source": "C:\\Users\\IsacC\\WorldQuest\\node_modules\\.cache\\wq-liquid-clay-web-preview",
+  "realApp": true,
+  "seededAccount": false,
+  "cases": [
+    {
+      "name": "/",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      }
+    },
+    {
+      "name": "/explore",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "chest": {
+        "top": 270,
+        "bottom": 528,
+        "width": 288,
+        "height": 258,
+        "viewportContained": true,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "continueBeforeScroll": {
+        "top": 409,
+        "bottom": 466,
+        "width": 288,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 409,
+        "bottom": 466,
+        "width": 288,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "guestStart": {
+        "top": 413,
+        "bottom": 470,
+        "width": 254,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "coin-wallet": {
+        "top": 202,
+        "bottom": 422,
+        "width": 288,
+        "height": 220,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 307,
+        "bottom": 413,
+        "width": 270,
+        "height": 106,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 526,
+        "bottom": 654,
+        "width": 288,
+        "height": 128,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      }
+    },
+    {
+      "name": "/lesson",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      }
+    },
+    {
+      "name": "/",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    },
+    {
+      "name": "/explore",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "chest": {
+        "top": 270,
+        "bottom": 528,
+        "width": 358,
+        "height": 258,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueBeforeScroll": {
+        "top": 685,
+        "bottom": 742,
+        "width": 358,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 685,
+        "bottom": 742,
+        "width": 358,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "guestStart": {
+        "top": 413,
+        "bottom": 470,
+        "width": 315.6875,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "coin-wallet": {
+        "top": 202,
+        "bottom": 422,
+        "width": 358,
+        "height": 220,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 307,
+        "bottom": 413,
+        "width": 340,
+        "height": 106,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 526,
+        "bottom": 636,
+        "width": 358,
+        "height": 110,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/lesson",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "limitations": [
+    "Chromium and react-native-web, not a physical device.",
+    "The accessibility mode doubles rendered glyphs; native fontScale branches need separate fixture/device proof."
+  ]
+}

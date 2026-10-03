@@ -1,4 +1,8 @@
 {
+  "explore:region.guide": "Välj en flagga. Vi utforskar tillsammans.",
+  "explore:region.guide__note": "Atlas's short invitation above a region's country list. Invites the user to choose a country, not a flag quiz.",
+  "explore:search.clear": "Utforska kontinenter",
+  "explore:search.clear__note": "Button in empty country search results. Clears the search and restores the continent grid.",
   "explore:title": "Utforska",
   "explore:subtitle": "Sju kontinenter. Börja var du vill.",
   "explore:region.EU": "Europa",
@@ -27,6 +31,9 @@
   "explore:mastery.mastered": "Bemästrat",
   "explore:mastery.burnished": "Slipat",
   "explore:search.label": "Sök länder eller världsdelar",
+  "explore:search.reset": "Rensa sökning",
+  "explore:search.more": "{count, plural, one {Visa # träff} other {Visa alla #}}",
+  "explore:search.fewer": "Visa färre",
   "explore:search.label__note": "Country search over installed content. Keep concise; count is validated coverage, not worldwide total.",
   "explore:search.count": "{count, plural, one {# land i den här kursen} other {# länder i den här kursen}}",
   "explore:search.count__note": "Country search over installed content. Keep concise; count is validated coverage, not worldwide total.",

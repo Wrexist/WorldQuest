@@ -44,8 +44,10 @@
   "shop:unlock.ready__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted.",
   "shop:unlock.progress": "{coins} / {price} mynt sparade",
   "shop:unlock.progress__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted.",
-  "shop:purchase.pending": "Bekr?ftar ditt k?p?",
+  "shop:purchase.pending": "Bekräftar ditt köp…",
   "shop:purchase.pending__note": "Purchase status. Ownership appears only after the server confirms it.",
-  "shop:purchase.failed": "K?pet kunde inte bekr?ftas. Anslut igen och f?rs?k p? nytt.",
-  "shop:purchase.failed__note": "Purchase status. Ownership appears only after the server confirms it."
+  "shop:purchase.failed": "Köpet kunde inte bekräftas. Anslut igen och försök på nytt.",
+  "shop:purchase.failed__note": "Purchase status. Ownership appears only after the server confirms it.",
+  "shop:atlas.equipped": "Nu bär du titeln {title}. Snyggt!",
+  "shop:atlas.equipped__note": "Atlas confirms a title change only after equipped state changes. {title} is the translated title name. No purchase or reward is implied."
 }

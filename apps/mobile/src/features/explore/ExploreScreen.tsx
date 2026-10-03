@@ -1,10 +1,14 @@
 import { createThemeStyles } from '@worldquest/design'
 
 
-import { useState } from 'react'
-import { Animated, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native'
+import { useEffect, useRef, useState } from 'react'
+import { AccessibilityInfo, Animated, Keyboard, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native'
 import {
+  Button,
   Card,
+  ClaySurface,
+  clayShadow,
+  depth,
   palette,
   ProgressBar,
   radius,
@@ -19,6 +23,8 @@ import {
 import type { WorldProgress } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
+import { AtlasCompanion } from '../../components/AtlasCompanion.js'
+import { SceneEntrance } from '../../components/SceneEntrance.js'
 import { TopBar } from '../../components/TopBar.js'
 import { DaylightIllustration } from '../../components/DaylightIllustration.js'
 import type { ArtName } from '../../lib/art.generated.js'
@@ -76,7 +82,7 @@ export type ExploreScreenProps = {
   readonly coins?: number | undefined
   /**
    * The 3D atlas, when this build may show it (features/atlas/atlasAvailability.ts).
-   * Present: the globe sits above the search, and a search result SELECTS its country on
+   * Present: search results precede the globe, and a result SELECTS its country on
    * the globe rather than leaving the screen — the card then opens the country page.
    * Absent: Explore is exactly what it was.
    */
@@ -109,11 +115,39 @@ export function ExploreScreen({
   const { colors, styles } = useThemeValues()
   const t = useT()
   const [query, setQuery] = useState('')
+  const [allResults, setAllResults] = useState(false)
   const [selected, setSelected] = useState<string | null>(null)
   const [atlasRegion, setAtlasRegion] = useState<string | null>(null)
+  const scroll = useRef<ScrollView>(null)
+  const atlasTop = useRef(0)
+  const revealSelection = useRef(false)
+  const countryOpen = useRef<View>(null)
+  const selectionFrame = useRef<number | undefined>(undefined)
+  useEffect(() => () => { if (selectionFrame.current !== undefined) cancelAnimationFrame(selectionFrame.current) }, [])
   const normalize = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().trim()
   const needle = normalize(query)
   const matches = countries.filter(country => normalize(country.name).includes(needle) || (REGIONS.includes(country.region as RegionCode) && normalize(t(REGION_NAME[country.region as RegionCode])).includes(needle)))
+  const selectCountry = (id: string | null) => {
+    if (selectionFrame.current !== undefined) cancelAnimationFrame(selectionFrame.current)
+    revealSelection.current = id !== null && (needle.length > 0 || selected === null)
+    setSelected(id)
+    if (id === null) return
+    setQuery('')
+    setAllResults(false)
+    Keyboard.dismiss()
+    if (atlasRegion !== null && countries.find(country => country.id === id)?.region !== atlasRegion) setAtlasRegion(null)
+    // A search/list pick can be far below the map. Reveal it again after the query
+    // collapses and the atlas reports its new position.
+    scroll.current?.scrollTo({ y: atlasTop.current, animated: false })
+    // The picked result unmounts. Hand its focus to the revealed action, only for
+    // user selections; refreshed country data must not steal Close's focus.
+    selectionFrame.current = requestAnimationFrame(() => {
+      selectionFrame.current = undefined
+      if (countryOpen.current === null) return
+      if (Platform.OS === 'web') countryOpen.current.focus()
+      else AccessibilityInfo.sendAccessibilityEvent(countryOpen.current, 'focus')
+    })
+  }
 
   // All seven tiles are the same size, so one measurement serves them all. Seeded from
   // the window rather than from zero, so the first frame already has its sky instead of
@@ -127,7 +161,7 @@ export function ExploreScreen({
   const byRegion = new Map(world.regions.map((r) => [r.region, r]))
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <ScrollView ref={scroll} style={styles.screen} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
       <TopBar
         initials="EX"
         {...(coins !== undefined ? { coins } : {})}
@@ -135,50 +169,72 @@ export function ExploreScreen({
       />
 
       <View style={styles.header}>
-        <View style={styles.headerText}>
-          <Text style={styles.title} role="heading">
-            {t('explore:title')}
-          </Text>
-          <Text style={styles.subtitle}>{t('explore:subtitle')}</Text>
-        </View>
-
-
+        <Text style={styles.title} role="heading">
+          {t('explore:title')}
+        </Text>
+        {needle.length === 0 && selected === null && <AtlasCompanion compact message={t('explore:subtitle')} />}
       </View>
 
+      <View style={styles.searchField}>
+      <ClaySurface radius={radius.full} />
+      <View style={styles.searchIcon}><Icon name="globe" size={space[5]} color={colors.text.secondary} /></View>
       <TextInput accessibilityLabel={t('explore:search.label')}
         placeholder={t('explore:search.label')} placeholderTextColor={colors.text.tertiary}
-        value={query} onChangeText={setQuery} autoCorrect={false} returnKeyType="search"
+        value={query} onChangeText={value => { setQuery(value); setAllResults(false) }} autoCorrect={false} returnKeyType="search"
         style={styles.search} testID="explore-search" />
+      {query.length > 0 && <Pressable role="button" aria-label={t('explore:search.reset')} onPress={() => setQuery('')} style={styles.searchClear}>
+        <Icon name="close" size={18} color={colors.text.secondary} />
+      </Pressable>}
+      </View>
+      {needle.length > 0 && <View style={styles.searchResults}>
+        <Text style={styles.subtitle} accessibilityLiveRegion="polite">{t('explore:search.count', { count: matches.length })}</Text>
+        {matches.length === 0 && <>
+          <AtlasCompanion compact mood="thinking" message={t('explore:search.empty')} />
+          <Button variant="secondary" label={t('explore:search.clear')} onPress={() => setQuery('')} />
+        </>}
+        {(allResults ? matches : matches.slice(0, 6)).map(country => <Pressable key={country.id} role="button" aria-label={country.name}
+          onPress={() => (atlas !== undefined ? selectCountry(country.id) : onSelectCountry?.(country.id))}
+          style={({ pressed }) => [styles.searchRow, pressed && styles.searchPressed]}>
+          <ClaySurface radius={radius.lg} />
+          {country.flagPath && <Flag path={country.flagPath} width={32} label="" />}
+          <View style={styles.headerText}>
+            <Text style={styles.collectionName}>{country.name}</Text>
+            <Text style={styles.resultMeta}>{t(`explore:mastery.${country.progress.mastery}`)}</Text>
+          </View>
+          <Icon name="chevron" size={18} />
+        </Pressable>)}
+        {matches.length > 6 && <Pressable role="button" aria-expanded={allResults} onPress={() => setAllResults(!allResults)} style={styles.moreResults}>
+          <Text style={styles.moreLabel}>{allResults ? t('explore:search.fewer') : t('explore:search.more', { count: matches.length })}</Text>
+        </Pressable>}
+      </View>}
       {atlas !== undefined && (
         <ExploreAtlas
           countries={countries}
           names={atlas.names}
           selected={selected}
-          onSelect={setSelected}
+          onSelect={selectCountry}
+          openRef={countryOpen}
+          showBrowse={needle.length === 0}
+          onLayout={event => {
+            atlasTop.current = event.nativeEvent.layout.y
+            if (revealSelection.current) {
+              scroll.current?.scrollTo({ y: atlasTop.current, animated: false })
+              revealSelection.current = false
+            }
+          }}
           region={atlasRegion}
           onRegion={(region) => {
             setAtlasRegion(region)
             // A selection outside the new filter would be a card for a country the
             // globe is no longer showing.
-            if (region !== null && selected !== null && countries.find((c) => c.id === selected)?.region !== region) setSelected(null)
+            if (region !== null && selected !== null && countries.find((c) => c.id === selected)?.region !== region) selectCountry(null)
           }}
           matches={needle.length > 0 ? matches.map((m) => m.id) : []}
           onOpenCountry={(id) => onSelectCountry?.(id)}
         />
       )}
-      {needle.length > 0 && <View style={styles.searchResults}>
-        <Text style={styles.subtitle} accessibilityLiveRegion="polite">{t('explore:search.count', { count: matches.length })}</Text>
-        {matches.length === 0 && <Text style={styles.subtitle}>{t('explore:search.empty')}</Text>}
-        {matches.map(country => <Card key={country.id} onPress={() => (atlas !== undefined ? setSelected(country.id) : onSelectCountry?.(country.id))} style={styles.searchRow}>
-          {country.flagPath && <Flag path={country.flagPath} width={36} label="" />}
-          <View style={styles.headerText}>
-            <Text style={styles.collectionName}>{country.name}</Text>
-            <Text style={styles.subtitle}>{t(`explore:mastery.${country.progress.mastery}`)}</Text>
-          </View>
-          <Icon name="chevron" size={18} />
-        </Card>)}
-      </View>}
-      {needle.length === 0 && <>
+      {needle.length === 0 && (atlas === undefined || selected === null) && <>
+      <SceneEntrance>
       <Card style={styles.worldCard} accessibilityLabel={t('explore:world.label')}>
 
         <DaylightIllustration name="discovery-island" size={windowWidth < 360 || fontScale > 1.3 ? 80 : 112} active={false} />
@@ -206,6 +262,7 @@ export function ExploreScreen({
           />
         </View>
       </Card>
+      </SceneEntrance>
 
 
       <View style={styles.grid}>
@@ -319,16 +376,18 @@ function ContinentTile({
         }}
         // A continent with no content yet is dimmed rather than hidden. Hiding it would
         // read as a smaller world; dimming says "not yet".
-        style={[
+        style={({ pressed }) => [
           styles.tile,
           { borderColor: colors.border.subtle, backgroundColor: colors.bg.surface },
           // The measured maximum, applied as a floor. `styles.tile` carries the seed for
           // the frame before anything has reported.
           minHeight > 0 && { minHeight },
           empty && styles.tileEmpty,
+          !empty && styles.tileInteractive,
+          pressed && !empty && styles.tilePressed,
         ]}
       >
-
+        <ClaySurface radius={radius.lg} />
         <View style={styles.tileShape} pointerEvents="none" aria-hidden>
           <AdventureArt name={DESTINATION[region]} style={{ width: '100%', height: 116 }} />
         </View>
@@ -385,9 +444,16 @@ function ExploreSkeleton() {
 
 const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
-  search: { minHeight: 48, borderWidth: 1, borderColor: colors.border.subtle, borderRadius: radius.lg, backgroundColor: colors.bg.surface, paddingHorizontal: space[4], ...text('body'), color: colors.text.primary },
-  searchResults: { gap: space[3] },
-  searchRow: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  searchField: { ...clayShadow(colors), flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.clay.ice.rim, borderRadius: radius.full, backgroundColor: colors.bg.surface },
+  searchIcon: { paddingStart: space[4] },
+  search: { position: 'relative', flex: 1, minWidth: 0, minHeight: 48, paddingHorizontal: space[3], ...text('body'), color: colors.text.primary },
+  searchClear: { width: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' },
+  searchResults: { gap: space[1] },
+  searchRow: { minHeight: 56, padding: space[3], flexDirection: 'row', alignItems: 'center', gap: space[3], borderBottomWidth: 1, borderColor: colors.border.subtle, backgroundColor: colors.bg.surface, borderRadius: radius.md },
+  searchPressed: { backgroundColor: colors.bg.surfacePressed },
+  resultMeta: { ...text('caption'), color: colors.text.secondary },
+  moreResults: { minHeight: 48, justifyContent: 'center', paddingHorizontal: space[3] },
+  moreLabel: { ...text('bodyStrong'), color: colors.action.secondary },
   collections: { flexDirection: 'row', gap: space[3], marginBottom: space[1] },
   // One per line on a narrow phone. Each card keeps `flex: 1`, which in a column means
   // it takes the full width rather than a half of it — and a full-width row is the shape
@@ -412,9 +478,7 @@ const useThemeValues = createThemeStyles((colors) => {
   collectionHint: { ...text('caption'), color: colors.text.tertiary },
   screen: { flex: 1 },
   content: { padding: space[4], gap: space[4], paddingBottom: space[6] },
-  // A row now, with the mascot on the end. `space[1]` still separates the two lines of
-  // text, which is why the gap moved inward rather than staying here.
-  header: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  header: { gap: space[2] },
   headerText: { flex: 1, gap: space[1] },
   title: { ...text('h1'), color: colors.text.primary },
   subtitle: { ...text('body'), color: colors.text.secondary },
@@ -458,6 +522,8 @@ const useThemeValues = createThemeStyles((colors) => {
     backgroundColor: colors.bg.surface,
   },
   tileEmpty: { opacity: 0.7 },
+  tileInteractive: { borderBottomWidth: depth.button },
+  tilePressed: { transform: [{ translateY: depth.chip }], backgroundColor: colors.bg.surfacePressed },
   regionName: { ...text('h3'), color: colors.text.primary },
   regionMeta: { ...text('caption'), color: colors.text.secondary },
   // Same size, brighter and heavier. `numeric` for tabular figures so a column of

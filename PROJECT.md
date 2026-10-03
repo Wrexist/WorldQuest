@@ -305,7 +305,7 @@ CI fails on a hardcoded hex colour, a raw user-facing string, or a magic economy
 | Cold start → interactive Home | < 2.0 s (mid-tier Android) |
 | Lesson item transition | < 100 ms |
 | Frame rate during animation | ≥ 58 fps |
-| JS bundle (mobile, initial) | < 4.1 MiB — **resolved 2026-08-09, measured for real the same day.** The gate and this row disagreed (gate 6.0, bundle 5.93) because `@sentry/react-native` cost 1.92 MiB and raised the enforced number rather than the documented one. Isac decided to hold ~4 and drop Sentry (no account existed for it yet). The first pass set the gate to 4.0 MiB by arithmetic (5.93 − 1.92); a real `pnpm install` + `pnpm bundle:native` run later the same day measured **4.07 MiB** — a hair over — so `scripts/bundle-native.cjs` now enforces **4.1 MiB**, with the real number and the reason recorded in that file's own history comment. See `docs/plan/cowork-handoff.md` §6 for the original decision and `apps/mobile/src/lib/reporting.ts` for what replaced Sentry. |
+| JS bundle (mobile, initial) | < 5.21 MiB per platform. Current measured gate, 2026-10-02: 5,456,119 bytes iOS / 5,453,594 Android. The responsive motion pass adds 755 / 751 bytes since the cloud/Atlas pass, within the unchanged gate. The preceding cloud presentation allocated 0.01 MiB over 5.20 MiB; its 76,524-byte image is a separate asset. Historical allocations, including the August Sentry removal and October 3D atlas, are recorded in `scripts/bundle-native.cjs`. See [current review](docs/design/reviews/responsive-motion-2026-10-02/README.md) and [cloud allocation](docs/design/reviews/cloud-companions-2026-10-02/README.md). |
 | Offline lesson start | works with **zero** network |
 
 ---
@@ -380,6 +380,12 @@ Distilled from the mockup ([`docs/design/assets/mockup-v1.png`](docs/design/asse
 ---
 
 ## 8. Design system
+
+The owner's October 2, 2026 liquid-clay references supersede the historical palette
+and surface values below. The [current visual contract](docs/design/design-system.md)
+uses powder-blue canvases, sculpted ice cards, navy reward panels and softly reflective
+capsule controls, with matching light/dark semantic tokens. Existing accessibility,
+layout, motion and reward rules continue to apply.
 
 Full spec: [`docs/design/design-system.md`](docs/design/design-system.md).
 Machine-readable: `packages/design/tokens.json` → generated `tokens.ts`.

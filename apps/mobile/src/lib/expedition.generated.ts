@@ -6,7 +6,6 @@ import art3 from '../../assets/art/expedition/gem.webp'
 import art4 from '../../assets/art/expedition/passport.webp'
 import art5 from '../../assets/art/expedition/star-trophy.webp'
 import art6 from '../../assets/art/expedition/streak-freeze.webp'
-import art7 from '../../assets/art/expedition/treasure-chest.webp'
 
 export const EXPEDITION_ART = {
   'coins': { asset: art0, geometry: {"x":0.1609375,"y":0.1875,"w":0.665625,"h":0.5796875,"aspect":1} },
@@ -16,5 +15,4 @@ export const EXPEDITION_ART = {
   'passport': { asset: art4, geometry: {"x":0.2203125,"y":0.1296875,"w":0.534375,"h":0.803125,"aspect":1} },
   'star-trophy': { asset: art5, geometry: {"x":0.20625,"y":0.14375,"w":0.5875,"h":0.7640625,"aspect":1} },
   'streak-freeze': { asset: art6, geometry: {"x":0.1734375,"y":0.2125,"w":0.653125,"h":0.65,"aspect":1} },
-  'treasure-chest': { asset: art7, geometry: {"x":0.190625,"y":0.0640625,"w":0.6453125,"h":0.80625,"aspect":1} },
 } as const

@@ -8,6 +8,7 @@ import { createThemeStyles } from '../theme.js'
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
 import { colors, radius, space } from '../tokens.js'
 import { text } from '../typography.js'
+import { ClaySurface } from './ClaySurface.js'
 
 export type ChipKind = 'xp' | 'coin' | 'streak' | 'hearts' | 'gem'
 
@@ -51,6 +52,7 @@ export function StatChip({ kind, value, icon, accessibilityLabel, dim = false, s
       style={[styles.base, style]}
       testID={testID}
     >
+      <ClaySurface radius={radius.full} />
       {icon}
       <Text style={[styles.value, { color: tint }]}>{value}</Text>
     </View>

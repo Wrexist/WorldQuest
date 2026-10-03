@@ -1,0 +1,546 @@
+{
+  "routes": {
+    "country-SE": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 77,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 6,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Sweden",
+          "What to know"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 85,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 4,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Sweden",
+          "What to know"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 86,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 4,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Sweden",
+          "What to know"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 65,
+          "percentOfViewport": 6
+        },
+        "contentDensity": 82,
+        "emptiestBand": {
+          "px": 60,
+          "percentOfViewport": 6,
+          "startsAtPercent": 85
+        },
+        "headings": [
+          "Sweden",
+          "What to know"
+        ]
+      }
+    },
+    "region-EU": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 99,
+        "emptiestBand": {
+          "px": 4,
+          "percentOfViewport": 1,
+          "startsAtPercent": 73
+        },
+        "headings": [
+          "Europe"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 97,
+        "emptiestBand": {
+          "px": 8,
+          "percentOfViewport": 1,
+          "startsAtPercent": 59
+        },
+        "headings": [
+          "Europe"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 97,
+        "emptiestBand": {
+          "px": 8,
+          "percentOfViewport": 1,
+          "startsAtPercent": 70
+        },
+        "headings": [
+          "Europe"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 97,
+        "emptiestBand": {
+          "px": 8,
+          "percentOfViewport": 1,
+          "startsAtPercent": 64
+        },
+        "headings": [
+          "Europe"
+        ]
+      }
+    },
+    "collection-flags": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 96,
+        "emptiestBand": {
+          "px": 16,
+          "percentOfViewport": 3,
+          "startsAtPercent": 73
+        },
+        "headings": [
+          "Flags"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 95,
+        "emptiestBand": {
+          "px": 16,
+          "percentOfViewport": 2,
+          "startsAtPercent": 46
+        },
+        "headings": [
+          "Flags"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 97,
+        "emptiestBand": {
+          "px": 8,
+          "percentOfViewport": 1,
+          "startsAtPercent": 56
+        },
+        "headings": [
+          "Flags"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 97,
+        "emptiestBand": {
+          "px": 12,
+          "percentOfViewport": 1,
+          "startsAtPercent": 38
+        },
+        "headings": [
+          "Flags"
+        ]
+      }
+    },
+    "profile": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Your explorer passport"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 94,
+          "percentOfViewport": 11
+        },
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Your explorer passport"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 169,
+          "percentOfViewport": 18
+        },
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Your explorer passport"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 261,
+          "percentOfViewport": 25
+        },
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Your explorer passport"
+        ]
+      }
+    },
+    "achievements": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 94,
+        "emptiestBand": {
+          "px": 12,
+          "percentOfViewport": 2,
+          "startsAtPercent": 53
+        },
+        "headings": [
+          "Achievements",
+          "Up next",
+          "Everything else"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 94,
+        "emptiestBand": {
+          "px": 12,
+          "percentOfViewport": 1,
+          "startsAtPercent": 36
+        },
+        "headings": [
+          "Achievements",
+          "Up next",
+          "Everything else"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 94,
+        "emptiestBand": {
+          "px": 12,
+          "percentOfViewport": 1,
+          "startsAtPercent": 33
+        },
+        "headings": [
+          "Achievements",
+          "Up next",
+          "Everything else"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 95,
+        "emptiestBand": {
+          "px": 12,
+          "percentOfViewport": 1,
+          "startsAtPercent": 45
+        },
+        "headings": [
+          "Achievements",
+          "Up next",
+          "Everything else"
+        ]
+      }
+    },
+    "quests": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Today's Quest"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Today's Quest"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Today's Quest"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Today's Quest"
+        ]
+      }
+    },
+    "streak": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Your streak",
+          "No days yet",
+          "October 2026",
+          "Streak gems"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 98,
+        "emptiestBand": {
+          "px": 12,
+          "percentOfViewport": 1,
+          "startsAtPercent": 98
+        },
+        "headings": [
+          "Your streak",
+          "No days yet",
+          "October 2026",
+          "Streak gems"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 97,
+        "emptiestBand": {
+          "px": 12,
+          "percentOfViewport": 1,
+          "startsAtPercent": 67
+        },
+        "headings": [
+          "Your streak",
+          "No days yet",
+          "October 2026",
+          "Streak gems"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 96,
+        "emptiestBand": {
+          "px": 12,
+          "percentOfViewport": 1,
+          "startsAtPercent": 61
+        },
+        "headings": [
+          "Your streak",
+          "No days yet",
+          "October 2026",
+          "Streak gems"
+        ]
+      }
+    },
+    "shop": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Shop",
+          "Streak",
+          "Titles"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Shop",
+          "Streak",
+          "Titles"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Shop",
+          "Streak",
+          "Titles"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Shop",
+          "Streak",
+          "Titles"
+        ]
+      }
+    }
+  },
+  "states": {},
+  "generatedAt": null
+}

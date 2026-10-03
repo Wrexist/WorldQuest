@@ -28,8 +28,8 @@ describe('MonthCalendar', () => {
   })
 
   it('hides the thirty cells from a screen reader, which has the count instead', () => {
-    const { container } = render(<MonthCalendar month={month({ '2026-09-25': 1 })} />)
-    const hidden = container.querySelector('[aria-hidden="true"]')
+    render(<MonthCalendar month={month({ '2026-09-25': 1 })} />)
+    const hidden = screen.getByTestId('calendar-day-learned').closest('[aria-hidden="true"]')
     expect(hidden?.textContent).toContain('25')
     expect(hidden?.textContent).not.toContain('September')
   })

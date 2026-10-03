@@ -18,17 +18,18 @@ describe('the Explore scene', () => {
     expect(spec.focus.kind).toBe('world')
     expect(spec.interaction.selectable).toBe('all')
     expect(spec.markers).toEqual([])
+    expect(spec.labels).toEqual([])
   })
 
-  it('selects a country, frames it, names it first, and pins its verified capital', () => {
+  it('frames the selection without a displaced duplicate name and pins its verified capital', () => {
     const spec = buildExploreScene({ ...base, selected: 'BR' })
     expect(spec.highlights).toContainEqual({ countryId: 'BR', state: 'selected' })
     expect(spec.focus).toMatchObject({ kind: 'country', countryId: 'BR' })
-    expect(spec.labels[0]!.text).toBe('Brazil')
-    expect(spec.labels.filter((l) => l.countryId === 'BR')).toHaveLength(1)
+    expect(spec.labels).toEqual([])
     expect(spec.markers).toHaveLength(1)
     expect(spec.markers[0]!.label).toBe('Brasília')
     expect(spec.summary).toContain('Brasília')
+    expect(spec.summary).toContain('Brazil')
   })
 
   it('pins nothing it has not verified — a review-required capital, or a country with no capital fact', () => {
@@ -48,13 +49,15 @@ describe('the Explore scene', () => {
       { countryId: 'PT', state: 'context' },
       { countryId: 'ES', state: 'context' },
     ])
-    expect(spec.labels.map((l) => l.countryId).sort()).toEqual(['ES', 'PT'])
+    expect(spec.labels).toEqual([])
+    expect(spec.focus.kind).toBe('world')
   })
 
-  it('agrees with the region filter: framed on the region, labels only from it', () => {
+  it('frames the chosen region without floating country names', () => {
     const spec = buildExploreScene({ ...base, region: 'SA' })
-    expect(spec.focus.kind).toBe('region')
-    expect(spec.labels.every((l) => ['BR', 'AR', 'CO', 'PE', 'VE', 'CL', 'BO', 'PY', 'EC', 'UY', 'GY', 'SR'].includes(l.countryId))).toBe(true)
+    expect(spec.focus).toMatchObject({ kind: 'region', regionId: 'SA' })
+    expect(spec.labels).toEqual([])
+    expect(spec.interaction).toEqual({ rotate: true, zoom: true, selectable: 'all' })
   })
 
   it('changes its scene key with every selection, so a late tap for the old one is dropped', () => {

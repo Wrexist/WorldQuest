@@ -49,6 +49,8 @@ import { Art } from '../../components/Art.js'
 import { Stat } from '../../components/Stat.js'
 import { Icon } from '../../components/Icon.js'
 import { MonthCalendar } from './MonthCalendar.js'
+import { AtlasCompanion } from '../../components/AtlasCompanion.js'
+import { RewardMotion } from '../../components/RewardMotion.js'
 import type { MonthActivity } from './monthActivity.js'
 
 /**
@@ -332,7 +334,9 @@ export function StreakScreen({
             This is the hero of the screen — the number underneath it is the whole
             subject — and it is drawn large enough for the art to read, which a chip at
             18pt is not. Decorative: the heading below states the streak in words. */}
-        <Art name="rewards/streak-flame" size={72} />
+        <RewardMotion kind="flame" active={current > 0 && !broken}>
+          <Art name="rewards/streak-flame" size={72} />
+        </RewardMotion>
         <Text style={styles.count} role="heading" aria-level={1}>
           {t('streak:days', { count: current })}
         </Text>
@@ -348,13 +352,11 @@ export function StreakScreen({
             {t('streak:longest', { count: longest })}
           </Tally>
         )}
-        <Text style={styles.status}>
-          {broken
+        <AtlasCompanion compact mood={broken || current === 0 ? 'encouraging' : 'proud'} message={broken
             ? t('streak:broken.body')
             : current > 0
               ? t('streak:intact')
-              : t('streak:none')}
-        </Text>
+              : t('streak:none')} />
         <MilestoneLine current={current} broken={broken} />
         {/* Sharing, Duolingo's streak-page button. The phone's own sheet with a sentence
             the user can edit: no link, no tracking, no count of who shared. Only for a

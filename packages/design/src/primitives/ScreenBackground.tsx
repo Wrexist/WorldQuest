@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native'
 
 
 export function ScreenBackground({ children }: { children: ReactNode }) {
-  const { styles } = useThemeValues()
+  const styles = useThemeValues()
   return <View style={styles.canvas}>{children}</View>
 }
 
@@ -15,5 +15,5 @@ const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
   canvas: { flex: 1, backgroundColor: colors.bg.canvas },
 })
-  return { colors, styles }
+  return styles
 })

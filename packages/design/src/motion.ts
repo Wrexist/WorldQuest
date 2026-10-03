@@ -150,14 +150,24 @@ export function useTiming(step: MotionStep): Timing {
  * `Animated.Value` that is safe to hand straight to a style.
  */
 export function useAnimatedTo(target: number, step: MotionStep = 'base'): Animated.Value {
-  const timing = useTiming(step)
+  const { duration, easing } = useTiming(step)
   const value = useRef(new Animated.Value(target)).current
+  const previous = useRef(target)
 
   useEffect(() => {
-    // A zero-duration timing still fires its callback and still sets the value, which
-    // is exactly what reduced motion should do.
-    Animated.timing(value, { toValue: target, ...timing }).start()
-  }, [target, timing, value])
+    const changed = previous.current !== target
+    previous.current = target
+    if (!changed || duration === 0 || AppState.currentState === 'background' || AppState.currentState === 'inactive') {
+      value.setValue(target)
+      return
+    }
+    const animation = Animated.timing(value, { toValue: target, duration, easing, useNativeDriver: true, isInteraction: false })
+    animation.start()
+    const subscription = AppState.addEventListener('change', state => {
+      if (state !== 'active') { animation.stop(); value.setValue(target) }
+    })
+    return () => { animation.stop(); subscription?.remove?.() }
+  }, [target, duration, easing, value])
 
   return value
 }
@@ -235,34 +245,39 @@ const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : us
  * animation must be able to, because the tenth celebration is not delightful and the
  * hundredth is an obstacle.
  */
-export function useCelebration(trigger: unknown): Animated.Value {
+export function useCelebration(trigger: unknown, enabled = true): Animated.Value {
   const reduced = useReducedMotion()
   const scale = useRef(new Animated.Value(1)).current
-  const first = useRef(true)
+  const previous = useRef(trigger)
 
   useEffect(() => {
-    // Not on mount — only on a real change. Otherwise every screen pops on arrival.
-    if (first.current) {
-      first.current = false
-      return
-    }
-    if (reduced) return
+    // Restored state and preference changes are not new accomplishments.
+    const changed = !Object.is(previous.current, trigger)
+    previous.current = trigger
+    scale.setValue(1)
+    if (!changed || !enabled || reduced || AppState.currentState === 'background' || AppState.currentState === 'inactive') return
 
-    Animated.sequence([
+    const animation = Animated.sequence([
       Animated.timing(scale, {
         toValue: 1.08,
         duration: motion.quick.duration,
         easing: EASINGS['easeOut']!,
         useNativeDriver: true,
+        isInteraction: false,
       }),
-      Animated.spring(scale, {
+      Animated.timing(scale, {
         toValue: 1,
-        damping: motion.expressive.damping ?? 0.7,
-        stiffness: motion.expressive.stiffness ?? 180,
+        duration: motion.quick.duration,
+        easing: EASINGS['spring']!,
         useNativeDriver: true,
+        isInteraction: false,
       }),
-    ]).start()
-  }, [trigger, reduced, scale])
+    ])
+    animation.start()
+    const settle = () => { animation.stop(); scale.setValue(1) }
+    const subscription = AppState.addEventListener('change', state => { if (state !== 'active') settle() })
+    return () => { settle(); subscription?.remove?.() }
+  }, [trigger, enabled, reduced, scale])
 
   return scale
 }

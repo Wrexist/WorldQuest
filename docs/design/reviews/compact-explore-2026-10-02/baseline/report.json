@@ -1,0 +1,81 @@
+{
+  "source": "C:\\Users\\IsacC\\WorldQuest\\node_modules\\.cache\\wq-question-country-web-v2",
+  "baseline": true,
+  "realApp": true,
+  "seededAccount": false,
+  "cases": [
+    {
+      "name": "selected Spain",
+      "width": 390,
+      "metrics": {
+        "height": 184,
+        "width": 358,
+        "overflow": [],
+        "text": "SpainCapitalMadridOpen Spain",
+        "targets": [
+          {
+            "label": "Clear selection",
+            "width": 48,
+            "height": 48
+          },
+          {
+            "label": "Open Spain",
+            "width": 324,
+            "height": 56
+          }
+        ]
+      },
+      "collapsedAfterSelection": false,
+      "globeRetained": false
+    },
+    {
+      "name": "selected Spain",
+      "width": 320,
+      "metrics": {
+        "height": 244,
+        "width": 288,
+        "overflow": [],
+        "text": "SpainCapitalMadridOpen Spain",
+        "targets": [
+          {
+            "label": "Clear selection",
+            "width": 48,
+            "height": 48
+          },
+          {
+            "label": "Open Spain",
+            "width": 254,
+            "height": 56
+          }
+        ]
+      },
+      "collapsedAfterSelection": false,
+      "globeRetained": false
+    },
+    {
+      "name": "selected Spain",
+      "width": 768,
+      "metrics": {
+        "height": 184,
+        "width": 568,
+        "overflow": [],
+        "text": "SpainCapitalMadridOpen Spain",
+        "targets": [
+          {
+            "label": "Clear selection",
+            "width": 48,
+            "height": 48
+          },
+          {
+            "label": "Open Spain",
+            "width": 534,
+            "height": 56
+          }
+        ]
+      },
+      "collapsedAfterSelection": false,
+      "globeRetained": false
+    }
+  ],
+  "errors": []
+}

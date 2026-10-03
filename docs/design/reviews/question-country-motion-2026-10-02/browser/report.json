@@ -1,0 +1,3433 @@
+{
+  "source": "C:\\Users\\IsacC\\WorldQuest\\node_modules\\.cache\\wq-question-country-web-v1",
+  "realApp": true,
+  "seededAccount": false,
+  "layouts": [
+    {
+      "name": "country card",
+      "reduced": false,
+      "width": 390,
+      "scaled": false,
+      "overflow": {
+        "page": false,
+        "text": [
+          "North America",
+          "South America",
+          "Oceania"
+        ]
+      }
+    },
+    {
+      "name": "country card",
+      "reduced": true,
+      "width": 390,
+      "scaled": false,
+      "overflow": {
+        "page": false,
+        "text": [
+          "North America",
+          "South America",
+          "Oceania"
+        ]
+      }
+    },
+    {
+      "name": "country card",
+      "reduced": false,
+      "width": 320,
+      "scaled": false,
+      "overflow": {
+        "page": false,
+        "text": [
+          "North America",
+          "South America",
+          "Oceania"
+        ]
+      }
+    },
+    {
+      "name": "country card",
+      "reduced": true,
+      "width": 320,
+      "scaled": false,
+      "overflow": {
+        "page": false,
+        "text": [
+          "North America",
+          "South America",
+          "Oceania"
+        ]
+      }
+    },
+    {
+      "name": "country card",
+      "reduced": false,
+      "width": 768,
+      "scaled": false,
+      "overflow": {
+        "page": false,
+        "text": [
+          "Oceania"
+        ]
+      }
+    },
+    {
+      "name": "country card",
+      "reduced": true,
+      "width": 768,
+      "scaled": false,
+      "overflow": {
+        "page": false,
+        "text": [
+          "Oceania"
+        ]
+      }
+    },
+    {
+      "name": "country card",
+      "reduced": false,
+      "width": 390,
+      "scaled": false,
+      "overflow": {
+        "page": false,
+        "text": [
+          "North America",
+          "South America",
+          "Oceania"
+        ]
+      }
+    },
+    {
+      "name": "country card",
+      "reduced": true,
+      "width": 320,
+      "scaled": true,
+      "overflow": {
+        "page": false,
+        "text": [
+          "Asien",
+          "Afrika",
+          "Nordamerika",
+          "Sydamerika",
+          "Oceanien",
+          "Bosnien och Hercegovina"
+        ]
+      }
+    }
+  ],
+  "interactions": [
+    {
+      "name": "question handoff",
+      "width": 390,
+      "reduced": false,
+      "scrollRetained": true,
+      "globeRetained": null,
+      "samples": [
+        {
+          "time": 43,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 46.199999928474426,
+          "lesson-prompt-arrival": "matrix(0.98307, 0, 0, 0.98307, 0, 6.772)",
+          "lesson-options-arrival": "matrix(0.98265, 0, 0, 0.98265, 0, 6.93981)"
+        },
+        {
+          "time": 62.39999997615814,
+          "lesson-prompt-arrival": "matrix(0.98389, 0, 0, 0.98389, 0, 6.44385)",
+          "lesson-options-arrival": "matrix(0.983483, 0, 0, 0.983483, 0, 6.60669)"
+        },
+        {
+          "time": 80.09999990463257,
+          "lesson-prompt-arrival": "matrix(0.989598, 0, 0, 0.989598, 0, 4.16071)",
+          "lesson-options-arrival": "matrix(0.989598, 0, 0, 0.989598, 0, 4.16071)"
+        },
+        {
+          "time": 96.5,
+          "lesson-prompt-arrival": "matrix(0.994365, 0, 0, 0.994365, 0, 2.25408)",
+          "lesson-options-arrival": "matrix(0.994142, 0, 0, 0.994142, 0, 2.34327)"
+        },
+        {
+          "time": 112.5,
+          "lesson-prompt-arrival": "matrix(0.997331, 0, 0, 0.997331, 0, 1.06745)",
+          "lesson-options-arrival": "matrix(0.997177, 0, 0, 0.997177, 0, 1.12906)"
+        },
+        {
+          "time": 129.59999990463257,
+          "lesson-prompt-arrival": "matrix(0.999291, 0, 0, 0.999291, 0, 0.283565)",
+          "lesson-options-arrival": "matrix(0.999195, 0, 0, 0.999195, 0, 0.322129)"
+        },
+        {
+          "time": 144.79999995231628,
+          "lesson-prompt-arrival": "matrix(1.00052, 0, 0, 1.00052, 0, -0.207135)",
+          "lesson-options-arrival": "matrix(1.00047, 0, 0, 1.00047, 0, -0.189085)"
+        },
+        {
+          "time": 162,
+          "lesson-prompt-arrival": "matrix(1.00093, 0, 0, 1.00093, 0, -0.3712)",
+          "lesson-options-arrival": "matrix(1.00091, 0, 0, 1.00091, 0, -0.365866)"
+        },
+        {
+          "time": 178.39999997615814,
+          "lesson-prompt-arrival": "matrix(1.00092, 0, 0, 1.00092, 0, -0.36827)",
+          "lesson-options-arrival": "matrix(1.00093, 0, 0, 1.00093, 0, -0.372534)"
+        },
+        {
+          "time": 195.59999990463257,
+          "lesson-prompt-arrival": "matrix(1.00064, 0, 0, 1.00064, 0, -0.256943)",
+          "lesson-options-arrival": "matrix(1.00066, 0, 0, 1.00066, 0, -0.265569)"
+        },
+        {
+          "time": 212.29999995231628,
+          "lesson-prompt-arrival": "matrix(1.00027, 0, 0, 1.00027, 0, -0.106029)",
+          "lesson-options-arrival": "matrix(1.00027, 0, 0, 1.00027, 0, -0.106029)"
+        },
+        {
+          "time": 228.59999990463257,
+          "lesson-prompt-arrival": "matrix(1.00002, 0, 0, 1.00002, 0, -0.00673011)",
+          "lesson-options-arrival": "matrix(1.00002, 0, 0, 1.00002, 0, -0.00958518)"
+        },
+        {
+          "time": 245.39999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 262.09999990463257,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 278.6999999284744,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 295.6999999284744,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 312.39999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 328.6999999284744,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 345.1999999284744,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 361.7999999523163,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 378.2999999523163,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 396.2999999523163,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 412.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 429.09999990463257,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 446.39999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 462.1999999284744,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 478.1999999284744,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 495.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 512.0999999046326,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 528.6999999284744,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 545,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 562.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 579.0999999046326,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 596.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 612.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 629.0999999046326,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 645.8999999761581,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 662.0999999046326,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "noReplayOnSelection": true
+    },
+    {
+      "name": "country reveal and switch",
+      "reduced": false,
+      "width": 390,
+      "samples": [
+        {
+          "time": 42.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 145.89999997615814,
+          "explore-atlas-card": "matrix(0.98389, 0, 0, 0.98389, 0, 6.44385)"
+        },
+        {
+          "time": 151.70000004768372,
+          "explore-atlas-card": "matrix(1.00096, 0, 0, 1.00096, 0, -0.38565)"
+        },
+        {
+          "time": 232.10000002384186,
+          "explore-atlas-card": "matrix(1.00097, 0, 0, 1.00097, 0, -0.388618)"
+        },
+        {
+          "time": 318.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 392.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 460.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 528.7000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 599.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 613.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 629.2000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 647.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 663.2000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "switched": [
+        {
+          "time": 9.200000047683716,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 28,
+          "explore-atlas-card": "matrix(0.98, 0, 0, 0.98, 0, 8)"
+        },
+        {
+          "time": 98.80000007152557,
+          "explore-atlas-card": "matrix(0.981354, 0, 0, 0.981354, 0, 7.45836)"
+        },
+        {
+          "time": 108.90000009536743,
+          "explore-atlas-card": "matrix(0.998992, 0, 0, 0.998992, 0, 0.4032)"
+        },
+        {
+          "time": 182,
+          "explore-atlas-card": "matrix(0.99995, 0, 0, 0.99995, 0, 0.0200054)"
+        },
+        {
+          "time": 252,
+          "explore-atlas-card": "matrix(1.00031, 0, 0, 1.00031, 0, -0.122785)"
+        },
+        {
+          "time": 321.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 394.8000000715256,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 464.2000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 534.9000000953674,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 602,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 607.6000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 623.7000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 639.7000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 656.6000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "cardRetained": true,
+      "openFocusRetained": true,
+      "globeRetained": true
+    },
+    {
+      "name": "question handoff",
+      "width": 390,
+      "reduced": true,
+      "scrollRetained": true,
+      "globeRetained": null,
+      "samples": [
+        {
+          "time": 0.19999992847442627,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 32.39999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 34,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 44.299999952316284,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 62,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 77.60000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 94.19999992847443,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 111.19999992847443,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 127.69999992847443,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 144.10000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 161.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 177.69999992847443,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 193.79999995231628,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 210.60000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 228.29999995231628,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 244.19999992847443,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 260.7999999523163,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 277.1999999284744,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 295.10000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 310.2999999523163,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 327.60000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 343.7999999523163,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 361.39999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 377,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 394.60000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 411,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 427.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 444.1999999284744,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 460.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 476.89999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 494.60000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 511.60000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 527.1000000238419,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 544.2999999523163,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 561.1000000238419,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 577.1999999284744,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 593.6999999284744,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 611.3999999761581,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 627.2999999523163,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 645.3999999761581,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 660.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "noReplayOnSelection": true
+    },
+    {
+      "name": "country reveal and switch",
+      "reduced": true,
+      "width": 390,
+      "samples": [
+        {
+          "time": 35.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 106.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 113.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 130.29999995231628,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 147.20000004768372,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 163.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 180.70000004768372,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 196.79999995231628,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 213.20000004768372,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 230.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 247.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 263.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 280,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 296.7000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 313.7000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 330.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 346.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 362.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 380.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 397.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 413.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 430.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 447.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 463.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 480.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 496.7000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 513,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 530.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 546.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 563.7000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 579.8999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 597.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 612.8999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 631.6000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 646.7000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 662.8999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "switched": [
+        {
+          "time": 26.300000071525574,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 98.30000007152557,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 110,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 125.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 142.80000007152557,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 158.90000009536743,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 175.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 193,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 210.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 226.30000007152557,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 242.70000004768372,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 259.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 275.90000009536743,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 292.2000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 309.90000009536743,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 325.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 342.8000000715256,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 359.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 375.90000009536743,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 392.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 410.8000000715256,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 425.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 443,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 459.2000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 475.3000000715256,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 493,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 509.3000000715256,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 526.2000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 542.4000000953674,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 560,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 575.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 593.6000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 609.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 625.6000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 642.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 659.2000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "cardRetained": true,
+      "openFocusRetained": true,
+      "globeRetained": true
+    },
+    {
+      "name": "question handoff",
+      "width": 320,
+      "reduced": false,
+      "scrollRetained": true,
+      "globeRetained": null,
+      "samples": [
+        {
+          "time": 28.600000023841858,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 31.100000023841858,
+          "lesson-prompt-arrival": "matrix(0.981354, 0, 0, 0.981354, 0, 7.45836)",
+          "lesson-options-arrival": "matrix(0.981354, 0, 0, 0.981354, 0, 7.45836)"
+        },
+        {
+          "time": 43.5,
+          "lesson-prompt-arrival": "matrix(0.98265, 0, 0, 0.98265, 0, 6.93981)",
+          "lesson-options-arrival": "matrix(0.98265, 0, 0, 0.98265, 0, 6.93981)"
+        },
+        {
+          "time": 60.200000047683716,
+          "lesson-prompt-arrival": "matrix(0.987283, 0, 0, 0.987283, 0, 5.0868)",
+          "lesson-options-arrival": "matrix(0.987283, 0, 0, 0.987283, 0, 5.0868)"
+        },
+        {
+          "time": 75.89999997615814,
+          "lesson-prompt-arrival": "matrix(0.992447, 0, 0, 0.992447, 0, 3.02108)",
+          "lesson-options-arrival": "matrix(0.992447, 0, 0, 0.992447, 0, 3.02108)"
+        },
+        {
+          "time": 93.80000007152557,
+          "lesson-prompt-arrival": "matrix(0.995798, 0, 0, 0.995798, 0, 1.68073)",
+          "lesson-options-arrival": "matrix(0.995985, 0, 0, 0.995985, 0, 1.60589)"
+        },
+        {
+          "time": 110.10000002384186,
+          "lesson-prompt-arrival": "matrix(0.998546, 0, 0, 0.998546, 0, 0.581601)",
+          "lesson-options-arrival": "matrix(0.998546, 0, 0, 0.998546, 0, 0.581601)"
+        },
+        {
+          "time": 127,
+          "lesson-prompt-arrival": "matrix(1.00009, 0, 0, 1.00009, 0, -0.0340449)",
+          "lesson-options-arrival": "matrix(1.00009, 0, 0, 1.00009, 0, -0.0340449)"
+        },
+        {
+          "time": 143.70000004768372,
+          "lesson-prompt-arrival": "matrix(1.00082, 0, 0, 1.00082, 0, -0.327985)",
+          "lesson-options-arrival": "matrix(1.00082, 0, 0, 1.00082, 0, -0.327985)"
+        },
+        {
+          "time": 159.89999997615814,
+          "lesson-prompt-arrival": "matrix(1.00097, 0, 0, 1.00097, 0, -0.388618)",
+          "lesson-options-arrival": "matrix(1.00097, 0, 0, 1.00097, 0, -0.388618)"
+        },
+        {
+          "time": 177,
+          "lesson-prompt-arrival": "matrix(1.00077, 0, 0, 1.00077, 0, -0.30625)",
+          "lesson-options-arrival": "matrix(1.00077, 0, 0, 1.00077, 0, -0.30625)"
+        },
+        {
+          "time": 194.5,
+          "lesson-prompt-arrival": "matrix(1.00039, 0, 0, 1.00039, 0, -0.157875)",
+          "lesson-options-arrival": "matrix(1.00039, 0, 0, 1.00039, 0, -0.157875)"
+        },
+        {
+          "time": 209.10000002384186,
+          "lesson-prompt-arrival": "matrix(1.00008, 0, 0, 1.00008, 0, -0.0304326)",
+          "lesson-options-arrival": "matrix(1.00008, 0, 0, 1.00008, 0, -0.0304326)"
+        },
+        {
+          "time": 226.10000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 243.70000004768372,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 260.2000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 277.10000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 293,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 310.8000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 327.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 343,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 359.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 376.2000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 392.89999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 410.2000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 426.10000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 442.3000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 459.60000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 475.89999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 493.2000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 509.7000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 526.7000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 542.8000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 559.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 575.8000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 592.8999999761581,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 610.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 626,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 643.3999999761581,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 659.8000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "noReplayOnSelection": true
+    },
+    {
+      "name": "country reveal and switch",
+      "reduced": false,
+      "width": 320,
+      "samples": [
+        {
+          "time": 31.199999928474426,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 99.29999995231628,
+          "explore-atlas-card": "matrix(0.98265, 0, 0, 0.98265, 0, 6.93981)"
+        },
+        {
+          "time": 102.89999997615814,
+          "explore-atlas-card": "matrix(0.999195, 0, 0, 0.999195, 0, 0.322129)"
+        },
+        {
+          "time": 157,
+          "explore-atlas-card": "matrix(0.999561, 0, 0, 0.999561, 0, 0.175541)"
+        },
+        {
+          "time": 210.09999990463257,
+          "explore-atlas-card": "matrix(1.00082, 0, 0, 1.00082, 0, -0.328059)"
+        },
+        {
+          "time": 260.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 312.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 358,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 400.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 441.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 481.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 522.5999999046326,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 562.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 564.8999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 581.0999999046326,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 597.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 614.8999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 631.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 648.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 664.0999999046326,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "switched": [
+        {
+          "time": 27.700000047683716,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 73.20000004768372,
+          "explore-atlas-card": "matrix(0.981793, 0, 0, 0.981793, 0, 7.28297)"
+        },
+        {
+          "time": 77.70000004768372,
+          "explore-atlas-card": "matrix(0.995607, 0, 0, 0.995607, 0, 1.7573)"
+        },
+        {
+          "time": 119.5,
+          "explore-atlas-card": "matrix(0.996521, 0, 0, 0.996521, 0, 1.3916)"
+        },
+        {
+          "time": 160.79999995231628,
+          "explore-atlas-card": "matrix(1.00064, 0, 0, 1.00064, 0, -0.255526)"
+        },
+        {
+          "time": 203,
+          "explore-atlas-card": "matrix(1.00073, 0, 0, 1.00073, 0, -0.290539)"
+        },
+        {
+          "time": 246.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, -0.000281001)"
+        },
+        {
+          "time": 292.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 337.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 381.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 425.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 467.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 510.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 551.7000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 560.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 576.2000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 594.7000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 610.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 626.2000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 643.7000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 660,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "cardRetained": true,
+      "openFocusRetained": true,
+      "globeRetained": true
+    },
+    {
+      "name": "question handoff",
+      "width": 320,
+      "reduced": true,
+      "scrollRetained": true,
+      "globeRetained": null,
+      "samples": [
+        {
+          "time": 0.20000004768371582,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 7.200000047683716,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 32.60000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 41.40000009536743,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 57.60000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 74.30000007152557,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 90.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 108.30000007152557,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 124.60000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 141.40000009536743,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 158.30000007152557,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 175.20000004768372,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 191.30000007152557,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 207.20000004768372,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 224.30000007152557,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 240.70000004768372,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 257.2000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 274.2000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 291.90000009536743,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 307.2000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 324.90000009536743,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 340.90000009536743,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 358.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 374.7000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 390.7000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 408.40000009536743,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 424.2000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 441.40000009536743,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 457.40000009536743,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 474.10000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 492.10000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 507.2000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 524.3000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 541.1000000238419,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 557.4000000953674,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 575.2000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 590.9000000953674,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 607.9000000953674,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 624.7000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 641.1000000238419,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 657.6000000238419,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "noReplayOnSelection": true
+    },
+    {
+      "name": "country reveal and switch",
+      "reduced": true,
+      "width": 320,
+      "samples": [
+        {
+          "time": 28,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 77.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 81.19999992847443,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 97.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 114.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 131.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 148.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 164.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 181.29999995231628,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 198,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 214.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 231.19999992847443,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 248,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 264.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 281.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 297.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 313.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 331.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 347.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 364.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 380.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 396.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 414.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 431.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 447.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 463.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 482,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 497.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 514.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 530.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 547.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 563.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 580.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 598.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 613.8999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 631.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 648.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 663.6000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "switched": [
+        {
+          "time": 24.299999952316284,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 70.29999995231628,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 77,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 92.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 110.20000004768372,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 126.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 144.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 159.29999995231628,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 176,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 193.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 210.29999995231628,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 226.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 243.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 260,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 276.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 292.7000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 309.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 326.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 343.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 359.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 376.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 392.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 409.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 426.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 443.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 460.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 477,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 494,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 510.2000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 526.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 542.8999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 559.8999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 576,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 592.6000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 609.7000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 626.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 642.6000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 659.3999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "cardRetained": true,
+      "openFocusRetained": true,
+      "globeRetained": true
+    },
+    {
+      "name": "question handoff",
+      "width": 768,
+      "reduced": false,
+      "scrollRetained": true,
+      "globeRetained": null,
+      "samples": [
+        {
+          "time": 16,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 48.10000002384186,
+          "lesson-prompt-arrival": "matrix(0.98, 0, 0, 0.98, 0, 8)",
+          "lesson-options-arrival": "matrix(0.98, 0, 0, 0.98, 0, 8)"
+        },
+        {
+          "time": 49.90000009536743,
+          "lesson-prompt-arrival": "matrix(0.982225, 0, 0, 0.982225, 0, 7.11013)",
+          "lesson-options-arrival": "matrix(0.982225, 0, 0, 0.982225, 0, 7.11013)"
+        },
+        {
+          "time": 64.80000007152557,
+          "lesson-prompt-arrival": "matrix(0.98307, 0, 0, 0.98307, 0, 6.772)",
+          "lesson-options-arrival": "matrix(0.98307, 0, 0, 0.98307, 0, 6.772)"
+        },
+        {
+          "time": 81.70000004768372,
+          "lesson-prompt-arrival": "matrix(0.988639, 0, 0, 0.988639, 0, 4.5442)",
+          "lesson-options-arrival": "matrix(0.988639, 0, 0, 0.988639, 0, 4.5442)"
+        },
+        {
+          "time": 98.40000009536743,
+          "lesson-prompt-arrival": "matrix(0.993445, 0, 0, 0.993445, 0, 2.62216)",
+          "lesson-options-arrival": "matrix(0.993445, 0, 0, 0.993445, 0, 2.62216)"
+        },
+        {
+          "time": 115.70000004768372,
+          "lesson-prompt-arrival": "matrix(0.996691, 0, 0, 0.996691, 0, 1.32352)",
+          "lesson-options-arrival": "matrix(0.996691, 0, 0, 0.996691, 0, 1.32352)"
+        },
+        {
+          "time": 131.90000009536743,
+          "lesson-prompt-arrival": "matrix(0.999095, 0, 0, 0.999095, 0, 0.362002)",
+          "lesson-options-arrival": "matrix(0.999095, 0, 0, 0.999095, 0, 0.362002)"
+        },
+        {
+          "time": 148.5,
+          "lesson-prompt-arrival": "matrix(1.00032, 0, 0, 1.00032, 0, -0.128929)",
+          "lesson-options-arrival": "matrix(1.00032, 0, 0, 1.00032, 0, -0.128929)"
+        },
+        {
+          "time": 165,
+          "lesson-prompt-arrival": "matrix(1.00088, 0, 0, 1.00088, 0, -0.353009)",
+          "lesson-options-arrival": "matrix(1.0009, 0, 0, 1.0009, 0, -0.359809)"
+        },
+        {
+          "time": 181.5,
+          "lesson-prompt-arrival": "matrix(1.00095, 0, 0, 1.00095, 0, -0.379777)",
+          "lesson-options-arrival": "matrix(1.00095, 0, 0, 1.00095, 0, -0.379777)"
+        },
+        {
+          "time": 198.40000009536743,
+          "lesson-prompt-arrival": "matrix(1.00071, 0, 0, 1.00071, 0, -0.282385)",
+          "lesson-options-arrival": "matrix(1.00069, 0, 0, 1.00069, 0, -0.274056)"
+        },
+        {
+          "time": 214.40000009536743,
+          "lesson-prompt-arrival": "matrix(1.00033, 0, 0, 1.00033, 0, -0.131387)",
+          "lesson-options-arrival": "matrix(1.00031, 0, 0, 1.00031, 0, -0.122785)"
+        },
+        {
+          "time": 231.80000007152557,
+          "lesson-prompt-arrival": "matrix(1.00005, 0, 0, 1.00005, 0, -0.02085)",
+          "lesson-options-arrival": "matrix(1.00004, 0, 0, 1.00004, 0, -0.0166628)"
+        },
+        {
+          "time": 249,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 265.60000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 281.7000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 298.8000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 315.2000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 331.3000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 348.40000009536743,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 364.8000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 381.7000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 398.40000009536743,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 414.8000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 431.90000009536743,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 449.10000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 466.7000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 482.3000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 498.7000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 515.6000000238419,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 531.2000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 548.4000000953674,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 564.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 581.2000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 598,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 615.3000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 631.9000000953674,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 648.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 664.8000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "noReplayOnSelection": true
+    },
+    {
+      "name": "country reveal and switch",
+      "reduced": false,
+      "width": 768,
+      "samples": [
+        {
+          "time": 37.299999952316284,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 197,
+          "explore-atlas-card": "matrix(0.98265, 0, 0, 0.98265, 0, 6.93981)"
+        },
+        {
+          "time": 202.19999992847443,
+          "explore-atlas-card": "matrix(1.00012, 0, 0, 1.00012, 0, -0.0475616)"
+        },
+        {
+          "time": 335.1999999284744,
+          "explore-atlas-card": "matrix(1.00004, 0, 0, 1.00004, 0, -0.0166628)"
+        },
+        {
+          "time": 472.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 589.3999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 702.3999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "switched": [
+        {
+          "time": 7.200000047683716,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 28.399999976158142,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 151.30000007152557,
+          "explore-atlas-card": "matrix(0.982225, 0, 0, 0.982225, 0, 7.11013)"
+        },
+        {
+          "time": 158.70000004768372,
+          "explore-atlas-card": "matrix(1.00093, 0, 0, 1.00093, 0, -0.372534)"
+        },
+        {
+          "time": 285.5,
+          "explore-atlas-card": "matrix(1.00082, 0, 0, 1.00082, 0, -0.328059)"
+        },
+        {
+          "time": 402.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 522.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 643.3000000715256,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 756.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "cardRetained": true,
+      "openFocusRetained": true,
+      "globeRetained": true
+    },
+    {
+      "name": "question handoff",
+      "width": 768,
+      "reduced": true,
+      "scrollRetained": true,
+      "globeRetained": null,
+      "samples": [
+        {
+          "time": 0.10000002384185791,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 5.399999976158142,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 30.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 39.299999952316284,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 55.39999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 72,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 88.10000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 105.39999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 123,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 138,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 155.79999995231628,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 172.39999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 189.70000004768372,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 205.10000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 221.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 238.10000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 256.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 271.7999999523163,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 289.2999999523163,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 306.10000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 322,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 338.89999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 355,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 372,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 388.7999999523163,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 405.7000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 422.2999999523163,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 438.89999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 455.2000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 472.89999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 489.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 505.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 521.8999999761581,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 538.1000000238419,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 555.2000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 572.3999999761581,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 589.6000000238419,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 605.2999999523163,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 621.7999999523163,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 638.2999999523163,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 655.3999999761581,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "noReplayOnSelection": true
+    },
+    {
+      "name": "country reveal and switch",
+      "reduced": true,
+      "width": 768,
+      "samples": [
+        {
+          "time": 33.799999952316284,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 167,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 169,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 180.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 197.69999992847443,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 213.09999990463257,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 230,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 246.59999990463257,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 263.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 279.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 297.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 313.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 330.59999990463257,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 348.59999990463257,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 363.09999990463257,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 379.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 396.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 413.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 430.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 479.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 479.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 496.59999990463257,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 514.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 529.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 547,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 563.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 579.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 596.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 613.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 631.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 647.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 663.3999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "switched": [
+        {
+          "time": 3.799999952316284,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 26,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 146.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 153.29999995231628,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 170.19999992847443,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 186.79999995231628,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 204,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 220.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 237,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 253.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 270.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 286.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 303.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 321.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 337.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 354.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 370.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 386.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 404.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 419.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 436.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 454.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 470.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 487.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 504.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 521.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 538.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 554.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 570.3999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 586.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 603.6000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 620.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 636.6000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 653.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "cardRetained": true,
+      "openFocusRetained": true,
+      "globeRetained": true
+    },
+    {
+      "name": "question handoff",
+      "width": 390,
+      "reduced": false,
+      "scrollRetained": true,
+      "globeRetained": null,
+      "samples": [
+        {
+          "time": 4.899999976158142,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 37.800000071525574,
+          "lesson-prompt-arrival": "matrix(0.98, 0, 0, 0.98, 0, 8)",
+          "lesson-options-arrival": "matrix(0.98, 0, 0, 0.98, 0, 8)"
+        },
+        {
+          "time": 39.300000071525574,
+          "lesson-prompt-arrival": "matrix(0.981793, 0, 0, 0.981793, 0, 7.28297)",
+          "lesson-options-arrival": "matrix(0.981793, 0, 0, 0.981793, 0, 7.28297)"
+        },
+        {
+          "time": 55.200000047683716,
+          "lesson-prompt-arrival": "matrix(0.982225, 0, 0, 0.982225, 0, 7.11013)",
+          "lesson-options-arrival": "matrix(0.982225, 0, 0, 0.982225, 0, 7.11013)"
+        },
+        {
+          "time": 71.10000002384186,
+          "lesson-prompt-arrival": "matrix(0.988309, 0, 0, 0.988309, 0, 4.67647)",
+          "lesson-options-arrival": "matrix(0.988309, 0, 0, 0.988309, 0, 4.67647)"
+        },
+        {
+          "time": 88.20000004768372,
+          "lesson-prompt-arrival": "matrix(0.992956, 0, 0, 0.992956, 0, 2.8177)",
+          "lesson-options-arrival": "matrix(0.992956, 0, 0, 0.992956, 0, 2.8177)"
+        },
+        {
+          "time": 104.80000007152557,
+          "lesson-prompt-arrival": "matrix(0.996521, 0, 0, 0.996521, 0, 1.3916)",
+          "lesson-options-arrival": "matrix(0.996521, 0, 0, 0.996521, 0, 1.3916)"
+        },
+        {
+          "time": 121.10000002384186,
+          "lesson-prompt-arrival": "matrix(0.998886, 0, 0, 0.998886, 0, 0.445741)",
+          "lesson-options-arrival": "matrix(0.998886, 0, 0, 0.998886, 0, 0.445741)"
+        },
+        {
+          "time": 138.39999997615814,
+          "lesson-prompt-arrival": "matrix(1.00021, 0, 0, 1.00021, 0, -0.0836426)",
+          "lesson-options-arrival": "matrix(1.00021, 0, 0, 1.00021, 0, -0.0836426)"
+        },
+        {
+          "time": 155.60000002384186,
+          "lesson-prompt-arrival": "matrix(1.00088, 0, 0, 1.00088, 0, -0.353009)",
+          "lesson-options-arrival": "matrix(1.00088, 0, 0, 1.00088, 0, -0.353009)"
+        },
+        {
+          "time": 171.20000004768372,
+          "lesson-prompt-arrival": "matrix(1.00095, 0, 0, 1.00095, 0, -0.379777)",
+          "lesson-options-arrival": "matrix(1.00095, 0, 0, 1.00095, 0, -0.379777)"
+        },
+        {
+          "time": 187.60000002384186,
+          "lesson-prompt-arrival": "matrix(1.00073, 0, 0, 1.00073, 0, -0.290539)",
+          "lesson-options-arrival": "matrix(1.00073, 0, 0, 1.00073, 0, -0.290539)"
+        },
+        {
+          "time": 205.10000002384186,
+          "lesson-prompt-arrival": "matrix(1.00035, 0, 0, 1.00035, 0, -0.140115)",
+          "lesson-options-arrival": "matrix(1.00035, 0, 0, 1.00035, 0, -0.140115)"
+        },
+        {
+          "time": 221.80000007152557,
+          "lesson-prompt-arrival": "matrix(1.00005, 0, 0, 1.00005, 0, -0.02085)",
+          "lesson-options-arrival": "matrix(1.00005, 0, 0, 1.00005, 0, -0.02085)"
+        },
+        {
+          "time": 239,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 254.89999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 271.10000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 287.89999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 305.10000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 321.3000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 338,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 355.10000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 371.39999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 387.7000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 405.39999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 421.3000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 437.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 455.10000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 471.39999997615814,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 487.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 504.60000002384186,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 521.8000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 538.3000000715256,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 554.5,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 571.6000000238419,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 587.7000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 604.7000000476837,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 621.6000000238419,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 638.6000000238419,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 655,
+          "lesson-prompt-arrival": "matrix(1, 0, 0, 1, 0, 0)",
+          "lesson-options-arrival": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "noReplayOnSelection": true
+    },
+    {
+      "name": "country reveal and switch",
+      "reduced": false,
+      "width": 390,
+      "samples": [
+        {
+          "time": 34.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 92,
+          "explore-atlas-card": "matrix(0.98265, 0, 0, 0.98265, 0, 6.93981)"
+        },
+        {
+          "time": 95.5,
+          "explore-atlas-card": "matrix(0.997909, 0, 0, 0.997909, 0, 0.83655)"
+        },
+        {
+          "time": 126.10000002384186,
+          "explore-atlas-card": "matrix(0.998426, 0, 0, 0.998426, 0, 0.629692)"
+        },
+        {
+          "time": 156.19999992847443,
+          "explore-atlas-card": "matrix(1.00067, 0, 0, 1.00067, 0, -0.269796)"
+        },
+        {
+          "time": 188.10000002384186,
+          "explore-atlas-card": "matrix(1.0009, 0, 0, 1.0009, 0, -0.358542)"
+        },
+        {
+          "time": 220.10000002384186,
+          "explore-atlas-card": "matrix(1.00024, 0, 0, 1.00024, 0, -0.0979093)"
+        },
+        {
+          "time": 248.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 278,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 304.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 330,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 355.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 378.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 401.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 426.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 450.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 472.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 492.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 496.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 512.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 528.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 545.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 561.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 578.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 595.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 612,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 628.6000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 644.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 662.3999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "switched": [
+        {
+          "time": 21.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 47,
+          "explore-atlas-card": "matrix(0.981354, 0, 0, 0.981354, 0, 7.45836)"
+        },
+        {
+          "time": 51.300000071525574,
+          "explore-atlas-card": "matrix(0.99021, 0, 0, 0.99021, 0, 3.91595)"
+        },
+        {
+          "time": 75.80000007152557,
+          "explore-atlas-card": "matrix(0.99137, 0, 0, 0.99137, 0, 3.45197)"
+        },
+        {
+          "time": 100.20000004768372,
+          "explore-atlas-card": "matrix(0.996857, 0, 0, 0.996857, 0, 1.25708)"
+        },
+        {
+          "time": 125.89999997615814,
+          "explore-atlas-card": "matrix(0.999726, 0, 0, 0.999726, 0, 0.109739)"
+        },
+        {
+          "time": 149.70000004768372,
+          "explore-atlas-card": "matrix(1.0009, 0, 0, 1.0009, 0, -0.359809)"
+        },
+        {
+          "time": 176.89999997615814,
+          "explore-atlas-card": "matrix(1.00085, 0, 0, 1.00085, 0, -0.341221)"
+        },
+        {
+          "time": 202.10000002384186,
+          "explore-atlas-card": "matrix(1.00029, 0, 0, 1.00029, 0, -0.114326)"
+        },
+        {
+          "time": 225.80000007152557,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 251.80000007152557,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 280,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 307.7000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 334.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 362.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 388.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 414.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 443.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 472.8000000715256,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 496.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 503.3000000715256,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 514.7000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 532.6000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 548.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 565.3000000715256,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 581.7000000476837,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 598,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 614.6000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 631,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 647.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 664.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "cardRetained": true,
+      "openFocusRetained": true,
+      "globeRetained": true
+    },
+    {
+      "name": "country reveal and switch",
+      "reduced": true,
+      "width": 320,
+      "samples": [
+        {
+          "time": 13.5,
+          "explore-atlas-card": null
+        },
+        {
+          "time": 49.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 106.79999995231628,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 111.79999995231628,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 128.29999995231628,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 145.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 161.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 179.19999992847443,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 195.29999995231628,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 211.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 228.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 244.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 261.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 279,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 294.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 312.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 328.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 344.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 362.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 378.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 395.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 411.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 428,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 444.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 462.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 479.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 494.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 511.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 529.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 545.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 561.6000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 578.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 595.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 612,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 628.8999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 644.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 661.3999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "switched": [
+        {
+          "time": 11.199999928474426,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 36.799999952316284,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 83.19999992847443,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 94.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 111.69999992847443,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 128.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 144.89999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 161.69999992847443,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 178.69999992847443,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 195.69999992847443,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 211.79999995231628,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 228.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 245.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 262,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 278.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 295.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 311.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 328.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 345.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 361.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 378.10000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 394.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 411.60000002384186,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 427.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 445.1999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 461.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 478.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 495.7999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 511.39999997615814,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 527.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 544.3999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 561.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 577.6999999284744,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 595.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 611.1000000238419,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 628.2999999523163,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 644.5,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "time": 661.8999999761581,
+          "explore-atlas-card": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      ],
+      "cardRetained": true,
+      "openFocusRetained": true,
+      "globeRetained": true
+    }
+  ],
+  "errors": []
+}

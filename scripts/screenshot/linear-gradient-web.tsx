@@ -1,5 +1,5 @@
 /**
- * `expo-linear-gradient`, for the screenshot renderer only.
+ * `expo-linear-gradient`, for screenshot rendering and component tests.
  *
  * The real module is native, so the renderer would otherwise take `Card`'s flat
  * fallback — and the screenshots would show flat cards while the app shows gradients.
@@ -7,7 +7,8 @@
  * it is a review artefact that quietly lies.
  *
  * This maps the same props onto a CSS gradient. It is aliased in ONLY by the
- * screenshot build (`--alias:expo-linear-gradient=...`), so nothing ships with it.
+ * screenshot build and Vitest, so nothing ships with it. Real browser reviews use
+ * Expo's exported implementation rather than this harness adapter.
  */
 
 import { View, type StyleProp, type ViewStyle } from 'react-native'

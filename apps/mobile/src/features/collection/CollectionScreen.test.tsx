@@ -70,6 +70,15 @@ describe('Collection — the tiles', () => {
 })
 
 describe('Collection — search', () => {
+  it('recovers from an empty search and filter together', () => {
+    renderCollection()
+    fireEvent.click(chip('Collected'))
+    fireEvent.change(screen.getByLabelText('Search countries…'), { target: { value: 'zzz' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Browse countries' }))
+    expect(screen.getByLabelText('Search countries…').getAttribute('value')).toBe('')
+    expect(chip('All').getAttribute('aria-checked')).toBe('true')
+    expect(screen.getByText('Japan')).toBeTruthy()
+  })
   it('is diacritic-insensitive, because nobody types the circumflex', () => {
     renderCollection()
     fireEvent.change(screen.getByLabelText('Search countries…'), { target: { value: 'cote' } })

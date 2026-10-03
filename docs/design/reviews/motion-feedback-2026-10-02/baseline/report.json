@@ -1,0 +1,201 @@
+{
+  "fixture": true,
+  "description": "Actual TabBar, AnswerOption, ProgressBar, QuestTreasureCard and PairsBoard. Explicit local presentation values, no account state or reward storage. Hardware haptics stubbed. Accessible cases combine native fontScale=2 and measured doubled glyphs with the production tab label scaling cap.",
+  "layouts": [],
+  "interactions": [
+    {
+      "name": "picture layout at 320",
+      "accessible": false,
+      "overflow": {
+        "text": [],
+        "page": false
+      },
+      "bounds": []
+    },
+    {
+      "name": "picture layout at 320",
+      "accessible": true,
+      "overflow": {
+        "text": [],
+        "page": false
+      },
+      "bounds": []
+    },
+    {
+      "name": "pairs layout at 320",
+      "accessible": false,
+      "overflow": {
+        "text": [],
+        "page": false
+      },
+      "bounds": [
+        {
+          "text": "Stockholm",
+          "target": {
+            "x": 166,
+            "width": 138,
+            "height": 56,
+            "minWidth": "0px",
+            "flex": "0 0 auto"
+          },
+          "face": {
+            "x": 184,
+            "width": 102,
+            "height": 24,
+            "minWidth": "auto",
+            "flex": "1 1 0%"
+          },
+          "label": null
+        },
+        {
+          "text": "Oslo",
+          "target": {
+            "x": 166,
+            "width": 138,
+            "height": 56,
+            "minWidth": "0px",
+            "flex": "0 0 auto"
+          },
+          "face": {
+            "x": 184,
+            "width": 102,
+            "height": 24,
+            "minWidth": "auto",
+            "flex": "1 1 0%"
+          },
+          "label": null
+        },
+        {
+          "text": "Copenhagen",
+          "target": {
+            "x": 166,
+            "width": 138,
+            "height": 56,
+            "minWidth": "0px",
+            "flex": "0 0 auto"
+          },
+          "face": {
+            "x": 184,
+            "width": 102,
+            "height": 24,
+            "minWidth": "auto",
+            "flex": "1 1 0%"
+          },
+          "label": null
+        },
+        {
+          "text": "Helsinki",
+          "target": {
+            "x": 166,
+            "width": 138,
+            "height": 56,
+            "minWidth": "0px",
+            "flex": "0 0 auto"
+          },
+          "face": {
+            "x": 184,
+            "width": 102,
+            "height": 24,
+            "minWidth": "auto",
+            "flex": "1 1 0%"
+          },
+          "label": null
+        }
+      ]
+    },
+    {
+      "name": "pairs layout at 320",
+      "accessible": true,
+      "overflow": {
+        "text": [
+          "Stockholm",
+          "Köpenhamn",
+          "Helsingfors"
+        ],
+        "page": true
+      },
+      "bounds": [
+        {
+          "text": "Stockholm",
+          "target": {
+            "x": 166,
+            "width": 138,
+            "height": 76,
+            "minWidth": "0px",
+            "flex": "0 0 auto"
+          },
+          "face": {
+            "x": 184,
+            "width": 154.890625,
+            "height": 48,
+            "minWidth": "auto",
+            "flex": "1 1 0%"
+          },
+          "label": null
+        },
+        {
+          "text": "Oslo",
+          "target": {
+            "x": 166,
+            "width": 138,
+            "height": 76,
+            "minWidth": "0px",
+            "flex": "0 0 auto"
+          },
+          "face": {
+            "x": 184,
+            "width": 102,
+            "height": 48,
+            "minWidth": "auto",
+            "flex": "1 1 0%"
+          },
+          "label": null
+        },
+        {
+          "text": "Köpenhamn",
+          "target": {
+            "x": 166,
+            "width": 138,
+            "height": 76,
+            "minWidth": "0px",
+            "flex": "0 0 auto"
+          },
+          "face": {
+            "x": 184,
+            "width": 174.5625,
+            "height": 48,
+            "minWidth": "auto",
+            "flex": "1 1 0%"
+          },
+          "label": null
+        },
+        {
+          "text": "Helsingfors",
+          "target": {
+            "x": 166,
+            "width": 138,
+            "height": 76,
+            "minWidth": "0px",
+            "flex": "0 0 auto"
+          },
+          "face": {
+            "x": 184,
+            "width": 168.078125,
+            "height": 48,
+            "minWidth": "auto",
+            "flex": "1 1 0%"
+          },
+          "label": null
+        }
+      ]
+    },
+    {
+      "name": "baseline with local DOM-only minWidth=0 trial",
+      "overflow": {
+        "text": [],
+        "page": false
+      }
+    }
+  ],
+  "errors": []
+}

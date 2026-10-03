@@ -26,6 +26,7 @@ import {
 import {
   AnswerOption,
   Button,
+  ClaySurface,
   layout,
   ProgressBar,
   radius,
@@ -90,6 +91,7 @@ import { Icon } from '../../components/Icon.js'
 import { Stat } from '../../components/Stat.js'
 import { EarnedReward } from './EarnedReward.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
+import { SceneEntrance } from '../../components/SceneEntrance.js'
 
 type ScreenState = 'loading' | 'error' | 'empty' | 'offline-start' | 'ready'
 
@@ -855,6 +857,9 @@ export function LessonScreen({
 
   const question = lesson.question
   if (!question) return <LoadingState />
+  // Replay only for a new question, including a repeated item in review. The atlas
+  // stays outside these entrances so its GL context and camera survive the change.
+  const questionScene = `${lesson.state.lessonId}:${lesson.state.index}`
 
   const answered = lesson.state.phase === 'answered'
 
@@ -1026,15 +1031,19 @@ export function LessonScreen({
           <Text style={[styles.reviewTag, styles.newTag]}>{t('lesson:new.tag')}</Text>
         )}
         {!showBoard && !boardSettled && (
-        <Text style={styles.prompt} role="heading">
-          {/* The prompt key and its params come from the question template in the
-              content pack, so they are validated by `pnpm content:validate` rather
-              than by the compiler. */}
-          {tContent(question.promptKey, question.promptParams)}
-        </Text>
+          <SceneEntrance replayKey={questionScene} testID="lesson-prompt-arrival">
+            <Text style={styles.prompt} role="heading">
+              {/* The prompt key and its params come from the question template in the
+                  content pack, so they are validated by `pnpm content:validate` rather
+                  than by the compiler. */}
+              {tContent(question.promptKey, question.promptParams)}
+            </Text>
+          </SceneEntrance>
         )}
         {showBoard && boardMembers !== null && (
-          <PairsBoard key={boardMembers[0]!.item.id} members={boardMembers} onDone={lesson.answerGroup} />
+          <SceneEntrance replayKey={questionScene} testID="lesson-board-arrival">
+            <PairsBoard key={boardMembers[0]!.item.id} members={boardMembers} onDone={lesson.answerGroup} />
+          </SceneEntrance>
         )}
 
         {/* The picture the prompt is asking about — "Which country's flag is this?".
@@ -1049,13 +1058,13 @@ export function LessonScreen({
             unlabelled image, and the label is what makes that true rather than
             assumed. */}
         {question.promptAsset !== undefined && (
-          <View style={styles.promptArt} testID="prompt-art">
+          <SceneEntrance replayKey={questionScene} style={styles.promptArt} testID="prompt-art">
             <Flag
               path={question.promptAsset}
               width={compact ? 180 : FLAG_PROMPT_WIDTH}
               label={tContent(question.promptKey, question.promptParams)}
             />
-          </View>
+          </SceneEntrance>
         )}
 
         {/* Where in the world you are, beside the question.
@@ -1081,7 +1090,7 @@ export function LessonScreen({
                 still given with the options below — the map selects nothing. */}
             <LessonAtlas
               question={question}
-              sceneKey={`${lesson.state.lessonId}:${lesson.state.index}`}
+              sceneKey={questionScene}
               index={index?.index}
               selected={lesson.state.selectedOptionId !== null}
               answered={answered}
@@ -1098,7 +1107,9 @@ export function LessonScreen({
         )}
 
         {!showBoard && !boardSettled && (
-        <View
+        <SceneEntrance
+          replayKey={questionScene}
+          testID="lesson-options-arrival"
           /**
            * A 2x2 grid when the answers are pictures, a column when they are words.
            *
@@ -1223,7 +1234,7 @@ export function LessonScreen({
             />
             )
           })}
-        </View>
+        </SceneEntrance>
         )}
 
         {checkInScroll && !answered && !showBoard && checkButton}
@@ -1297,6 +1308,7 @@ export function LessonScreen({
               ]}
               testID="answer-sheet"
             >
+              <ClaySurface transparent radius={radius.lg} />
               {/* The thing the question was ABOUT, now that it can be shown.
 
                   "Hur ser Japans flagga ut?" is asked in words and answered in words,

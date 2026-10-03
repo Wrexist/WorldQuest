@@ -7,8 +7,9 @@
  * be somewhere React Native for web actually runs.
  */
 
-import { describe, expect, it } from 'vitest'
-import { render } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+import { act, fireEvent, render } from '@testing-library/react'
+import { AppState, type AppStateStatus } from 'react-native'
 import { AnswerOption } from '@worldquest/design'
 
 const FLAG = <img src="flags/SE.png" alt="" data-testid="art" />
@@ -16,6 +17,7 @@ const FLAG = <img src="flags/SE.png" alt="" data-testid="art" />
 /** The card itself — the row that lays the badge, the answer and the mark out. */
 const card = (container: HTMLElement): HTMLElement =>
   container.querySelector('[role="button"]') as HTMLElement
+const face = (container: HTMLElement): HTMLElement => card(container).firstElementChild as HTMLElement
 
 describe('AnswerOption with a picture for an answer', () => {
   it('does not move the artwork when the mark appears', () => {
@@ -30,7 +32,7 @@ describe('AnswerOption with a picture for an answer', () => {
     const idle = render(
       <AnswerOption label="Sweden" art={FLAG} badge="A" state="idle" onPress={() => {}} />,
     )
-    const before = card(idle.container).childElementCount
+    const before = face(idle.container).childElementCount
 
     const answered = render(
       <AnswerOption
@@ -42,7 +44,7 @@ describe('AnswerOption with a picture for an answer', () => {
         onPress={() => {}}
       />,
     )
-    expect(card(answered.container).childElementCount).toBe(before)
+    expect(face(answered.container).childElementCount).toBe(before)
   })
 
   it('puts the mark inside the artwork rather than beside it', () => {
@@ -92,5 +94,64 @@ describe('AnswerOption with a picture for an answer', () => {
       />,
     )
     expect(getByTestId('mark')).toBeTruthy()
+  })
+})
+
+describe('AnswerOption press feedback', () => {
+  it('keeps the target still and activates immediately through repeated keyboard presses', () => {
+    const onPress = vi.fn()
+    const { container } = render(<AnswerOption label="Sweden" onPress={onPress} />)
+    const target = card(container)
+    target.focus()
+    for (let press = 0; press < 2; press++) {
+      fireEvent.keyDown(target, { key: ' ' })
+      expect(target.style.transform).toBe('')
+      // Reduced motion still acknowledges the press, while the face stays at rest.
+      expect(getComputedStyle(face(container)).opacity).toBe('0.7')
+      expect(face(container).style.transform).toBe('scale(1)')
+      fireEvent.keyUp(target, { key: ' ' })
+      // The native HTML button receives a browser click after keyboard activation.
+      fireEvent.click(target)
+      expect(onPress).toHaveBeenCalledTimes(press + 1)
+      expect(getComputedStyle(face(container)).opacity).not.toBe('0.7')
+    }
+  })
+
+  it('preserves the picture-grid width and disables a matched answer without another action', () => {
+    const onPress = vi.fn()
+    const { container, rerender } = render(<AnswerOption label="Sweden" art={FLAG} style={{ width: '48%' }} onPress={onPress} />)
+    expect(card(container).style.width).toBe('48%')
+    expect(face(container).style.width).toBe('')
+    rerender(<AnswerOption label="Sweden, matched" state="correct" art={FLAG} style={{ width: '48%' }} onPress={onPress} />)
+    fireEvent.click(card(container))
+    expect(onPress).not.toHaveBeenCalled()
+    expect(card(container).getAttribute('aria-disabled')).toBe('true')
+    expect(face(container).style.transform).toBe('scale(1)')
+  })
+
+  it('releases a held press when the app backgrounds without a pointer release', () => {
+    const listeners = new Set<(state: AppStateStatus) => void>()
+    const subscription = vi.spyOn(AppState, 'addEventListener').mockImplementation((_event, callback) => {
+      listeners.add(callback)
+      return { remove: () => { listeners.delete(callback) } }
+    })
+    try {
+      const onPress = vi.fn()
+      const view = render(<AnswerOption label="Sweden" onPress={onPress} />)
+      const target = card(view.container)
+      target.focus()
+      fireEvent.keyDown(target, { key: ' ' })
+      expect(getComputedStyle(face(view.container)).opacity).toBe('0.7')
+      act(() => { [...listeners].forEach(listener => listener('background')) })
+      expect(getComputedStyle(face(view.container)).opacity).not.toBe('0.7')
+      expect(face(view.container).style.transform).toBe('scale(1)')
+      act(() => { [...listeners].forEach(listener => listener('active')) })
+      expect(getComputedStyle(face(view.container)).opacity).not.toBe('0.7')
+      expect(onPress).not.toHaveBeenCalled()
+      view.unmount()
+      expect(listeners.size).toBe(0)
+    } finally {
+      subscription.mockRestore()
+    }
   })
 })

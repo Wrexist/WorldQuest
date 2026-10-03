@@ -33,11 +33,12 @@ import { createThemeStyles } from '@worldquest/design'
  * which is the same argument `QuestScreen` records for the same reasons.
  */
 
-import { StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Button, Card, radius, space, squircle, text } from '@worldquest/design'
 import { BALANCE, questProgress, type DailyQuest } from '@worldquest/engines'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
+import { ExplorerChestStill } from '../../components/ExplorerChestArt.js'
 import { Icon } from '../../components/Icon.js'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { Stat } from '../../components/Stat.js'
@@ -55,11 +56,8 @@ export type QuestIntroProps = {
 /**
  * The hero.
  *
- * The reference draws an open chest spilling gems and coins. There is no chest master —
- * `docs/design/asset-prompts.md` briefs no treasure, and this repo does not invent
- * artwork — so the picture is the one the quest already owns: Atlas, thinking, which is
- * the pose `QuestScreen` uses for the same subject two taps away. Matching it matters
- * more than choosing it.
+ * Atlas and today's expedition chest. The chest stays closed while there are tasks
+ * left: this is an invitation to explore, not a reward receipt or a claim action.
  */
 const HERO = 168
 
@@ -75,9 +73,10 @@ export function QuestIntro({ quest, onStart, onClose, resetsIn }: QuestIntroProp
           draw — and a back chevron that goes nowhere is worse than none. */}
       {onClose !== undefined && <ScreenHeader title={t('quests:intro.title')} onBack={onClose} />}
 
-      <View style={styles.body}>
-        <View pointerEvents="none">
-          <Art name="atlas/thinking" size={HERO} />
+      <ScrollView contentContainerStyle={styles.body}>
+        <View pointerEvents="none" style={styles.hero}>
+          <Art name="atlas/thinking" size={88} />
+          <ExplorerChestStill size={HERO} opened={quest?.complete === true} />
         </View>
 
         <Text style={styles.title} role="heading">
@@ -113,7 +112,7 @@ export function QuestIntro({ quest, onStart, onClose, resetsIn }: QuestIntroProp
             <Text style={styles.resetText}>{t('quests:resets', resetsIn)}</Text>
           </View>
         )}
-      </View>
+      </ScrollView>
 
       <View style={styles.actions}>
         <Button
@@ -160,14 +159,15 @@ function Reward({
 const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
   screen: { flex: 1 },
-  body: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[3], paddingHorizontal: space[5] },
-  title: { ...text('h1'), color: colors.text.primary, textAlign: 'center' },
-  subtitle: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
-  rewards: { flexDirection: 'row', gap: space[3], marginTop: space[2] },
+  body: { flexGrow: 1, alignItems: 'center', justifyContent: 'center', gap: space[3], paddingHorizontal: space[5], paddingVertical: space[4] },
+  hero: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: space[2] },
+  title: { ...text('h1'), color: colors.text.primary, textAlign: 'center', maxWidth: '100%' },
+  subtitle: { ...text('body'), color: colors.text.secondary, textAlign: 'center', maxWidth: '100%' },
+  rewards: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: space[3], marginTop: space[2], maxWidth: '100%' },
   reward: { alignItems: 'center', paddingVertical: space[3], paddingHorizontal: space[4], borderRadius: radius.lg, ...squircle },
   progress: { ...text('bodyStrong', { numeric: true }), color: colors.text.primary },
-  reset: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
-  resetText: { ...text('caption', { numeric: true }), color: colors.text.tertiary },
+  reset: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[2], maxWidth: '100%' },
+  resetText: { ...text('caption', { numeric: true }), color: colors.text.tertiary, flexShrink: 1 },
   actions: { padding: space[4], gap: space[2] },
 })
   return { colors, styles }

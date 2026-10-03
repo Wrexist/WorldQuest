@@ -32,10 +32,15 @@ import { createThemeStyles } from '@worldquest/design'
  * Spec: docs/systems/xp-economy.md · ADR 0011
  */
 
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { useEffect, useRef, useState } from 'react'
+import { I18nManager, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import {
   Button,
   Card,
+  ClaySurface,
+  clayShadow,
+  depth,
+  layout,
   ProgressBar,
   radius,
   space,
@@ -49,6 +54,10 @@ import { TopBar } from '../../components/TopBar.js'
 import { Art } from '../../components/Art.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
 import { CoinWallet } from '../../components/CoinWallet.js'
+import { AtlasCompanion } from '../../components/AtlasCompanion.js'
+import { SceneEntrance } from '../../components/SceneEntrance.js'
+import { CloudBackdrop } from '../../components/CloudBackdrop.js'
+import { hapticSelect } from '../../lib/haptics.js'
 import type { ArtName } from '../../lib/art.generated.js'
 import type { IconName } from '../../lib/icons.generated.js'
 import { INSIGNIA_SIZE, insigniaFor } from '../../lib/insignia.js'
@@ -99,6 +108,7 @@ export function ShopScreen({
 }: ShopScreenProps) {
   const { colors, styles } = useThemeValues()
   const t = useT()
+  const { width, fontScale } = useWindowDimensions()
 
   if (error) {
     return (
@@ -113,6 +123,7 @@ export function ShopScreen({
 
   const titles = catalogue.filter((i) => i.kind === 'title')
   const nextUnlock = [...titles].filter(item => !owned.has(item.id)).sort((a, b) => a.price - b.price)[0]
+  const unlockCaption = nextUnlock === undefined ? '' : coins >= nextUnlock.price ? t('shop:unlock.ready') : t('shop:unlock.progress', { coins, price: nextUnlock.price })
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
@@ -131,31 +142,32 @@ export function ShopScreen({
         initials="EX"
         {...(onOpenStreak !== undefined && streak !== undefined ? { onStreak: onOpenStreak, streak } : {})}
       />
-      <Text style={styles.h1} role="heading" aria-level={1}>
-        {t('shop:title')}
-      </Text>
+      <View>
+      <CloudBackdrop style={styles.headerClouds} />
+      <View style={[styles.shopHeading, fontScale >= 1.5 && styles.rowStacked]}>
+        <Text style={[styles.h1, fontScale >= 1.5 && styles.intrinsic]} role="heading" aria-level={1}>{t('shop:title')}</Text>
+        <AdventureArt name="explorer" mood="proud" boopLabel={t('common:atlas.boop')} style={[styles.guide, width < layout.baseWidth && styles.guideSmall]} />
+      </View>
+      </View>
 
-      {/* The balance, as the first thing on the screen rather than a chip beside the
-          heading.
-
-          It is the number every row on this screen is measured against — "1,000 coins"
-          means nothing until you know what you have — and it was a 20pt pill sharing a
-          line with the title. The reference gives it a card of its own with the mascot
-          leaning in, which is what makes it read as YOUR balance rather than as a unit
-          label. Atlas is decorative; the card says what it is in words. */}
-      <CoinWallet coins={coins} />
+      {/* Balance and its nearest affordable goal belong in one glance. The progress
+          stays outside the balance's accessible group so neither announcement hides. */}
+      <SceneEntrance><CoinWallet coins={coins}>
+      {!loading && nextUnlock !== undefined && <View style={styles.unlock} testID="shop-next-unlock">
+        <ClaySurface tone="gold" radius={radius.xl} />
+        <View style={styles.header}>
+          <Text style={styles.unlockTitle}>{t('shop:unlock.title')}</Text>
+          <Icon name="star" size={space[4]} color={colors.clay.gold.ink} />
+        </View>
+        <Text style={styles.unlockName}>{t(nextUnlock.nameKey as TranslationKey)}</Text>
+        <Tally style={styles.unlockProgress} numberStyle={styles.unlockCount}>{unlockCaption}</Tally>
+        <ProgressBar current={Math.min(coins, nextUnlock.price)} total={Math.max(1, nextUnlock.price)} showCount={false}
+          height={space[3]} accessibilityLabel={unlockCaption} />
+      </View>}
+      </CoinWallet></SceneEntrance>
 
       {/* The rule the whole screen obeys, in the first sentence a child reads. */}
       <Text style={styles.intro}>{t('shop:intro')}</Text>
-      {!loading && nextUnlock !== undefined && <Card style={styles.unlock} testID="shop-next-unlock">
-        <View style={styles.header}>
-          <Text style={styles.unlockTitle}>{t('shop:unlock.title')}</Text>
-          <Icon name="star" size={24} color={colors.reward.coin} />
-        </View>
-        <Text style={styles.unlockName}>{t(nextUnlock.nameKey as TranslationKey)}</Text>
-        <ProgressBar current={Math.min(coins, nextUnlock.price)} total={Math.max(1, nextUnlock.price)} showCount={false}
-          label={coins >= nextUnlock.price ? t('shop:unlock.ready') : t('shop:unlock.progress', { coins, price: nextUnlock.price })} />
-      </Card>}
 
       {isOffline && (
         // Not an error. A purchase is a server decision (ADR 0006) so it waits; owned
@@ -171,19 +183,19 @@ export function ShopScreen({
           twice; at the end of the list it sat below some sixteen titles, where nobody
           looking for it would scroll (round-3 design review). */}
       {onOpenStreak !== undefined && (
-        <>
-          <Text style={styles.section} role="heading" aria-level={2}>
-            {t('shop:section.streak')}
-          </Text>
-          <Card level={1} style={styles.freeze} testID="shop-freeze">
+          <Pressable onPress={onOpenStreak} role="button" aria-label={t('shop:freeze.cta')}
+            accessibilityHint={t('shop:freeze.body')} testID="shop-freeze"
+            style={({ pressed }) => [styles.freeze, pressed && styles.freezePressed]}>
+            <ClaySurface radius={radius.xl} />
+            <View style={[styles.freezeContent, fontScale >= 1.5 && styles.freezeStacked]}>
             <Art name="rewards/streak-freeze" size={space[8]} />
-            <View style={styles.freezeText}>
+            <View style={[styles.freezeText, fontScale >= 1.5 && styles.intrinsic]}>
               <Text style={styles.freezeTitle}>{t('shop:freeze.title')}</Text>
               <Text style={styles.freezeBody}>{t('shop:freeze.body')}</Text>
             </View>
-            <Button label={t('shop:freeze.cta')} onPress={onOpenStreak} size="sm" variant="discovery" fullWidth={false} />
-          </Card>
-        </>
+            </View>
+            <View style={styles.forward}><Icon name="chevron" size={space[5]} color={colors.action.secondary} /></View>
+          </Pressable>
       )}
 
       <Text style={styles.section} role="heading" aria-level={2}>
@@ -334,9 +346,25 @@ function TitleRow({
 }) {
   const { colors, styles } = useThemeValues()
   const t = useT()
+  const { fontScale } = useWindowDimensions()
+  const largeText = fontScale >= 1.5
+  const previouslyEquipped = useRef(equipped)
+  const [justEquipped, setJustEquipped] = useState(false)
+
+  useEffect(() => {
+    // Confirm a real change, never the initial state or an unconfirmed button press.
+    if (equipped && !previouslyEquipped.current) {
+      setJustEquipped(true)
+      hapticSelect()
+    } else if (!equipped) {
+      setJustEquipped(false)
+    }
+    previouslyEquipped.current = equipped
+  }, [equipped])
 
   return (
-    <Card level={equipped ? 2 : 1} style={[styles.row, equipped && styles.rowOn, explorer && styles.explorerCard]}>
+    <Card tone={explorer ? 'sky' : 'ice'} style={[styles.titleCard, equipped && styles.rowOn]}>
+      <View style={[styles.row, explorer && styles.explorerRow, largeText && styles.rowStacked]}>
       {/* The slot is reserved even when it is empty.
 
           Only rank titles carry an insignia; the cosmetic ones have no art and never
@@ -345,19 +373,20 @@ function TitleRow({
           list of otherwise identical rows had two left edges and the earned title read
           as a different KIND of thing rather than as the same thing, owned. */}
       <View style={[styles.insignia, explorer && { width: 96 }]}>
-        {explorer ? <AdventureArt name="explorer" style={{ width: 96, height: 116 }} /> : insignia != null ? (
+        {explorer ? <AdventureArt name="explorer" mood={equipped ? 'proud' : 'welcome'} boopLabel={t('common:atlas.boop')} style={{ width: 96, height: 116 }} /> : insignia != null ? (
           <Art name={insignia} size={INSIGNIA_SIZE} />
         ) : glyph !== undefined ? (
           // Dimmed until it is owned, so the column reads as a set of things you could
           // have. Decorative — the row already says the title's name.
           <View style={[styles.glyph, !owned && styles.glyphLocked]}>
-            <Icon name={glyph} size={22} color={colors.reward.coin} />
+            <ClaySurface tone="gold" radius={radius.full} />
+            <Icon name={glyph} size={22} color={colors.clay.gold.ink} />
           </View>
         ) : null}
       </View>
-      <View style={[styles.rowText, explorer && { minWidth: 120 }]}>
+      <View style={[styles.rowText, explorer && { minWidth: 120 }, largeText && styles.intrinsic]}>
         <Text style={styles.rowName}>{name}</Text>
-        {help !== undefined && <Text style={styles.rowHelp}>{help}</Text>}
+        {help !== undefined && <Text style={[styles.rowHelp, explorer && styles.explorerHelp]}>{help}</Text>}
         {/* A coin beside the price, in the coin's own tint.
 
             Seven gold numbers ran down this screen with no unit on any of them but the
@@ -390,7 +419,8 @@ function TitleRow({
       <View style={styles.action}>
       {equipped ? (
         <View style={styles.badge}>
-          <Icon name="check" size={16} color={colors.status.progress} />
+          <ClaySurface tone="lime" radius={radius.full} />
+          <Icon name="check" size={16} color={colors.clay.lime.ink} />
           <Text style={styles.badgeText}>{t('shop:equipped')}</Text>
         </View>
       ) : owned ? (
@@ -404,6 +434,12 @@ function TitleRow({
         />
       )}
       </View>
+      </View>
+      {justEquipped && equipped &&
+        <View role="status" aria-live="polite" testID="shop-title-confirmed">
+          <AtlasCompanion compact mood="proud" message={t('shop:atlas.equipped', { title: name })} />
+        </View>
+      }
     </Card>
   )
 }
@@ -426,21 +462,19 @@ function SkeletonRows() {
 
 const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
-  unlock: { backgroundColor: colors.journey.sand, gap: space[2] },
-  unlockTitle: { ...text('overline'), color: colors.text.secondary },
-  unlockName: { ...text('h3'), color: colors.text.primary },
-  explorerCard: { flexWrap: 'wrap', backgroundColor: colors.journey.sky, borderColor: colors.border.subtle },
+  unlock: { ...clayShadow(colors), gap: space[1], padding: space[3], margin: space[2], marginTop: space[0], borderRadius: radius.xl },
+  unlockTitle: { ...text('overline'), color: colors.clay.gold.muted },
+  unlockName: { ...text('h3', { weight: '800' }), color: colors.clay.gold.ink },
+  unlockProgress: { ...text('caption'), color: colors.clay.gold.muted },
+  unlockCount: { ...text('caption', { weight: '800', numeric: true }), color: colors.clay.gold.ink },
+  headerClouds: { start: 'auto', width: '100%', maxWidth: space[9] * 6 },
+  shopHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space[3] },
+  guide: { width: space[9] + space[8], height: space[9] + space[8], flexShrink: 0 },
+  guideSmall: { width: space[8] * 2, height: space[8] * 2 },
+  explorerRow: { flexWrap: 'wrap' },
   screen: { flex: 1 },
   content: { padding: space[4], gap: space[4], paddingBottom: space[6] },
 
-  wallet: { backgroundColor: colors.journey.sand, borderColor: colors.league.gold.edge, flexDirection: 'row', alignItems: 'center', overflow: 'hidden' },
-  walletText: { flex: 1, gap: space[1] },
-  walletLabel: { ...text('caption'), color: colors.text.secondary },
-  walletAmount: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
-  walletNumber: { ...text('display', { numeric: true }), color: colors.text.primary },
-  // Bleeds past the card's padding on the trailing side, the way the quest card's
-  // mascot does on Home: a cutout inside its own padding reads as a sticker.
-  walletArt: { marginEnd: -space[3], marginVertical: -space[2] },
   // A tinted disc, so a 22pt glyph fills the 48pt slot an insignia would occupy
   // instead of floating in the middle of it.
   glyph: {
@@ -449,14 +483,13 @@ const useThemeValues = createThemeStyles((colors) => {
     borderRadius: radius.full,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.bg.surfaceRaised,
   },
   // Dimmed, not ghosted. 0.45 photographed as a watermark — the glyph is the only thing
   // distinguishing five otherwise identical rows, so it has to be legible while still
   // reading as something you do not own yet.
   glyphLocked: { opacity: 0.7 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  h1: { ...text('h1'), color: colors.text.primary },
+  h1: { ...text('h1'), color: colors.text.primary, flex: 1 },
   intro: { ...text('body'), color: colors.text.secondary },
 
   offline: {
@@ -472,14 +505,18 @@ const useThemeValues = createThemeStyles((colors) => {
 
   section: { ...text('overline'), color: colors.text.secondary, marginTop: space[3] },
 
+  titleCard: { gap: space[3] },
   row: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
-  rowOn: { backgroundColor: colors.journey.meadow, borderColor: colors.status.progress },
+  rowOn: { borderColor: colors.status.progress },
   rowSkeleton: { minHeight: 64 },
   skeletonBar: { height: 16, flex: 1, borderRadius: radius.sm, backgroundColor: colors.bg.surfaceRaised, ...squircle },
   insignia: { width: INSIGNIA_SIZE, alignItems: 'center' },
-  rowText: { flex: 1, gap: space[1] },
+  rowText: { flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 0, gap: space[1] },
+  rowStacked: { flexDirection: 'column', alignItems: 'stretch' },
+  intrinsic: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto' },
   rowName: { ...text('bodyStrong'), color: colors.text.primary },
   rowHelp: { ...text('caption'), color: colors.text.secondary },
+  explorerHelp: { color: colors.clay.sky.muted },
   rowPriceLine: { flexDirection: 'row', alignItems: 'center', gap: space[1] },
   rowPrice: { ...text('caption'), color: colors.reward.coin },
   rowPriceNumber: { ...text('caption', { weight: '700', numeric: true }) },
@@ -487,15 +524,19 @@ const useThemeValues = createThemeStyles((colors) => {
   rowShortNumber: { ...text('caption', { weight: '700', numeric: true }) },
 
   action: { alignSelf: 'center' },
-  badge: { flexDirection: 'row', alignItems: 'center', gap: space[1] },
-  badgeText: { ...text('caption'), color: colors.status.progress },
+  badge: { flexDirection: 'row', alignItems: 'center', gap: space[1], paddingHorizontal: space[3], paddingVertical: space[2], borderRadius: radius.full },
+  badgeText: { ...text('caption', { weight: '700' }), color: colors.clay.lime.ink },
 
   empty: { gap: space[2] },
   emptyTitle: { ...text('h3'), color: colors.text.primary },
   emptyBody: { ...text('body'), color: colors.text.secondary },
 
-  freeze: { backgroundColor: colors.journey.sky, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space[3] },
-  freezeText: { flex: 1, minWidth: 160, gap: space[1] },
+  freeze: { ...clayShadow(colors), flexDirection: 'row', alignItems: 'center', gap: space[3], padding: space[3], borderRadius: radius.xl, borderWidth: 1, borderBottomWidth: depth.button, borderColor: colors.border.subtle },
+  freezePressed: { transform: [{ translateY: depth.chip }], opacity: 0.88 },
+  freezeContent: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  freezeStacked: { flexDirection: 'column', alignItems: 'stretch' },
+  freezeText: { flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 0, gap: space[1] },
+  forward: { transform: [{ scaleX: I18nManager.isRTL ? -1 : 1 }] },
   freezeTitle: { ...text('bodyStrong'), color: colors.text.primary },
   freezeBody: { ...text('caption'), color: colors.text.secondary },
   tail: { height: space[5] },

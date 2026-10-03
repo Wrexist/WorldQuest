@@ -10,10 +10,12 @@ import { createThemeStyles } from '../theme.js'
  * Spec: docs/design/design-system.md · mockup screen 3
  */
 
-import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
-import { radius, space } from '../tokens.js'
+import { Animated, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
+import { radius, space, typography } from '../tokens.js'
 import { squircle } from '../shape.js'
 import { fontFamily, text } from '../typography.js'
+import { useAnimatedTo, useCelebration } from '../motion.js'
+import { ClaySurface, clayShadow } from './ClaySurface.js'
 
 // ── avatar ──────────────────────────────────────────────────────────────────
 
@@ -55,7 +57,7 @@ export function Avatar({
   ringed = true,
   accessibilityLabel,
 }: AvatarProps) {
-  const { styles } = useThemeValues()
+  const styles = useThemeValues()
   return (
     <View
       accessible
@@ -107,7 +109,7 @@ export type StreakBadgeProps = {
  * than a pill. The count is the loudest thing in the header after the greeting.
  */
 export function StreakBadge({ days, label, icon, accessibilityLabel, onPress }: StreakBadgeProps) {
-  const { styles } = useThemeValues()
+  const styles = useThemeValues()
   const inner = (
     <>
       <View style={styles.streakRow}>
@@ -167,7 +169,7 @@ export type ArtSlotProps = {
  * the real asset is a one-line change rather than a redesign.
  */
 export function ArtSlot({ tint, art, width = 96, height = 96, style }: ArtSlotProps) {
-  const { styles } = useThemeValues()
+  const styles = useThemeValues()
   return (
     <View
       // Decorative: the card already carries its meaning in text.
@@ -216,9 +218,10 @@ export type TabBarProps = {
 const TAB_LABEL_MAX_SCALE = 1.2
 
 export function TabBar({ items, activeKey, onSelect }: TabBarProps) {
-  const { styles } = useThemeValues()
+  const styles = useThemeValues()
   return (
     <View role="tablist" style={styles.tabBar}>
+      <ClaySurface radius={radius['2xl']} />
       {items.map((item) => {
         const active = item.key === activeKey
         return (
@@ -243,7 +246,7 @@ export function TabBar({ items, activeKey, onSelect }: TabBarProps) {
             // enough to notice they were passing while sitting on Home.
             onPress={() => onSelect(item.key)}
           >
-            <View style={[styles.tabChip, active && styles.tabChipActive]}>{item.icon(active)}</View>
+            <TabChip active={active}>{item.icon(active)}</TabChip>
             {/*
               Bounded scaling, and this is the one place in the app that gets it.
               A tab is one fifth of the screen width and its label is a word that
@@ -275,6 +278,26 @@ export function TabBar({ items, activeKey, onSelect }: TabBarProps) {
   )
 }
 
+/** A selection acknowledges the tap; navigation and labels never wait for it. */
+function TabChip({ active, children }: { active: boolean; children: React.ReactNode }) {
+  const styles = useThemeValues()
+  const scale = useCelebration(active, active)
+  const opacity = useAnimatedTo(active ? 1 : 0, 'quick')
+  return (
+    <View style={styles.tabChip}>
+      <Animated.View
+        testID="tab-chip"
+        pointerEvents="none"
+        aria-hidden
+        importantForAccessibility="no-hide-descendants"
+        style={[styles.tabChip, styles.tabChipActive, StyleSheet.absoluteFill, { opacity, transform: [{ scale }] }]}
+      >
+        <ClaySurface tone="sky" radius={radius.lg} />
+      </Animated.View>
+      <Animated.View style={{ transform: [{ scale }] }}>{children}</Animated.View>
+    </View>
+  )
+}
 
 
 const useThemeValues = createThemeStyles((colors) => {
@@ -294,7 +317,6 @@ const useThemeValues = createThemeStyles((colors) => {
 
   streak: { alignItems: 'center' },
   streakRow: { flexDirection: 'row', alignItems: 'center', gap: space[1] },
-  flame: { fontSize: 18 },
   streakCount: { ...text('numeric'), color: colors.text.primary },
   streakLabel: { ...text('caption'), color: colors.text.secondary },
 
@@ -307,12 +329,14 @@ const useThemeValues = createThemeStyles((colors) => {
   },
 
   tabBar: {
+    ...clayShadow(colors),
     flexDirection: 'row',
-    // Two pixels, and in the strong slate rather than the subtle one. The bar is the
-    // app's permanent furniture; a 1px hairline in a near-canvas colour left it
-    // floating with no clear top on a dark screen.
-    borderTopWidth: 1,
-    borderTopColor: colors.border.subtle,
+    // A continuous rim keeps the raised dock distinct from the canvas in both themes.
+    borderWidth: 1,
+    borderColor: colors.clay.ice.rim,
+    borderRadius: radius['2xl'],
+    marginHorizontal: space[2],
+    marginBottom: space[1],
     paddingTop: space[2],
     paddingBottom: space[2],
     backgroundColor: colors.bg.surface,
@@ -327,14 +351,16 @@ const useThemeValues = createThemeStyles((colors) => {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tabChipActive: { backgroundColor: colors.journey.sky },
+  tabChipActive: { ...clayShadow(colors), backgroundColor: colors.journey.sky },
   tabLabel: {
     // Title case, not the overline's uppercase — the mockup's bar reads "Explore",
     // not "EXPLORE", and five uppercase labels at this size become a fence.
     ...text('overline', { weight: '600', transform: 'none' }),
+    // Sentence-case labels use normal tracking so long translations remain separate.
+    letterSpacing: typography.scale.caption.letterSpacing,
     color: colors.text.tertiary,
   },
   tabLabelActive: { color: colors.action.secondary },
 })
-  return { colors, styles }
+  return styles
 })

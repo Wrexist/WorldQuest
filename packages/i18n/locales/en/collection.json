@@ -40,5 +40,11 @@
   "collection:search.none.title": "No match for “{query}”",
   "collection:search.none.title__note": "Search empty state. {query} is what the user typed.",
   "collection:search.none.body": "Check the spelling, or browse by continent.",
-  "collection:search.none.body__note": "Search empty state body. Offers a way onward rather than a dead end."
+  "collection:search.none.body__note": "Search empty state body. Offers a way onward rather than a dead end.",
+  "collection:guide.start": "A world to collect! Practise countries to fill your collection.",
+  "collection:guide.start__note": "Atlas speech beside the collection before any country is mastered. Explains how collecting works, without promising a reward for a tap or single lesson.",
+  "collection:guide.progress": "Your discoveries are adding up. Pick a country to explore!",
+  "collection:guide.progress__note": "Atlas speech when at least one tile is mastered. A warm invitation to open a country.",
+  "collection:browse": "Browse countries",
+  "collection:browse__note": "Button clears the search and selected filter to show all countries."
 }

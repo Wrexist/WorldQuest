@@ -175,7 +175,15 @@ cause: a browser with no keyboard, no OLED panel and no real screen reader.
 Not a flagship. The budget is about a mid-tier Android — a device three or four years
 old, which is what a ten-year-old is most likely to be handed.
 
-One input to this is already measured. `pnpm bundle:native` fails if the Hermes bundle
+Current size gate (2026-10-02): **5.21 MiB** per platform, with iOS **5,456,119 B**
+and Android **5,453,594 B**, plus approximately **19.66 MiB of assets**. The responsive
+motion pass adds **755/751 B** since the cloud/Atlas pass, within the unchanged gate;
+see the [current review](../design/reviews/responsive-motion-2026-10-02/README.md).
+The preceding cloud presentation's 0.01 MiB allocation over 5.20 MiB remains in its
+[measured review](../design/reviews/cloud-companions-2026-10-02/README.md).
+This does not establish cold-start timing. The dated numbers below are historical.
+
+One input to this was already measured. `pnpm bundle:native` failed if the Hermes bundle
 passes **4.3 MB** per platform; the measurement on 2026-08-11 was **4.26 MB** for both
 iOS and Android, plus **9.70 MB across 345 assets** (5.34 MB webp, 2.33 MB png, 2.09 MB
 fonts, 0.17 MB sounds) shipped beside the bundle. Hermes reads every byte of the

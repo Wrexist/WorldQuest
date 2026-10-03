@@ -1,0 +1,52 @@
+{
+  "name": "WorldQuest explorer chest",
+  "version": "1.0.0",
+  "created": "2026-10-02",
+  "workflow": "Original procedural Blender geometry from user-approved ImageGen concept. No paid provider jobs.",
+  "reference": {
+    "path": "approved-reference.png",
+    "sha256": "d223a79e46441300ebb865a987852ae8dfbae1c090640d9a1fa119570a194caf"
+  },
+  "geography": {
+    "source": "Natural Earth 1:110m land via world-atlas",
+    "license": "Public domain",
+    "path": "docs\\design\\assets\\world-mascot-3d\\land.png",
+    "sha256": "2a73465768306968b00f584ba4b9a4f9a25d558d5528289ebf5ebf2f37982ac6"
+  },
+  "assetLicense": "Original WorldQuest project asset; existing project usage terms apply. Natural Earth land is public domain.",
+  "model": {
+    "units": "meters",
+    "sourceUp": "Z",
+    "glbUp": "Y",
+    "triangles": 42348,
+    "glbBytes": 1164896,
+    "sha256": "4cb0a95935e767b5e3afc6eda957359a1b2e3457f174ed3fdc017e677c502eec",
+    "animationFrames": 40,
+    "fps": 20
+  },
+  "policy": {
+    "maxTriangles": 100000,
+    "maxGlbBytes": 5242880,
+    "stills": {
+      "size": 640,
+      "transparent": true
+    },
+    "film": {
+      "frames": 40,
+      "size": 240,
+      "columns": 8,
+      "rows": 5
+    }
+  },
+  "validation": {
+    "topologyBudget": true,
+    "modelSizeBudget": true,
+    "blenderVersion": "5.2.1 LTS",
+    "renderedStills": true,
+    "renderedAllFrames": true
+  },
+  "conceptPrompt": {
+    "path": "concept-prompt.txt",
+    "sha256": "c76e9acadd571dd43dea15b2c00b5367d0f0f3d7263b7f0236c0a965b4c2af62"
+  }
+}

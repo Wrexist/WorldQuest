@@ -941,18 +941,24 @@ const skip = (name, why) => {
   const tabIcons = await page.evaluate(() => {
     const bar = document.querySelector('[role="tablist"]')
     if (bar === null) return null
-    return Array.from(bar.querySelectorAll('img')).map((i) => ({
-      w: i.naturalWidth,
-      src: i.getAttribute('src') ?? '',
-    }))
+    // Clay glyphs have decorative highlight/shadow layers. Verify every image
+    // within each named tab instead of assuming one image node per tab.
+    return Array.from(bar.querySelectorAll('[role="tab"]')).map((tab) =>
+      Array.from(tab.querySelectorAll('img')).map((i) => ({
+        w: i.naturalWidth,
+        src: i.getAttribute('src') ?? '',
+      })),
+    )
   })
   step(
     'the five tab icons are real artwork, not blank rectangles',
     tabIcons !== null &&
       tabIcons.length === 5 &&
       // Line icons, retained illustrations, and the new studio renders must decode.
-      tabIcons.every((i) => i.w > 0 && /(?:icons\/|art\/(?:playful|soft)\/)/.test(i.src)),
-    tabIcons === null ? 'no tablist' : `${tabIcons.filter((i) => i.w > 0).length}/5 decoded`,
+      tabIcons.every((layers) => layers.length > 0 && layers.every((i) =>
+        i.w > 0 && /(?:icons\/|art\/(?:playful|soft)\/)/.test(i.src))),
+    tabIcons === null ? 'no tablist' : `${tabIcons.filter((layers) =>
+      layers.length > 0 && layers.every((i) => i.w > 0)).length}/5 tabs decoded`,
   )
 
   for (const tab of TABS) {
@@ -1268,9 +1274,17 @@ const skip = (name, why) => {
        (await streakBeat.count()) > 0 && !/nothing to buy|per month|Try it free/i.test(afterSummary),
        afterSummary.slice(0, 80).replace(/\s+/g, ' '))
   await page.getByTestId('open-streak-chest').click()
-  await page.waitForTimeout(2000)
+  const chestGem = streakBeat.getByText('+1 streak gem', { exact: true })
+  // The opening starts after image decode. Wait for its receipt, not a fixed delay
+  // barely longer than the film; the bounded wait also covers the decode fallback.
+  try {
+    await chestGem.waitFor({ state: 'visible', timeout: 6000 })
+  } catch (error) {
+    if (error.name !== 'TimeoutError') throw error
+    // Record a failed step and its screenshot below, rather than aborting the flow.
+  }
   step('the chest reveals a collectible gem, keeping the coin wallet separate',
-    await streakBeat.getByText('+1 streak gem', { exact: true }).count() === 1 &&
+    await chestGem.count() === 1 &&
     /coins stay in your wallet/.test(await body()))
   await page.screenshot({ path: path.join(SHOTS, 'streak-extended.png') })
   await streakBeat.getByText('Continue', { exact: true }).click()

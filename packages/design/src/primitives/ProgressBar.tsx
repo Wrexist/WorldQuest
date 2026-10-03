@@ -12,10 +12,12 @@ import { createThemeStyles } from '../theme.js'
  * looks filled is the single most motivating object in a learning app. It is drawn
  * inside the fill, so it grows with it and disappears at zero.
  */
-import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
-import { radius, space } from '../tokens.js'
+import { Animated, I18nManager, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
+import { depth, radius, space } from '../tokens.js'
 import { text } from '../typography.js'
 import { Tally } from './Tally.js'
+import { useAnimatedTo } from '../motion.js'
 
 /**
  * `progress` is the default green. `reward` is the amber the mockup uses on the
@@ -102,29 +104,25 @@ export function ProgressBar({
   style,
   testID,
 }: ProgressBarProps) {
-  const { FILLS, SHEENS, styles } = useThemeValues()
+  const { colors, FILLS, SHEENS, styles } = useThemeValues()
   const fill = FILLS[tone]
   const safeTotal = Math.max(1, total)
   const pct = Math.min(100, Math.max(0, (current / safeTotal) * 100))
+  // Keep the true accessible value immediate; only the decorative fill travels.
+  // Native scale avoids reflow, and logical start keeps RTL progress consistent.
+  const progress = useAnimatedTo(pct / 100, 'base')
 
   return (
     <View
       accessible
       role="progressbar"
       aria-label={label ?? accessibilityLabel}
-      // Set explicitly as well as via `accessibilityValue`. react-native-web carries
-      // that prop's numeric fields across but drops `text`, so the localised value was
-      // announced on native and silently missing on web — the third time in this repo
-      // that an RN platform a11y prop has no-opped on web while looking correct in
-      // source. Only the ARIA spelling can be trusted to reach the DOM.
+      // ARIA works on native and web; RN Web drops the accessibilityValue object.
+      // The spoken value follows real progress immediately, not the animated fill.
       aria-valuetext={valueText}
-      accessibilityValue={{
-        min: 0,
-        max: safeTotal,
-        now: current,
-        // Only a translated sentence, never an English one; see `valueText`.
-        ...(valueText !== undefined ? { text: valueText } : {}),
-      }}
+      aria-valuemin={0}
+      aria-valuemax={safeTotal}
+      aria-valuenow={current}
       style={[styles.wrap, style]}
       testID={testID}
     >
@@ -148,8 +146,10 @@ export function ProgressBar({
       )}
       <View style={showPercent ? styles.trackRow : undefined}>
       <View style={[styles.track, { height }, showPercent && styles.trackFlex]}>
-        {pct > 0 && (
-          <View style={[styles.fill, { width: `${pct}%`, backgroundColor: fill }]}>
+          <LinearGradient colors={[colors.bg.surfacePressed, colors.bg.surfaceRaised]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
+          <Animated.View style={[styles.fill, { width: '100%', backgroundColor: fill,
+            transformOrigin: I18nManager.isRTL ? 'right center' : 'left center', transform: [{ scaleX: progress }] }]}>
+            <LinearGradient colors={[SHEENS[tone], fill]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
             {/* Inset by a hair so the sheen follows the fill's rounded ends instead
                 of squaring them off. Hidden from the reader — the value is announced
                 by the track. */}
@@ -157,8 +157,7 @@ export function ProgressBar({
               style={[styles.sheen, { backgroundColor: SHEENS[tone] }]}
               importantForAccessibility="no-hide-descendants"
             />
-          </View>
-        )}
+          </Animated.View>
       </View>
       {showPercent && (
         // Hidden from the reader: the track above is a `progressbar` carrying
@@ -186,15 +185,15 @@ const useThemeValues = createThemeStyles((colors) => {
   streak: colors.status.streak,
 }
   const SHEENS: Record<ProgressTone, string> = {
-  progress: colors.status.progressHighlight,
-  reward: colors.reward.coin,
+  progress: colors.clay.lime.bottom,
+  reward: colors.league.gold.end,
   // A lighter flame, so the sheen reads on the run-coloured lesson bar. It was the fill
   // colour itself, which drew the sheen invisibly.
   streak: colors.status.streakHighlight,
 }
   const styles = StyleSheet.create({
   wrap: { gap: space[2] },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  header: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2], justifyContent: 'space-between', alignItems: 'center' },
   label: { ...text('caption'), color: colors.text.secondary },
   labelNumber: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.primary },
   // Tabular: `9 / 10` must not shift width when it becomes `10 / 10`.
@@ -211,8 +210,10 @@ const useThemeValues = createThemeStyles((colors) => {
     backgroundColor: colors.status.progressTrack,
     borderRadius: radius.full,
     overflow: 'hidden',
+    borderWidth: depth.card,
+    borderColor: colors.border.strong,
   },
-  fill: { height: '100%', borderRadius: radius.full, justifyContent: 'flex-start' },
+  fill: { height: '100%', borderRadius: radius.full, justifyContent: 'flex-start', overflow: 'hidden' },
   // Inset by one space step on every side it touches, so the sheen follows the fill's
   // rounded ends rather than squaring them off. `space[1]` is the step that exists for
   // exactly this — sub-component detail, not layout.

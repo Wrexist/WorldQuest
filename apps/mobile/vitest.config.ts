@@ -22,12 +22,15 @@
  */
 
 import { coverageConfigDefaults, defineConfig } from 'vitest/config'
+import { fileURLToPath } from 'node:url'
 
 export default defineConfig({
   resolve: {
     alias: {
       // The one line that makes React Native components mountable in jsdom.
       'react-native': 'react-native-web',
+      // Render the same gradient props in jsdom without importing native Expo JSX.
+      'expo-linear-gradient': fileURLToPath(new URL('../../scripts/screenshot/linear-gradient-web.tsx', import.meta.url)),
     },
   },
   esbuild: { jsx: 'automatic' },

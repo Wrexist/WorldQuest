@@ -1,12 +1,14 @@
 import { createThemeStyles } from '@worldquest/design'
 import { useEffect, useState } from 'react'
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native'
-import { Button, Card, radius, space, text } from '@worldquest/design'
+import { Button, Card, ClaySurface, radius, space, text } from '@worldquest/design'
 import { BALANCE } from '@worldquest/engines'
 import { AdventureArt } from '../../../components/AdventureArt.js'
+import { CloudBackdrop } from '../../../components/CloudBackdrop.js'
 import { FloatingProp, PATH_PROPS, SceneryBanner, isSceneryName } from '../../../components/Scenery.js'
 import { HeaderJewel } from '../../../components/HeaderJewel.js'
 import { RewardMotion } from '../../../components/RewardMotion.js'
+import { SceneEntrance } from '../../../components/SceneEntrance.js'
 import { Icon } from '../../../components/Icon.js'
 import { tContent, useT } from '../../../lib/i18n.js'
 import type { PathNodeView, PathUnitView } from '../pathView.js'
@@ -34,6 +36,7 @@ export function PlatformUnit({ unit, width, total, open, onPress, onPractise, on
   const sceneHeight = fontScale > 1.3 ? space[9] + space[5] : Math.round(Math.min(Math.max(width * .4, 120), 176))
   return <View style={styles.unit} testID="path-unit">
     <View style={[styles.header, scenery !== null && styles.headerScenic]}>
+      <ClaySurface tone="sky" radius={radius.xl} />
       {scenery !== null && <SceneryBanner name={scenery} height={sceneHeight} />}
       <View style={[styles.headerBody, scenery === null && styles.headerBodyPlain]}>
       <View style={styles.headerTop}>
@@ -79,18 +82,20 @@ function PlatformStop({ node, index, width, total, open, onPress, onPractise, on
         <PathNode node={node} total={total} swing={0} column={80} expanded={selected} onPress={() => onPress(node)} compact />
       </View>
       {current && <View pointerEvents="box-none" testID="trail-guide" dataSet={{ step: node.id }} style={[styles.guide, { start: center < width / 2 ? width - 112 : space[2] }]}>
+        <CloudBackdrop style={styles.guideClouds} />
         {/* The one Atlas you can poke: tap him and he laughs. A button with a name, so a
             screen reader meets it as the small game it is rather than as a picture. */}
         <AdventureArt name="explorer" mood="welcome" style={styles.explorer} boopLabel={t('home:path.guide.boop')} />
-        <View pointerEvents="none" aria-hidden style={styles.guideGround} />
       </View>}
     </View>
     {showAction && <View style={styles.actionWrap} testID="trail-next">
       <View pointerEvents="none" aria-hidden style={[styles.tail, { start: center - space[2] }]} />
       <View style={styles.action}>
+        <ClaySurface radius={radius.xl} />
         <View style={styles.rewardRow}>
           <Text style={styles.lesson}>{t('home:path.lesson', { lesson: Math.min(node.finished + 1, node.lessons), lessons: node.lessons })}</Text>
           <View style={styles.xpBadge}>
+            <ClaySurface tone="gold" radius={radius.full} />
             <RewardMotion><Icon name="star" size={space[5]} color={colors.reward.coin} /></RewardMotion>
             <Text style={styles.xpValue}>{t('home:path.xp', { amount: BALANCE.xp.correctAnswer })}</Text>
           </View>
@@ -100,12 +105,12 @@ function PlatformStop({ node, index, width, total, open, onPress, onPractise, on
         <Button variant="discovery" label={t(node.finished > 0 ? 'home:path.continueChallenge' : 'home:path.startChallenge')} accessibilityHint={tContent(node.objectiveKey, { count: node.count })} onPress={() => onPress(node)} />
       </View>
     </View>}
-    {selected && <Card testID="path-card" style={styles.inspection}>
+    {selected && <SceneEntrance replayKey={node.id}><Card testID="path-card" style={styles.inspection}>
       <Text style={styles.inspectTitle}>{tContent(node.objectiveKey, { count: node.count })}</Text>
       <Text style={styles.inspectBody}>{t(node.state === 'done' ? 'home:path.done.body' : 'home:path.locked.body')}</Text>
       {node.fading === true && <Text style={styles.inspectBody} testID="path-fading-note">{t('home:path.fading')}</Text>}
       {node.state === 'done' && <Button label={t('home:path.practise')} variant="secondary" onPress={() => onPractise(node.id)} testID="path-practise" />}
-    </Card>}
+    </Card></SceneEntrance>}
   </View>
 }
 
@@ -129,34 +134,34 @@ function sceneryBeside(index: number, current: boolean, center: number, width: n
 const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
   unit: { gap: space[2] },
-  header: { backgroundColor: colors.course.banner, borderRadius: radius.xl, borderBottomWidth: space[2], borderColor: colors.course.bannerEdge, overflow: 'hidden' },
-  headerScenic: { borderWidth: space[1], borderBottomWidth: space[2] },
+  header: { backgroundColor: colors.clay.sky.bottom, borderRadius: radius.xl, borderWidth: 1, borderColor: colors.clay.sky.rim, overflow: 'hidden' },
+  headerScenic: { borderWidth: 1 },
   headerBody: { padding: space[4], paddingTop: space[3], gap: space[1] },
   headerBodyPlain: { paddingTop: space[4] },
   headerTop: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   headerWords: { flex: 1, gap: space[1] },
-  overline: { ...text('overline'), color: colors.course.bannerInk },
-  title: { ...text('h2'), color: colors.course.bannerInk },
-  count: { ...text('caption'), color: colors.course.bannerInk },
+  overline: { ...text('overline'), color: colors.clay.sky.muted },
+  title: { ...text('h2'), color: colors.clay.sky.ink },
+  count: { ...text('caption'), color: colors.clay.sky.muted },
   unitTrack: { flexDirection: 'row', gap: space[1], marginTop: space[2] },
   unitSegment: { flex: 1, height: space[2], borderRadius: radius.full, backgroundColor: colors.course.bannerEdge },
   unitSegmentDone: { backgroundColor: colors.action.primaryFace },
   rewardRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: space[2] },
   xpBadge: { flexDirection: 'row', alignItems: 'center', gap: space[1], backgroundColor: colors.journey.sand, paddingHorizontal: space[2], paddingVertical: space[1], borderRadius: radius.full },
-  xpValue: { ...text('bodyStrong', { numeric: true }), color: colors.text.primary },
-  rewardHint: { ...text('caption'), color: colors.course.bannerInk },
+  xpValue: { ...text('bodyStrong', { numeric: true }), color: colors.clay.gold.ink },
+  rewardHint: { ...text('caption'), color: colors.text.secondary },
   path: { gap: space[1] },
   stop: { gap: space[2], paddingBottom: space[1] },
   platformRow: { height: 112 },
   upcomingRow: { height: 96 },
   guide: { position: 'absolute', top: -space[1], width: 104, alignItems: 'center' },
-  explorer: { width: 96, height: 112 },
-  guideGround: { width: space[8], height: space[2], borderRadius: radius.full, backgroundColor: colors.course.track, opacity: .5, marginTop: -space[2], zIndex: -1 },
+  guideClouds: { start: -space[3], end: -space[3], height: space[8] },
+  explorer: { width: space[9] + space[7], height: space[9] + space[7] },
   actionWrap: { marginBottom: 0 },
-  tail: { position: 'absolute', top: -space[2], width: space[4], height: space[4], transform: [{ rotate: '45deg' }], backgroundColor: colors.course.banner },
-  action: { backgroundColor: colors.course.banner, borderRadius: radius.xl, padding: space[3], gap: space[2], borderBottomWidth: space[1], borderColor: colors.course.bannerEdge },
-  lesson: { ...text('caption', { weight: '700' }), color: colors.course.bannerInk },
-  objective: { ...text('h3'), color: colors.course.bannerInk },
+  tail: { position: 'absolute', top: -space[2], width: space[4], height: space[4], transform: [{ rotate: '45deg' }], backgroundColor: colors.clay.ice.top },
+  action: { backgroundColor: colors.bg.surface, borderRadius: radius.xl, padding: space[3], gap: space[2], borderWidth: 1, borderColor: colors.clay.ice.rim },
+  lesson: { ...text('caption', { weight: '700' }), color: colors.text.secondary },
+  objective: { ...text('h3'), color: colors.text.primary },
   inspection: { gap: space[2] },
   inspectTitle: { ...text('bodyStrong'), color: colors.text.primary },
   inspectBody: { ...text('body'), color: colors.text.secondary },

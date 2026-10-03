@@ -1,5 +1,54 @@
 # Design system
 
+## Liquid clay contract — October 2, 2026
+
+The owner's three Quests, Profile and Shop references supersede the previous flat
+surface treatment. WorldQuest now uses a powder-blue canvas, milky ice cards, navy
+treasure and wallet panels, raised sky selections, gold rewards and a lime learning
+action. Nunito, the globe explorer and the approved explorer chest stay recognisable.
+The reference phone frame is presentation artwork; it is not drawn inside the app.
+
+`colors.clay` defines five complete materials (`ice`, `navy`, `sky`, `gold`, `lime`)
+in both light and dark themes. Each carries gradient endpoints, a rim and readable
+ink/muted text. `ClaySurface` draws bounded lighting beneath content and never owns
+content height or input. `clayShadow(colors)` supplies shared native elevation.
+Reflection and bevels describe rounded volume; they do not animate while reading.
+This explicitly replaces the older ban on highlights on button faces: the new
+owner-approved reference calls for rounded, softly reflective controls. Text stays
+flat and high-contrast; shadows and highlights must never obscure labels or inputs.
+
+Cards use 24-point corners, large panels 32, and primary controls a full capsule.
+The radius scale is now 8/12/20/24/32/full; the spacing scale is unchanged. Only
+interactive controls sink on press. Existing tab pops, answer transitions, progress
+fills, chest nudges/opening and Atlas reactions retain their reduced-motion paths.
+There is no new animation engine or looping background effect.
+
+This material is shared across all five tabs, onboarding, lesson answers/feedback,
+country and collection cards, settings and state surfaces. Custom Home course,
+Explore search/map chrome, Quest checkpoints, Profile activity and Shop wallet
+surfaces use the same primitive. Previously approved compact layouts remain:
+Continue stays outside the Quest scroller, country selection stays a compact row,
+and identity/XP and wallet/next unlock remain grouped. Large text wraps in flow.
+
+See the [reference measurements](reviews/liquid-clay-2026-10-02/reference-audit.md)
+and [rendered review](reviews/liquid-clay-2026-10-02/README.md). The older visual
+sections below are retained as migration history; behavioral, accessibility,
+localization and semantic-color requirements still apply.
+
+### Soft sky details, October 2, 2026
+
+The owner's Profile reference adds a quiet cloud stage behind Atlas and the title.
+`CloudBackdrop` shares one transparent sculpted illustration across the Profile,
+Quests and Shop heroes and a small ground layer beside Home's current step.
+Keep the original cloud proportions, place foreground controls above it, and leave
+reward/task panels and map geography clear. Profile's clouds stay behind Atlas
+when enlarged text stacks the identity. Hero mascots use larger square frames;
+sprite margins and existing animation poses are preserved.
+
+`illustration.cloudOpacity` dims the artwork at night. The four-point ambient rise
+uses `motion.drift`, stops for Reduced Motion and does not move text or controls.
+See [asset source and reproduction](assets/clay-clouds/README.md).
+
 ## Cohesive adventure contract, September 27, 2026
 
 The approved ice-blue canvas, navy text, ocean-blue course cards, warm gold rewards
@@ -305,6 +354,37 @@ alone is never a control unless it is universally understood (back, close, setti
 Lottie → static final frame · parallax and the auto-rotating globe → off ·
 staggering → off. This is checked in the DoD, not assumed.
 
+The October 2 interaction pass adds motion only at a state change: answer faces
+compress 2% on press (`motion.press`) inside fixed touch targets; newly selected
+tab icons and newly completed quest checkpoints pop once (two `motion.quick`
+phases); progress fills ease to their next value (`motion.base`, native `scaleX`
+from logical start). Restored progress does not replay an entrance. Numeric and
+accessible values update immediately, independently of the decorative fill.
+Reduced motion uses settled states and static press opacity. The shared target
+and celebration helpers stop stale work on retarget/unmount and settle when the
+app backgrounds; changing the motion preference does not replay an old event.
+See [motion feedback review](reviews/motion-feedback-2026-10-02/README.md).
+
+Question prompts, flag art and answer blocks arrive together over `motion.quick`
+(180 ms), moving up `space[2]` and settling from 98% scale. Selected Explore country
+cards use the same arrival. `SceneEntrance.replayKey` follows the lesson run/index
+or country ID without remounting content: selections, grading, data refreshes,
+focus returns and preference changes do not replay it. Controls remain available
+throughout, and the globe stays mounted outside the moving blocks. Blur,
+backgrounding and reduced motion settle immediately. See
+[question and country motion review](reviews/question-country-motion-2026-10-02/README.md).
+
+The follow-on responsiveness pass eases the active clay tab highlight with
+`motion.quick` opacity and the icon's existing grow/settle value, inside an
+unchanged hit target. Weekly activity uses `motion.expressive` native `scaleY`,
+anchored to the bottom: changed relative fills travel, while restored history and
+spoken lesson counts remain immediate. Selected Home course details and paged
+streak-gem batches use the same short `SceneEntrance` as country cards. Gem paging
+controls and the live page announcement stay outside the moving batch. These are
+finite responses to selection or data changes, with no new ambient loops; Reduced
+Motion shows the final state immediately. See the
+[responsive motion review](reviews/responsive-motion-2026-10-02/README.md).
+
 ## 8. Haptics
 
 | Event | iOS | Android |
@@ -428,6 +508,30 @@ gutters and section spacing. Wallet and daily rewards share the sand field; the
 streak-freeze panel uses sky. Friends uses the same AnswerOption and ProgressBar
 as lessons, including their existing reduced-motion behavior. No new animation
 engine or decorative looping background was introduced.
+
+Explore uses a compact selected-country row: 40-point flag, `h3` name, a caption
+capital summary, a blue forward affordance and a separate 44-point clear target.
+The metadata row opens the country. Large native text stacks the flag and metadata
+without truncating the name. Country browsing is collapsed by default, with a
+region-aware count and flag/name rows on demand. Search precedes the globe, shows
+six matches before an explicit Show all action, and hands focus to the selected
+country action. The overview returns when the selection is cleared. Map controls
+share one horizontal toolbar with 48-point targets. Country names live in the
+card and browser; Explore omits floating name pills that could drift over a
+neighbour, while keeping the selected highlight and verified capital pin. See the
+[compact Explore review](reviews/compact-explore-2026-10-02/README.md).
+
+The same compact hierarchy applies to Quests, Profile and Shop. Quests keeps its
+interactive Atlas beside the heading, uses a 104-point chest in the reward summary,
+and pins Continue above the tab bar in normal layout, outside the task scroller.
+Profile groups its 96-point Atlas, identity and actual level progress in one
+passport card. Shop groups coin balance and next-unlock progress in one surface,
+while retaining separate accessible announcements; its freeze entry is a single
+navigation row. Names, descriptions and actions still wrap at large text sizes.
+At large native text sizes, Profile stats and Quest headings/tabs stack. Stacked
+mascot speech bubbles retain their intrinsic text height, and empty-state headings
+stay within the available card width instead of overflowing on long Swedish words.
+See the [compact app review](reviews/compact-app-2026-10-02/README.md).
 
 Verification for the league color pass (2026-09-27): 18 league tests, mobile
 TypeScript, accessibility lint and all 114 contrast pairs pass. Actual D1-backed

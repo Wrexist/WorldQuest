@@ -3,9 +3,8 @@
  * the path. Every name maps to art already in the app; none of it is a map, a flag or a
  * real coastline (`docs/design/asset-prompts.md`), so none of it can be a wrong fact.
  *
- * All of it is hidden from assistive technology. The unit's heading and the path's step
- * labels carry the meaning; a screen reader hearing "image, image" between steps would
- * only be slowed down by weather.
+ * Scenery is hidden from assistive technology. A scene may opt interactive foreground
+ * children into the reading order; the landscape itself stays decorative.
  */
 import type { ReactNode } from 'react'
 import { Animated, Image, StyleSheet, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native'
@@ -45,29 +44,34 @@ const hidden = { 'aria-hidden': true, accessibilityElementsHidden: true, importa
  * floats on a plain sky of its own, drifting — its art carries its own clouds, and flat
  * drawn ones beside them read as placeholder bars.
  */
-export function SceneryBanner({ name, height, style, rounded = 'top', children }: {
+export function SceneryBanner({ name, height, style, rounded = 'top', children, interactiveChildren = false }: {
   name: SceneryName; height: number; style?: StyleProp<ViewStyle>
   /** `top` sits on a banner's plate; `all` stands alone as a card. */
   rounded?: 'top' | 'all'
-  /** Whoever stands in the scene (Atlas), feet on its lower edge. Also decorative. */
+  /** Whoever stands in the scene (Atlas), feet on its lower edge. */
   children?: ReactNode
+  /** Keeps foreground controls reachable while the scenery remains decorative. */
+  interactiveChildren?: boolean
 }) {
   const { styles } = useThemeValues()
   const scene = SCENES[name]
   const drift = useDrift(0.3)
   const frame = [styles.frame, rounded === 'all' && styles.frameAll, { height }, style]
+  const sceneAccessibility = interactiveChildren ? { pointerEvents: 'box-none' as const } : { ...hidden, pointerEvents: 'none' as const }
   const foreground = children === undefined ? null : <View style={styles.foreground}>{children}</View>
   if (scene.fit === 'cover') {
-    return <View {...hidden} pointerEvents="none" testID={`scenery-${name}`} style={frame}>
+    return <View {...sceneAccessibility} testID={`scenery-${name}`} style={frame}>
       {/* Explicit size, not absoluteFill: on the web an Image positioned by its edges
           alone falls back to the file's own pixels and shows its top-left corner. */}
-      <Image source={toSource(scene.source)} resizeMode="cover" style={styles.fill} alt="" />
+      <View {...hidden} pointerEvents="none" style={styles.fill}>
+        <Image {...hidden} source={toSource(scene.source)} resizeMode="cover" style={styles.fill} alt="" />
+      </View>
       {foreground}
     </View>
   }
-  return <View {...hidden} pointerEvents="none" testID={`scenery-${name}`} style={[...frame, styles.sky]}>
+  return <View {...sceneAccessibility} testID={`scenery-${name}`} style={[...frame, styles.sky]}>
     {children === undefined
-      ? <Animated.View style={[styles.island, driftStyle(drift, space[2])]}>
+      ? <Animated.View {...hidden} pointerEvents="none" style={[styles.island, driftStyle(drift, space[2])]}>
           <Image source={toSource(scene.source)} resizeMode="contain" style={{ width: height * 1.1, height: height * 1.1 }} alt="" />
         </Animated.View>
       : <IslandStage size={height * .96}>{children}</IslandStage>}

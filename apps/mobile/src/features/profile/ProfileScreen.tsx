@@ -20,7 +20,10 @@ import {
   Avatar,
   Button,
   Card,
+  ClaySurface,
+  clayShadow,
   EmptyState,
+  layout,
   palette,
   ProgressBar,
   radius,
@@ -35,10 +38,9 @@ import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { REGIONS, type RegionCode } from '../explore/ExploreScreen.js'
 import { Art } from '../../components/Art.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
-import { SceneryBanner } from '../../components/Scenery.js'
-
-/** The explorer's island at the top of Profile: a place, with Atlas standing in it. */
-const IDENTITY_SCENE = 240
+import { AtlasCompanion } from '../../components/AtlasCompanion.js'
+import { SceneEntrance } from '../../components/SceneEntrance.js'
+import { CloudBackdrop } from '../../components/CloudBackdrop.js'
 import { avatarArt } from '../settings/AvatarPicker.js'
 import { INSIGNIA_SIZE, insigniaFor } from '../../lib/insignia.js'
 import { Icon } from '../../components/Icon.js'
@@ -50,14 +52,10 @@ import { WeekStrip, type WeekActivity } from '../../components/WeekStrip.js'
 import type { IconName } from '../../lib/icons.generated.js'
 
 /**
- * The portrait, and the badges beside it.
- *
- * 96 rather than the 72 it was: this is the only picture on the screen and the one thing
- * a user is looking at when they open their own profile. `BADGE` is sized so four medals
- * plus their gaps clear 320 with room — five would not, which is why `RECENT_BADGES` is
- * four rather than "as many as fit".
+ * The chosen avatar fits alongside the identity; Atlas remains its playful guide.
+ * Four recent medals fit at 320 without shrinking their artwork.
  */
-const PORTRAIT = 96
+const PORTRAIT = space[8]
 const BADGE = 60
 const RECENT_BADGES = 4
 
@@ -167,7 +165,9 @@ export function ProfileScreen({
 }: ProfileScreenProps) {
   const { colors, styles } = useThemeValues()
   const t = useT()
-  const { height: viewportHeight, width: viewportWidth } = useWindowDimensions()
+  const { width, fontScale } = useWindowDimensions()
+  const narrow = width < layout.baseWidth
+  const largeText = fontScale >= 1.5
   // Falls back to initials when nothing is chosen, and also when a stored id names an
   // avatar this build does not ship — a set that shrinks must not leave a blank circle.
   const portrait = avatarArt(avatar ?? null)
@@ -219,12 +219,14 @@ export function ProfileScreen({
             with `justifyContent: 'flex-start'` and 48 points of padding, leaving 46 % of
             a 390-wide phone empty below it — the most common reason a screen in this app
             reads as unfinished, and the same defect in seven other places. */}
+        <SceneEntrance>
+        <Card style={styles.emptyHero}>
         <EmptyState
           compact
-          art={<SceneryBanner name="discovery-island" rounded="all" height={Math.min(300, viewportHeight * .34)} style={{ width: Math.min(viewportWidth - 64, 480) }}>
-            <AdventureArt name="explorer" style={{ width: Math.min(300, viewportHeight * .34) * .4, height: Math.min(300, viewportHeight * .34) * .46 }} />
-          </SceneryBanner>}
-          style={styles.emptyHero}
+          art={<View style={styles.guestStage}>
+            <CloudBackdrop />
+            <AdventureArt name="explorer" mood="welcome" boopLabel={t('common:atlas.boop')} style={[styles.atlas, narrow && styles.guestAtlas]} />
+          </View>}
           title={t('profile:empty.title')}
           body={t('profile:empty.body')}
           {...(onStartLesson !== undefined
@@ -247,6 +249,8 @@ export function ProfileScreen({
               }
             : {})}
         />
+        </Card>
+        </SceneEntrance>
         {onOpenFriends && <Button style={styles.friendsEntry} variant="secondary" label={t('friends:title')} onPress={onOpenFriends}/>}
       </ScrollView>
     )
@@ -271,47 +275,44 @@ export function ProfileScreen({
         {...(onOpenSettings !== undefined ? { onSettings: onOpenSettings } : {})}
       />
 
-      {/* Portrait, name, worn title — one block, centred.
-
-          It was an avatar with the name beside it and the title three lines down inside
-          the level card, so the two halves of an identity sat in different components.
-          Stacked, the title reads as what it is: something you are called, under the
-          face you chose. */}
-      <View style={styles.identity}>
-        <SceneryBanner name="discovery-island" rounded="all" height={IDENTITY_SCENE}>
-          <AdventureArt name="explorer" style={{ width: IDENTITY_SCENE * .4, height: IDENTITY_SCENE * .46 }} />
-        </SceneryBanner>
-        {portrait !== null && <View style={styles.portrait}>
-          <Avatar
-            size={PORTRAIT}
-            ringed={false}
-            accessibilityLabel={t('profile:anonymous')}
-            initials="EX"
-            {...(portrait !== null ? { image: <Art name={portrait} size={PORTRAIT} /> } : {})}
-          />
-        </View>}
-        <View style={styles.nameRow}>
-          <Text style={styles.name} role="heading">
-            {t('profile:anonymous')}
-          </Text>
-          {/* A real 44pt target around a 16pt pencil, and absent rather than dead when
-              there is nothing to rename into. */}
-          {onRename !== undefined && (
-            <Pressable
-              onPress={onRename}
-              role="button"
-              aria-label={t('profile:rename')}
-              hitSlop={12}
-              style={styles.pencil}
-            >
-              <Icon name="edit" size={16} color={colors.text.tertiary} />
-            </Pressable>
-          )}
+      {/* One passport: identity and its real level progress stay together. Atlas remains
+          playful without making the weekly record start below a full-screen portrait. */}
+      <SceneEntrance>
+      <Card style={styles.passport} testID="profile-passport">
+        <View>
+        <CloudBackdrop style={styles.identityClouds} />
+        <View style={[styles.identity, largeText && styles.identityStacked]}>
+          <AdventureArt name="explorer" mood="proud" boopLabel={t('common:atlas.boop')} style={[styles.atlas, narrow && styles.atlasSmall]} />
+          <View style={[styles.identityText, largeText && styles.identityTextStacked]}>
+            {portrait !== null && <Avatar
+              size={PORTRAIT}
+              ringed={false}
+              accessibilityLabel={t('profile:anonymous')}
+              initials="EX"
+              image={<Art name={portrait} size={PORTRAIT} />}
+            />}
+            <View style={styles.nameRow}>
+              <Text style={styles.name} role="heading">
+                {t('profile:anonymous')}
+              </Text>
+              {onRename !== undefined && (
+                <Pressable
+                  onPress={onRename}
+                  role="button"
+                  aria-label={t('profile:rename')}
+                  style={styles.pencil}
+                >
+                  <ClaySurface tone="sky" radius={radius.full} />
+                  <Icon name="edit" size={space[4]} color={colors.text.tertiary} />
+                </Pressable>
+              )}
+            </View>
+            <Text style={styles.wornTitle}>
+              {t((wornTitleKey ?? progress.titleKey) as TranslationKey)}
+            </Text>
+          </View>
         </View>
-        <Text style={styles.wornTitle}>
-          {t((wornTitleKey ?? levelProgress(stats.xpTotal).titleKey) as TranslationKey)}
-        </Text>
-      </View>
+        </View>
 
       {/* Level on the left, the XP fraction on the right, the bar under both.
 
@@ -324,7 +325,8 @@ export function ProfileScreen({
           the lifetime total against the next threshold. Those two differ by every point
           earned before this level and the second one is what makes a bar disagree with
           the number printed next to it. */}
-      <Card style={styles.levelCard}>
+      <View style={styles.levelCard}>
+        <ClaySurface tone="sky" radius={radius.xl} />
         <View style={styles.levelRow}>
           {/* The rank's own insignia, when it has one. Six of the ten ranks are drawn
               (`asset-prompts.md` §12) and a bought shop title is not a rank at all, so
@@ -363,13 +365,14 @@ export function ProfileScreen({
             span: Math.max(1, progress.levelSpan),
           })}
         />
+      </View>
       </Card>
+      </SceneEntrance>
 
       {week !== undefined && <WeeklyActivity week={week} />}
       {gemDays.length > 0 && <StreakGemCollection days={gemDays} />}
       {onStartLesson !== undefined && <Card style={styles.adventureAction}>
-        <Text style={styles.adventureTitle}>{t('profile:adventure.title')}</Text>
-        <AnswerReward />
+        <AtlasCompanion compact message={t('profile:atlas.next')} mood="encouraging" />
         <Button variant="discovery" label={t('lesson:summary.adventure.continue')} onPress={onStartLesson} />
       </Card>}
 
@@ -385,20 +388,23 @@ export function ProfileScreen({
           the world that covers, and whether you came back. Longest streak keeps its place
           as the caption under the live one rather than as a seventh tile — same unit, and
           only one of the two is burning. */}
-      <View style={styles.statRow}>
+      <View style={[styles.statRow, largeText && styles.statRowStacked]}>
         <Stat
+          stacked={largeText}
           icon="star"
           tint={colors.status.progress}
           label={t('profile:stats.mastered')}
           value={String(stats.factsMastered)}
         />
         <Stat
+          stacked={largeText}
           icon="globe"
           tint={colors.action.primary}
           label={t('profile:stats.countries')}
           value={String(world?.entitiesComplete ?? 0)}
         />
         <Stat
+          stacked={largeText}
           icon="streak"
           tint={colors.status.streak}
           label={t('profile:stats.streak')}
@@ -542,6 +548,7 @@ function Stat({
   icon,
   tint,
   caption,
+  stacked,
 }: {
   label: string
   value: string
@@ -549,6 +556,7 @@ function Stat({
   readonly tint: string
   /** A second, quieter number about the same thing — the streak's record. */
   readonly caption?: string | undefined
+  readonly stacked: boolean
 }) {
   const { styles } = useThemeValues()
   return (
@@ -557,8 +565,9 @@ function Stat({
     <View
       accessible
       aria-label={caption === undefined ? `${label}, ${value}` : `${label}, ${value}, ${caption}`}
-      style={styles.stat}
+      style={[styles.stat, stacked && styles.statStacked]}
     >
+      <ClaySurface radius={radius.xl} />
       <Icon name={icon} size={20} color={tint} />
       <Text style={styles.statValue}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
@@ -573,9 +582,8 @@ function ProfileSkeleton() {
   return (
     <View style={styles.screen} aria-label={t('common:loading')}>
       <View style={styles.content}>
-        <Skeleton width={72} height={72} borderRadius={36} />
-        <Skeleton width="40%" height={28} />
-        <Skeleton height={88} borderRadius={radius.lg} />
+        <Skeleton height={space[9]} borderRadius={radius.lg} />
+        <Skeleton height={space[9] * 3} borderRadius={radius.lg} />
         <Skeleton height={160} borderRadius={radius.lg} />
       </View>
     </View>
@@ -592,11 +600,13 @@ function ProfileSkeleton() {
  * one fact, and this repo has spent long enough finding that bug in other places.
  */
 function WeeklyActivity({ week }: { readonly week: WeekActivity }) {
+  const { styles } = useThemeValues()
   const t = useT()
   return (
-    <Section title={t('profile:week.title')}>
+    <Card style={styles.weekCard}>
+      <Text style={styles.sectionTitle} role="heading">{t('profile:week.title')}</Text>
       <WeekStrip week={week} emptyLabel={t('profile:week.none')} />
-    </Section>
+    </Card>
   )
 }
 
@@ -606,11 +616,8 @@ const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
   adventureAction: { alignSelf: 'stretch', gap: space[3] },
   friendsEntry: { marginHorizontal: space[4], marginBottom: space[6] },
-  adventureTitle: { ...text('h3'), color: colors.text.primary },
-  insignia: { alignSelf: 'flex-start', marginBottom: space[1] },
-  levelTitle: { ...text('h3'), color: colors.text.primary, marginBottom: space[2] },
   screen: { flex: 1 },
-  emptyHero: { backgroundColor: colors.journey.sky, borderRadius: radius['2xl'], marginVertical: space[3], marginHorizontal: space[4], paddingVertical: space[3] },
+  emptyHero: { marginVertical: space[3], marginHorizontal: space[4], padding: space[4] },
   content: { padding: space[4], gap: space[4], paddingBottom: space[6] },
   emptyContent: { flexGrow: 1 },
   emptyBar: { paddingHorizontal: space[4], paddingTop: space[4] },
@@ -630,14 +637,21 @@ const useThemeValues = createThemeStyles((colors) => {
    * time the header changed height.
    */
 
-  name: { ...text('h1'), color: colors.text.primary },
+  name: { ...text('h2'), color: colors.text.primary, flexShrink: 1 },
   subtitle: { ...text('caption'), color: colors.text.secondary },
   subtitleNumber: {
     ...text('caption', { weight: '700', numeric: true }),
     color: colors.text.primary,
   },
 
-  levelCard: { gap: space[2] },
+  levelCard: { gap: space[2], padding: space[3], borderRadius: radius.xl, ...clayShadow(colors) },
+  weekCard: { gap: space[3] },
+  passport: { gap: space[3], padding: space[3], borderRadius: radius['2xl'] },
+  atlas: { width: space[9] * 2, height: space[9] * 2, flexShrink: 0 },
+  identityClouds: { top: 0, bottom: 'auto', height: space[9] * 2 },
+  atlasSmall: { width: space[9] + space[8], height: space[9] + space[8] },
+  guestAtlas: { width: space[8] * 2, height: space[8] * 2 },
+  guestStage: { width: space[9] * 3 + space[8], maxWidth: '100%', alignItems: 'center' },
 
   section: { gap: space[3], flexShrink: 0 },
   sectionTitle: { ...text('overline'), color: colors.text.tertiary },
@@ -646,40 +660,37 @@ const useThemeValues = createThemeStyles((colors) => {
   // width, because a percentage plus a gap overflows the row by the gap — the same trap
   // the lesson's answer grid and onboarding's continent grid each document.
   statRow: { flexDirection: 'row', gap: space[2], flexShrink: 0 },
+  statRowStacked: { flexDirection: 'column' },
   badgeRow: { flexDirection: 'row', gap: space[3], alignItems: 'center' },
   sectionHead: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
-  identity: { alignItems: 'center', gap: space[2], flexShrink: 0 },
-  // A ring drawn by the layout rather than by `Avatar`, so it can be the accent and thick
-  // enough to read at 96 — `ringed` is a hairline sized for the 40pt header avatar.
-  portrait: {
-    padding: space[1],
-    borderRadius: radius.full,
-    borderWidth: 3,
-    borderColor: colors.border.subtle,
-    backgroundColor: colors.journey.sky,
-  },
-  nameRow: { flexDirection: 'row', alignItems: 'center', gap: space[1], marginTop: space[2] },
-  pencil: { padding: space[1] },
-  wornTitle: { ...text('body'), color: colors.text.secondary },
+  identity: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  identityStacked: { flexDirection: 'column', alignItems: 'flex-start' },
+  identityText: { flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 0, gap: space[1], alignSelf: 'stretch', justifyContent: 'center' },
+  identityTextStacked: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto', width: '100%' },
+  nameRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space[2] },
+  pencil: { minWidth: space[7] + space[1], minHeight: space[7] + space[1], alignItems: 'center', justifyContent: 'center', borderRadius: radius.full },
+  wornTitle: { ...text('caption'), color: colors.text.secondary },
   levelRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space[2] },
   levelNumber: { ...text('h3'), color: colors.text.primary },
   // Tabular, like every other fraction in the app: two numbers that change independently
   // must not shift each other sideways as they do.
-  levelXp: { ...text('caption', { numeric: true }), color: colors.text.secondary },
+  levelXp: { ...text('caption', { numeric: true }), color: colors.clay.sky.muted },
   statCaption: { ...text('caption'), color: colors.text.tertiary },
   stat: {
     // `flex: 1` and not a percentage: these sit in a row with a `gap`, and a percentage
     // width plus a gap overflows the row by the gap.
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
     alignItems: 'center',
     gap: space[1],
     paddingVertical: space[4],
     paddingHorizontal: space[2],
-    borderRadius: radius.lg,
+    borderRadius: radius.xl,
     ...squircle,
-    backgroundColor: colors.bg.surface,
-    borderWidth: 2, borderColor: colors.border.subtle,
+    ...clayShadow(colors),
   },
+  statStacked: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto', width: '100%' },
   statValue: { ...text('numeric'), color: colors.text.primary },
   statLabel: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
 

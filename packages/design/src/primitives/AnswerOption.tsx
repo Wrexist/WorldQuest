@@ -1,49 +1,12 @@
 import { createThemeStyles } from '../theme.js'
-/**
- * AnswerOption — the most-tapped component in the product.
- *
- * ## Flat with a lit edge, not a slab on a slab
- *
- * This used to be drawn as a face sitting on a solid edge that sank when pressed, on
- * the reasoning that "if they read as flat list rows the user is reading a form; if
- * they read as buttons, they tap". The concern is right and the answer was not: four
- * stacked 3D slabs is the loudest thing on a screen whose actual subject is a question
- * and a map, and on a dark ground the edge under each one reads as a shadow the layout
- * did not ask for.
- *
- * What replaces it does the same job with light instead of geometry — a real border on
- * a near-black card, and a coloured ring plus an outward GLOW on the states that mean
- * something. A lit edge reads as interactive on a dark screen the way a raised edge
- * reads as interactive on a light one; it is the same signal in the medium the app
- * actually has. The reference this was rebuilt against does exactly that, and it is why
- * its option list looks like a modern product rather than a stack of toy bricks.
- *
- * The Button keeps its face and edge. That is not an inconsistency left behind: a
- * primary action is ONE object that should feel pressable, and four of them in a column
- * is the case this component is. The reference agrees — its Continue button is raised
- * and its options are flat.
- *
- * ## The letter badge
- *
- * A, B, C, D down the leading edge. Three things at once, which is why it earns the
- * space: it gives the eye a fixed rail to scan down instead of four ragged text
- * starts, it makes "the third one" sayable out loud, and it gives the correct/wrong
- * state a second non-colour carrier — the badge fills in on the answer, so the signal
- * survives being read by someone who cannot separate the green ring from the red one.
- *
- * Every rule below comes from the voice and accessibility specs:
- *
- *  - A wrong answer gets a MUTED surface, never red, and no shake or buzzer. We
- *    state the truth and move on; we do not punish. (voice-and-tone.md)
- *  - Correct is never signalled by colour alone — an icon accompanies it, and the
- *    caller pairs it with a haptic. ~8% of men are red/green colour-blind and a
- *    large share of our core audience is 10-year-old boys. (accessibility.md)
- *  - Options are ≥56pt tall and disabled during feedback, which doubles as
- *    double-tap protection.
- */
+/** Soft clay answer surfaces retain semantic borders and non-colour verdict marks.
+ * Only transform/opacity move, through reduced-motion-aware native helpers.
+ * Wrong answers remain calm and every label keeps its intrinsic text height. */
 
+import { useEffect, useState } from 'react'
 import {
   Animated,
+  AppState,
   Pressable,
   StyleSheet,
   Text,
@@ -52,9 +15,10 @@ import {
   type ViewStyle,
 } from 'react-native'
 import { radius, space } from '../tokens.js'
-import { useAnimatedTo } from '../motion.js'
+import { useAnimatedTo, useReducedMotion } from '../motion.js'
 import { squircle } from '../shape.js'
 import { text } from '../typography.js'
+import { ClaySurface, clayShadow } from './ClaySurface.js'
 
 export type AnswerState = 'idle' | 'selected' | 'correct' | 'wrong' | 'disabled'
 
@@ -184,6 +148,21 @@ export function AnswerOption({
   const { SKINS, styles } = useThemeValues()
   const isInert = state === 'disabled' || state === 'correct' || state === 'wrong'
   const skin = SKINS[state]
+  const reduced = useReducedMotion()
+  const [pressed, setPressed] = useState(false)
+  const press = useAnimatedTo(pressed && !isInert && !reduced ? 1 : 0, 'press')
+  useEffect(() => {
+    if (!pressed) return
+    if (isInert || AppState.currentState === 'background' || AppState.currentState === 'inactive') {
+      setPressed(false)
+      return
+    }
+    // Losing the app can cancel the gesture without delivering onPressOut.
+    const subscription = AppState.addEventListener('change', next => {
+      if (next !== 'active') setPressed(false)
+    })
+    return () => subscription?.remove?.()
+  }, [isInert, pressed])
 
   const fallbackGlyph = GLYPHS[state]
   const glyph =
@@ -221,31 +200,21 @@ export function AnswerOption({
       aria-disabled={isInert}
       disabled={isInert}
       onPress={onPress}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      onBlur={() => setPressed(false)}
       testID={testID}
-      // A style FUNCTION, so the press is the platform's own pressed state rather than
-      // an animation this component has to own and this package has to police. Nothing
-      // here reaches for `Animated`, which is why the reduced-motion guards in
-      // tokens.test.ts and motion.test.ts no longer apply to this file: opacity is not
-      // motion, and a user who has asked for less movement gets the same feedback.
-      style={({ pressed }) => [
+      style={[styles.target, style]}
+    >
+      {/* The face compresses inside a stationary target. Input never waits for the
+          release, and feedback states settle without another press gesture. */}
+      <Animated.View style={[
         styles.card,
         { backgroundColor: skin.face, borderColor: skin.edge },
-        // The glow, and the reason it is a shadow rather than a second view: a flat
-        // shape at low opacity has an EDGE, and an edge is the one thing a glow does
-        // not have. Same lesson as the primary button's bloom.
-        skin.glow !== undefined && {
-          shadowColor: skin.glow,
-          shadowOpacity: 0.45,
-          shadowRadius: space[3],
-          shadowOffset: { width: 0, height: 0 },
-          // Android cannot colour an elevation, so it gets a neutral lift instead — the
-          // platform's own idiom for the same idea. `tokens.test.ts` requires the pair.
-          elevation: space[1],
-        },
-        pressed && styles.pressed,
-        style,
-      ]}
-    >
+        pressed && !isInert && styles.pressed,
+        { transform: [{ scale: press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.98] }) }] },
+      ]}>
+      {state !== 'disabled' && <ClaySurface radius={radius.lg} transparent={state !== 'idle'} />}
       {badge !== undefined && (
         <View
           style={[
@@ -347,6 +316,7 @@ export function AnswerOption({
           {glyph}
         </Animated.View>
       )}
+      </Animated.View>
     </Pressable>
   )
 }
@@ -389,11 +359,16 @@ const useThemeValues = createThemeStyles((colors) => {
   },
 }
   const styles = StyleSheet.create({
+  target: {
+    alignSelf: 'stretch',
+    minHeight: FACE_HEIGHT,
+  },
   card: {
     minHeight: FACE_HEIGHT,
-    alignSelf: 'stretch',
+    flexGrow: 1,
     borderRadius: radius.lg,
     ...squircle,
+    ...clayShadow(colors),
     // Two pixels, all the way round. The ring is what separates one option from the
     // next at a glance; without it four dark rectangles on a dark screen become one
     // shape and the eye has to do the work of finding the boundaries.
@@ -404,9 +379,7 @@ const useThemeValues = createThemeStyles((colors) => {
     alignItems: 'center',
     gap: space[3],
   },
-  // The whole card dips, which is what a flat control does instead of travelling. Kept
-  // shallow on purpose: this fires on every answer in every lesson, and the tenth one
-  // should feel like nothing at all.
+  // Also signals the press under reduced motion, when the face does not compress.
   pressed: { opacity: 0.7 },
   badge: {
     width: DISC,
@@ -478,11 +451,11 @@ const useThemeValues = createThemeStyles((colors) => {
    *
    * So the default does the RTL-correct thing and only the centred case is declared.
    */
-  label: { ...text('bodyStrong'), color: colors.text.primary, flex: 1 },
+  label: { ...text('bodyStrong'), color: colors.text.primary, flex: 1, minWidth: 0 },
   // No rail to hang off, so a bare label centres in the card.
   labelCentre: { textAlign: 'center' },
   glyphWrap: { alignItems: 'center', justifyContent: 'center', minWidth: space[5] },
   glyph: { ...text('h3') },
 })
-  return { colors, SKINS, styles }
+  return { SKINS, styles }
 })

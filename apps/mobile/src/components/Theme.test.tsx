@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { Button, Card, colors, darkColors, setAppearance } from '@worldquest/design'
 
 afterEach(() => setAppearance('system'))
+const cssColor = (hex: string) => `rgb(${[1, 3, 5].map(at => Number.parseInt(hex.slice(at, at + 2), 16)).join(', ')})`
 
 function StatefulLesson() {
   const [answer, setAnswer] = useState(false)
@@ -18,9 +19,9 @@ describe('live semantic appearance', () => {
     setAppearance('light')
     render(<StatefulLesson />)
     fireEvent.click(screen.getByRole('button', { name: 'Choose answer' }))
-    expect(getComputedStyle(screen.getByTestId('theme-card')).backgroundColor).toBe('rgb(255, 255, 255)')
+    expect(getComputedStyle(screen.getByTestId('theme-card')).backgroundColor).toBe(cssColor(colors.bg.surface))
     act(() => setAppearance('dark'))
-    expect(getComputedStyle(screen.getByTestId('theme-card')).backgroundColor).toBe('rgb(20, 45, 64)')
+    expect(getComputedStyle(screen.getByTestId('theme-card')).backgroundColor).toBe(cssColor(darkColors.bg.surface))
     expect(screen.getByRole('button', { name: 'Selected answer' })).toBeTruthy()
     act(() => setAppearance('light'))
     expect(screen.getByRole('button', { name: 'Selected answer' })).toBeTruthy()

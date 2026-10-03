@@ -31,6 +31,7 @@ import { createThemeStyles } from '@worldquest/design'
 import { useEffect, useRef } from 'react'
 import { Animated, Pressable, StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native'
 import {
+  ClaySurface,
   depth,
   motion,
   press3d,
@@ -43,7 +44,7 @@ import {
 } from '@worldquest/design'
 import { tContent, useT } from '../../../lib/i18n.js'
 import { Icon } from '../../../components/Icon.js'
-import { DaylightIllustration } from '../../../components/DaylightIllustration.js'
+import { ExplorerChestStill } from '../../../components/ExplorerChestArt.js'
 import type { IconName } from '../../../lib/icons.generated.js'
 import type { PathNodeView } from '../pathView.js'
 import { PathBubble } from './PathBubble.js'
@@ -144,7 +145,7 @@ export function PathNode({ node, total, swing, column, expanded, onPress, onLayo
           compact && { borderWidth: 0, overflow: 'hidden' },
         ]}
       >
-        {compact && node.state !== 'locked' && <View pointerEvents="none" aria-hidden style={styles.platformShine} />}
+        <ClaySurface tone={current ? 'lime' : node.state === 'done' ? 'sky' : 'ice'} radius={radius.full} />
         <Icon name={glyph} size={current ? CURRENT_GLYPH : NODE_GLYPH} color={skin.glyph} />
       </Animated.View>
       {node.state === 'locked' && (
@@ -167,7 +168,7 @@ export function PathNode({ node, total, swing, column, expanded, onPress, onLayo
     <View style={[styles.row, compact && { height: 88, justifyContent: 'center' }]} onLayout={onLayout}>
       {!compact && !current && node.kind === 'check' && (
         <View style={styles.scenery} pointerEvents="none" aria-hidden>
-          <DaylightIllustration name="treasure-chest" size={NODE} />
+          <ExplorerChestStill size={NODE} opened={node.state === 'done'} />
         </View>
       )}
       <Pressable

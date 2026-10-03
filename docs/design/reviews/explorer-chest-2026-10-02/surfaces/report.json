@@ -1,0 +1,243 @@
+{
+  "fixture": true,
+  "description": "Real QuestIntro, QuestComplete and StreakGemCollection in React Native Web with explicit local presentation props. No production state is seeded. Haptics are stubbed.",
+  "checks": [
+    {
+      "suffix": "intro-fresh-default-320",
+      "overflow": [],
+      "controls": [
+        {
+          "label": "Back",
+          "top": 12,
+          "bottom": 56,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Start quest",
+          "top": 496,
+          "bottom": 552,
+          "width": 288,
+          "height": 56
+        }
+      ]
+    },
+    {
+      "suffix": "complete-fresh-default-320",
+      "overflow": [],
+      "controls": [
+        {
+          "label": "Nice",
+          "top": 496,
+          "bottom": 552,
+          "width": 288,
+          "height": 56
+        }
+      ]
+    },
+    {
+      "suffix": "complete-complete-default-320",
+      "overflow": [],
+      "controls": [
+        {
+          "label": "Nice",
+          "top": 496,
+          "bottom": 552,
+          "width": 288,
+          "height": 56
+        }
+      ]
+    },
+    {
+      "suffix": "collection-fresh-default-320",
+      "overflow": [],
+      "controls": [
+        {
+          "label": "Open today’s chest",
+          "top": 327,
+          "bottom": 383,
+          "width": 254,
+          "height": 56
+        }
+      ]
+    },
+    {
+      "suffix": "intro-fresh-default-390",
+      "overflow": [],
+      "controls": [
+        {
+          "label": "Back",
+          "top": 12,
+          "bottom": 56,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Start quest",
+          "top": 772,
+          "bottom": 828,
+          "width": 358,
+          "height": 56
+        }
+      ]
+    },
+    {
+      "suffix": "complete-fresh-default-390",
+      "overflow": [],
+      "controls": [
+        {
+          "label": "Nice",
+          "top": 772,
+          "bottom": 828,
+          "width": 358,
+          "height": 56
+        }
+      ]
+    },
+    {
+      "suffix": "complete-complete-default-390",
+      "overflow": [],
+      "controls": [
+        {
+          "label": "Nice",
+          "top": 772,
+          "bottom": 828,
+          "width": 358,
+          "height": 56
+        }
+      ]
+    },
+    {
+      "suffix": "collection-fresh-default-390",
+      "overflow": [],
+      "controls": [
+        {
+          "label": "Open today’s chest",
+          "top": 303,
+          "bottom": 359,
+          "width": 324,
+          "height": 56
+        }
+      ]
+    },
+    {
+      "suffix": "intro-fresh-accessible-320",
+      "overflow": [],
+      "controls": [
+        {
+          "label": "Tillbaka",
+          "top": 50,
+          "bottom": 94,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Starta uppdraget",
+          "top": 440,
+          "bottom": 552,
+          "width": 288,
+          "height": 112
+        }
+      ]
+    },
+    {
+      "suffix": "complete-fresh-accessible-320",
+      "overflow": [],
+      "controls": [
+        {
+          "label": "Fint",
+          "top": 488,
+          "bottom": 552,
+          "width": 288,
+          "height": 64
+        }
+      ]
+    },
+    {
+      "suffix": "complete-complete-accessible-320",
+      "overflow": [],
+      "controls": [
+        {
+          "label": "Fint",
+          "top": 488,
+          "bottom": 552,
+          "width": 288,
+          "height": 64
+        }
+      ]
+    },
+    {
+      "suffix": "collection-fresh-accessible-320",
+      "overflow": [],
+      "controls": [
+        {
+          "label": "Öppna dagens kista",
+          "top": 901,
+          "bottom": 1013,
+          "width": 254,
+          "height": 112
+        }
+      ]
+    },
+    {
+      "suffix": "intro-fresh-accessible-390",
+      "overflow": [],
+      "controls": [
+        {
+          "label": "Tillbaka",
+          "top": 50,
+          "bottom": 94,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Starta uppdraget",
+          "top": 764,
+          "bottom": 828,
+          "width": 358,
+          "height": 64
+        }
+      ]
+    },
+    {
+      "suffix": "complete-fresh-accessible-390",
+      "overflow": [],
+      "controls": [
+        {
+          "label": "Fint",
+          "top": 764,
+          "bottom": 828,
+          "width": 358,
+          "height": 64
+        }
+      ]
+    },
+    {
+      "suffix": "complete-complete-accessible-390",
+      "overflow": [],
+      "controls": [
+        {
+          "label": "Fint",
+          "top": 764,
+          "bottom": 828,
+          "width": 358,
+          "height": 64
+        }
+      ]
+    },
+    {
+      "suffix": "collection-fresh-accessible-390",
+      "overflow": [],
+      "controls": [
+        {
+          "label": "Öppna dagens kista",
+          "top": 769,
+          "bottom": 881,
+          "width": 324,
+          "height": 112
+        }
+      ]
+    }
+  ],
+  "errors": []
+}
