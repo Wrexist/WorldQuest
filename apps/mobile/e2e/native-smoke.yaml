@@ -129,6 +129,10 @@ appId: com.wrexist.worldquest
 - waitForAnimationToEnd:
     timeout: 10000
 - assertVisible: "Zoom in"
+- extendedWaitUntil:
+    notVisible:
+      id: "atlas-rendering"
+    timeout: 15000
 - takeScreenshot: native-explore-dragged
 - swipe:
     start: "3%, 38%"

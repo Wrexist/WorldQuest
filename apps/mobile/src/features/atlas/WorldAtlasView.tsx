@@ -125,6 +125,7 @@ export function WorldAtlasView({
   const [size, setSize] = useState<{ width: number; height: number } | null>(null)
   const [camera, setCamera] = useState<Camera>(WORLD_CAMERA)
   const [status, setStatus] = useState<AtlasStatus>('loading')
+  const [rendering, setRendering] = useState(false)
   const statusRef = useRef<AtlasStatus>('loading')
   const [appActive, setAppActive] = useState(AppState.currentState !== 'background' && AppState.currentState !== 'inactive')
   const foreground = useRef(appActive)
@@ -154,6 +155,7 @@ export function WorldAtlasView({
 
   const report = useCallback((next: AtlasStatus, error?: Error) => {
     statusRef.current = next
+    if (next === 'error') setRendering(false)
     setStatus(next)
     statusCallback.current?.(next, error)
   }, [])
@@ -176,6 +178,7 @@ export function WorldAtlasView({
   const requestDraw = useCallback(() => {
     dirty.current = true
     if (!mounted.current || !foreground.current || statusRef.current === 'error' || frame.current !== null || flight.current !== null) return
+    setRendering(true)
     frame.current = requestAnimationFrame(() => {
       frame.current = null
       if (!mounted.current || !foreground.current) return
@@ -200,6 +203,7 @@ export function WorldAtlasView({
         if (pending.deadline !== null) clearTimeout(pending.deadline)
         flight.current = null
         if (dirty.current && mounted.current && foreground.current) requestDrawRef.current()
+        else if (mounted.current) setRendering(false)
       }
       pending.fail = (error) => {
         if (flight.current !== pending) return
@@ -524,6 +528,7 @@ export function WorldAtlasView({
     <View
       style={[styles.frame, style]}
       onLayout={onLayout}
+      testID={rendering ? 'atlas-rendering' : 'atlas-idle'}
     >
       {/* One accessible element for the whole picture. The summary obeys the same
           disclosure rules as the labels; the pins and labels inside are hidden from the
@@ -536,6 +541,7 @@ export function WorldAtlasView({
         accessible
         role="img"
         accessibilityLabel={spec.summary}
+        aria-busy={rendering}
       >
       {/* The native surface stays transparent until its first complete frame. Keep a
           matching still underneath so shader warmup never exposes a blank map. The

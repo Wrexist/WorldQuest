@@ -1,7 +1,7 @@
 import { createThemeStyles } from '@worldquest/design'
 
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { AccessibilityInfo, Animated, Keyboard, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native'
 import {
   Button,
@@ -73,6 +73,7 @@ export type ExploreScreenProps = {
 
 
 const STACK_COLLECTIONS_BELOW = 360
+const EMPTY_COUNTRIES: NonNullable<ExploreScreenProps['countries']> = []
 
 type TileSize = { readonly width: number; readonly height: number }
 
@@ -80,7 +81,7 @@ const estimateTileWidth = (windowWidth: number) => (windowWidth - space[4] * 2) 
 
 export function ExploreScreen({
   world,
-  countries = [],
+  countries = EMPTY_COUNTRIES,
   onSelectCountry,
   loading,
   onSelectRegion,
@@ -105,7 +106,10 @@ export function ExploreScreen({
   useEffect(() => () => { if (selectionFrame.current !== undefined) cancelAnimationFrame(selectionFrame.current) }, [])
   const normalize = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().trim()
   const needle = normalize(query)
-  const matches = countries.filter(country => normalize(country.name).includes(needle) || (REGIONS.includes(country.region as RegionCode) && normalize(t(REGION_NAME[country.region as RegionCode])).includes(needle)))
+  const matches = useMemo(() => countries.filter(country => normalize(country.name).includes(needle) || (REGIONS.includes(country.region as RegionCode) && normalize(t(REGION_NAME[country.region as RegionCode])).includes(needle))), [countries, needle, t])
+  // Locking the scroller must not create a new highlight scene and redraw the old
+  // camera immediately before the first drag movement reaches the renderer.
+  const atlasMatches = useMemo(() => needle.length > 0 ? matches.map(country => country.id) : [], [matches, needle])
   const selectCountry = (id: string | null) => {
     if (selectionFrame.current !== undefined) cancelAnimationFrame(selectionFrame.current)
     revealSelection.current = id !== null && (needle.length > 0 || selected === null)
@@ -209,7 +213,7 @@ export function ExploreScreen({
             // globe is no longer showing.
             if (region !== null && selected !== null && countries.find((c) => c.id === selected)?.region !== region) selectCountry(null)
           }}
-          matches={needle.length > 0 ? matches.map((m) => m.id) : []}
+          matches={atlasMatches}
           onOpenCountry={(id) => onSelectCountry?.(id)}
         />
       )}

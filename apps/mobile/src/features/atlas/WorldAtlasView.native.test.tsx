@@ -117,9 +117,11 @@ describe('native GPU frame completion', () => {
     render(<WorldAtlasView spec={spec} controls onStatusChange={onStatusChange} />)
     await waitFor(() => expect(pending).toHaveLength(1))
     expect(screen.queryByRole('button', { name: 'Zoom in' })).toBeNull()
+    expect(screen.getByTestId('atlas-rendering')).toBeTruthy()
     expect(onStatusChange).not.toHaveBeenCalledWith('ready', undefined)
     await act(async () => { pending[0]!.resolve() })
     await waitFor(() => expect(screen.getByRole('button', { name: 'Zoom in' })).toBeTruthy())
+    expect(screen.getByTestId('atlas-idle')).toBeTruthy()
     expect(onStatusChange).toHaveBeenCalledWith('ready', undefined)
   })
 
