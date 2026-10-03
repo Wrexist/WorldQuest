@@ -44,15 +44,73 @@ the prior cache on failure or account change. Continuations read only the accoun
 revision and the next memory range. Requests are bounded to 100 pages. Existing
 unpaged clients retain their prior response contract, including the explicit error
 over 1,000 memories. The new client accepts older complete responses too. No database
-migration or auth/email gate change is required; the paging endpoint needs the
-updated Worker before histories above 1,000 memories can hydrate.
+migration or auth/email gate change is required. The updated Worker was deployed
+after local and CI transaction proofs passed; details are recorded below.
 
 A separate prompt bug preferred an English article-bearing country name over the
 available Swedish name. The fallback now prefers the current locale's sentence form,
 then its normal name, before English. Regression cases cover GB and NL in both
 languages. No authored factual values were changed.
 
+## Production deployment
+
+Deployed on October 3, 2026 from source commit
+`1ee48733c96783897f0fcd399afe072a900f05f7` to the existing
+`worldquest-production-api`, using `packages/backend/wrangler.production.jsonc`.
+The backend source matches the reviewed `5485deca` candidate; the later commit
+contains mobile translation keys and review documentation.
+
+- Active Worker version: `4e21ef6a-41b9-49d3-8c51-0dd9ec6e58a1`, at 100%.
+- Deployment: `64a4a552-0707-44de-a77d-6eba0893e505`, created
+  `2026-10-03T14:18:25.285319Z`.
+- Preflight verified a clean backend/engine/content tree, the existing production
+  Worker and D1 binding, and unchanged gates. Wrangler 4.131.1 dry-run packaging
+  passed: 6,654.29 KiB upload / 785.62 KiB gzip.
+- Deployment used `--keep-vars`; no migrations, secret updates or production data
+  seeding were run. Post-deployment binding readback confirmed `API_ENABLED=true`,
+  `EMAIL_AUTH_ENABLED=false`, `LEAGUES_ENABLED=false`, `CHALLENGES_ENABLED=false`
+  and the same production D1 database.
+- At `2026-10-03T14:19:09.056Z`,
+  `https://api.worldquest.dpdns.org/health` returned HTTP 200 and
+  `{"service":"worldquest","backend":"cloudflare-d1","apiEnabled":true}`.
+- The existing explicit-target hosted guest smoke ran once against the new version.
+  Five issued Swedish beginner questions passed the shipped parser and temporary
+  guest deletion was confirmed. It sent no email, submitted no answers and awarded
+  no rewards. The 1,005-memory proof remains isolated local/CI evidence; no such
+  history was seeded into production.
+
+Commands were checked against the installed CLI and
+[Cloudflare's Wrangler documentation](https://developers.cloudflare.com/workers/wrangler/commands/general/).
+
 ## Validation
+
+### Native bundled-file correction
+
+The uninstrumented iOS run `37128874643` reached Explore and displayed the reference
+load error before creating the globe. Its packaged catalogue was present and
+byte-identical to the generated 1,442,613-byte asset (6,745 facts); packaged
+`countries.bin` also matched the 904,180-byte source file.
+
+The installed Expo SDK 54 implementation explains the failure: `File.text()` and
+`File.bytes()` in `expo-file-system/ios/FileSystemFile.swift` request `.write`
+permission, while Expo Modules Core grants paths under `Bundle.main.bundlePath`
+only `.read`. `Asset.downloadAsync()` returns these existing file URLs directly.
+Both the reference text reader and atlas geometry reader now use the supported
+`expo-file-system/legacy` `readAsStringAsync`, whose native path checks `.read`.
+Text uses UTF-8; binary uses Base64 and an explicit `base64-js` decoder, without
+assuming Hermes provides `atob` or Node's `Buffer`. Texture URIs and web loaders
+are unchanged. A small JavaScript boundary re-exports the official runtime entry;
+its paired declaration re-exports Expo's own published legacy types, avoiding the
+package entry's TypeScript source error under `exactOptionalPropertyTypes` without
+weakening the app's checks or redirecting runtime resolution.
+
+Native-boundary JavaScript regression tests check the actual resolved local URI,
+UTF-8 Swedish text, byte-for-byte roundtrip and parsing of the real geometry asset,
+padding/empty buffers, unavailable `atob`, non-local URI rejection, and untouched
+texture handling. These tests cannot enforce iOS permissions: a new uninstrumented
+native acceptance run must prove catalogue and globe loading before release.
+
+### Combined candidate checks
 
 - Real workerd/SQLite: 1,005 memories hydrate completely in 250-row pages, another
   account reads none of them, malformed cursors fail, and a concurrent revision

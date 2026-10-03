@@ -296,3 +296,10 @@ vi.mock('expo-file-system', () => ({
     }
   },
 }))
+
+vi.mock('expo-file-system/legacy', () => ({
+  EncodingType: { UTF8: 'utf8', Base64: 'base64' },
+  readAsStringAsync: async () => {
+    throw new Error('expo-file-system is not available in tests')
+  },
+}))
