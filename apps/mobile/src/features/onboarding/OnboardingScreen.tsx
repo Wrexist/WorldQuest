@@ -1,4 +1,4 @@
-import { createThemeStyles } from '@worldquest/design'
+import { createThemeStyles, Spacer } from '@worldquest/design'
 /**
  * Welcome, language, value slides, age, goal, region, level, plan, then a taster.
  * The first real lesson still precedes any account request. Revisable preferences
@@ -806,7 +806,8 @@ export function OnboardingScreen({
 
       <Animated.View style={[styles.stepFill, stepStyle]}>
         {step === 'welcome' && (
-          <ScrollView contentContainerStyle={[styles.welcomeContent, styles.welcomeCentered]} showsVerticalScrollIndicator={false}>
+          <ScrollView contentContainerStyle={styles.welcomeContent} showsVerticalScrollIndicator={false}>
+            <Spacer />
             <Animated.View style={[styles.welcomeHero, { height: welcomeStage }, arrivalStyle]}>
               <LaunchHero size={welcomeStage} />
             </Animated.View>
@@ -817,6 +818,7 @@ export function OnboardingScreen({
             <Animated.Text style={[styles.body, staggerStyle(lineIn)]}>
               {t('onboarding:welcome.body')}
             </Animated.Text>
+            <Spacer />
           </ScrollView>
         )}
 
@@ -1297,7 +1299,6 @@ const useThemeValues = createThemeStyles((colors) => {
     askBubbleStacked: { flex: 0, alignSelf: 'stretch' },
     form: { alignItems: 'center', paddingHorizontal: space[4], paddingTop: space[3], paddingBottom: space[5], gap: space[3], flexGrow: 1 },
     welcomeContent: { alignItems: 'center', paddingHorizontal: space[4], paddingTop: space[5], paddingBottom: space[5], gap: space[4], flexGrow: 1 },
-    welcomeCentered: { justifyContent: 'center' },
     welcomeHero: { alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', flexShrink: 0 },
     hero: { height: HERO, alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', flexShrink: 0 },
     wordmark: { ...text('display'), color: colors.text.primary, textAlign: 'center' },

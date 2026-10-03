@@ -73,6 +73,17 @@ jobs:
           xcrun simctl boot "$DEVICE_ID"
           xcrun simctl bootstatus "$DEVICE_ID" -b
           xcrun simctl install "$DEVICE_ID" "$RUNNER_TEMP/app/WorldQuest.app"
+      - name: Approve the disposable simulator's URL bridge
+        run: |
+          set -euo pipefail
+          APPROVAL_PLIST="$HOME/Library/Developer/CoreSimulator/Devices/$DEVICE_ID/data/Library/Preferences/com.apple.launchservices.schemeapproval.plist"
+          APPROVAL_KEY='com.apple.CoreSimulator.CoreSimulatorBridge-->worldquest'
+          if /usr/libexec/PlistBuddy -c "Print $APPROVAL_KEY" "$APPROVAL_PLIST" >/dev/null 2>&1; then
+            /usr/libexec/PlistBuddy -c "Set $APPROVAL_KEY com.wrexist.worldquest" "$APPROVAL_PLIST"
+          else
+            /usr/libexec/PlistBuddy -c "Add $APPROVAL_KEY string com.wrexist.worldquest" "$APPROVAL_PLIST"
+          fi
+          plutil -lint "$APPROVAL_PLIST"
       - name: Run the native journey
         run: |
           set -euo pipefail

@@ -80,9 +80,6 @@ const WAIVED: Record<string, string> = {
   // immediately and was right to: the feedback sheet scrolls, which is precisely where
   // the long content on that screen lands. The waiver described the intent of the layout
   // and the script asks a narrower question — can the user reach the words.
-  'splash/SplashScreen':
-    'one mark and one line, shown for at most a second while fonts load. There is ' +
-    'nothing here that a translation or a font scale can grow past a screen',
 }
 
 type Screen = { name: string; code: string }

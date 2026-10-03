@@ -33,7 +33,7 @@ import { createThemeStyles } from '@worldquest/design'
 import { useEffect, useRef, useState } from 'react'
 import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Button, space, text, useAnimatedTo } from '@worldquest/design'
+import { Button, Spacer, space, text, useAnimatedTo } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { LaunchHero } from '../../components/LaunchHero.js'
 
@@ -73,6 +73,7 @@ export function SplashScreen({ phase = 'booting', onRetry }: SplashScreenProps) 
   return (
     <SafeAreaView style={styles.canvas}>
     <ScrollView contentContainerStyle={styles.root} bounces={false}>
+    <Spacer />
     <View style={styles.identity}
       // One live region for the whole screen. Announcing the wordmark and then the
       // status line separately would interrupt a screen-reader user twice on boot.
@@ -86,7 +87,7 @@ export function SplashScreen({ phase = 'booting', onRetry }: SplashScreenProps) 
         <LaunchHero size={space[9] * 4} boot />
       </Animated.View>
 
-      <Text style={styles.wordmark}>{t('splash:wordmark')}</Text>
+      <Text maxFontSizeMultiplier={1.3} dataSet={{ maxScale: '1.3' }} style={styles.wordmark}>{t('splash:wordmark')}</Text>
     </View>
 
       {/* Reserved whether or not it is filled, so the wordmark does not jump upward
@@ -103,6 +104,7 @@ export function SplashScreen({ phase = 'booting', onRetry }: SplashScreenProps) 
           </>
         )}
       </View>
+    <Spacer />
     </ScrollView>
     </SafeAreaView>
   )
@@ -145,7 +147,6 @@ const useThemeValues = createThemeStyles((colors) => {
   root: {
     flexGrow: 1,
     alignItems: 'center',
-    justifyContent: 'center',
     gap: space[4],
     padding: space[5],
   },
