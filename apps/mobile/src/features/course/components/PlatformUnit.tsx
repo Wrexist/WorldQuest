@@ -144,7 +144,7 @@ const useThemeValues = createThemeStyles((colors) => {
   title: { ...text('h2'), color: colors.clay.sky.ink },
   count: { ...text('caption'), color: colors.clay.sky.muted },
   unitTrack: { flexDirection: 'row', gap: space[1], marginTop: space[2] },
-  unitSegment: { flex: 1, height: space[2], borderRadius: radius.full, backgroundColor: colors.course.bannerEdge },
+  unitSegment: { flex: 1, height: space[2], borderRadius: radius.full, backgroundColor: colors.status.progressTrack },
   unitSegmentDone: { backgroundColor: colors.action.primaryFace },
   rewardRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: space[2] },
   xpBadge: { flexDirection: 'row', alignItems: 'center', gap: space[1], backgroundColor: colors.journey.sand, paddingHorizontal: space[2], paddingVertical: space[1], borderRadius: radius.full },

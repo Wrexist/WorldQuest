@@ -1,0 +1,375 @@
+{
+  "source": "C:\\Users\\IsacC\\WorldQuest\\node_modules\\.cache\\wq-web-d1",
+  "realApp": true,
+  "onboardingCompletedThroughUI": true,
+  "seededAccount": false,
+  "network": "Every API request intercepted; no Worker or production connection",
+  "cases": [
+    {
+      "name": "unavailable-320-en-normal",
+      "route": "http://127.0.0.1:4246/lesson?taster=1",
+      "width": 320,
+      "locale": "en",
+      "enlarged": false,
+      "title": "WorldQuest is temporarily unavailable",
+      "images": [
+        {
+          "file": "thinking.cb6e00db9afbf176e10c418426ddcfef.png",
+          "decoded": true,
+          "width": 512,
+          "height": 512
+        }
+      ],
+      "card": {
+        "radius": "24px",
+        "shadow": "rgba(39, 98, 130, 0.18) 0px 4px 8px 0px",
+        "gradients": 4
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "textOutsideViewport": []
+      },
+      "actions": [
+        {
+          "label": "Back",
+          "x": 48,
+          "y": 440.5,
+          "width": 224,
+          "height": 57,
+          "reachable": true
+        }
+      ]
+    },
+    {
+      "name": "unavailable-390-en-normal",
+      "route": "http://127.0.0.1:4246/lesson?taster=1",
+      "width": 390,
+      "locale": "en",
+      "enlarged": false,
+      "title": "WorldQuest is temporarily unavailable",
+      "images": [
+        {
+          "file": "thinking.cb6e00db9afbf176e10c418426ddcfef.png",
+          "decoded": true,
+          "width": 512,
+          "height": 512
+        }
+      ],
+      "card": {
+        "radius": "24px",
+        "shadow": "rgba(39, 98, 130, 0.18) 0px 4px 8px 0px",
+        "gradients": 4
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "textOutsideViewport": []
+      },
+      "actions": [
+        {
+          "label": "Back",
+          "x": 48,
+          "y": 551.5,
+          "width": 294,
+          "height": 57,
+          "reachable": true
+        }
+      ]
+    },
+    {
+      "name": "unavailable-320-sv-dark-glyph2-reduced",
+      "route": "http://127.0.0.1:4246/lesson",
+      "width": 320,
+      "locale": "sv",
+      "enlarged": true,
+      "title": "WorldQuest är tillfälligt otillgängligt",
+      "images": [
+        {
+          "file": "thinking.cb6e00db9afbf176e10c418426ddcfef.png",
+          "decoded": true,
+          "width": 512,
+          "height": 512
+        }
+      ],
+      "card": {
+        "radius": "24px",
+        "shadow": "rgba(2, 14, 28, 0.18) 0px 4px 8px 0px",
+        "gradients": 4
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "textOutsideViewport": []
+      },
+      "actions": [
+        {
+          "label": "Tillbaka",
+          "x": 48,
+          "y": 456,
+          "width": 224,
+          "height": 64,
+          "reachable": true
+        }
+      ]
+    },
+    {
+      "name": "unavailable-390-sv-dark-glyph2-reduced",
+      "route": "http://127.0.0.1:4246/lesson",
+      "width": 390,
+      "locale": "sv",
+      "enlarged": true,
+      "title": "WorldQuest är tillfälligt otillgängligt",
+      "images": [
+        {
+          "file": "thinking.cb6e00db9afbf176e10c418426ddcfef.png",
+          "decoded": true,
+          "width": 512,
+          "height": 512
+        }
+      ],
+      "card": {
+        "radius": "24px",
+        "shadow": "rgba(2, 14, 28, 0.18) 0px 4px 8px 0px",
+        "gradients": 4
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "textOutsideViewport": []
+      },
+      "actions": [
+        {
+          "label": "Tillbaka",
+          "x": 48,
+          "y": 680,
+          "width": 294,
+          "height": 64,
+          "reachable": true
+        }
+      ]
+    },
+    {
+      "name": "transport-320-en-normal",
+      "route": "http://127.0.0.1:4246/lesson?taster=1",
+      "width": 320,
+      "locale": "en",
+      "enlarged": false,
+      "title": "That didn't load",
+      "images": [
+        {
+          "file": "thinking.cb6e00db9afbf176e10c418426ddcfef.png",
+          "decoded": true,
+          "width": 512,
+          "height": 512
+        }
+      ],
+      "card": {
+        "radius": "24px",
+        "shadow": "rgba(39, 98, 130, 0.18) 0px 4px 8px 0px",
+        "gradients": 4
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "textOutsideViewport": []
+      },
+      "actions": [
+        {
+          "label": "Try again",
+          "x": 48,
+          "y": 353.5,
+          "width": 224,
+          "height": 57,
+          "reachable": true
+        },
+        {
+          "label": "Back",
+          "x": 48,
+          "y": 422.5,
+          "width": 224,
+          "height": 54,
+          "reachable": true
+        }
+      ]
+    },
+    {
+      "name": "transport-390-en-normal",
+      "route": "http://127.0.0.1:4246/lesson?taster=1",
+      "width": 390,
+      "locale": "en",
+      "enlarged": false,
+      "title": "That didn't load",
+      "images": [
+        {
+          "file": "thinking.cb6e00db9afbf176e10c418426ddcfef.png",
+          "decoded": true,
+          "width": 512,
+          "height": 512
+        }
+      ],
+      "card": {
+        "radius": "24px",
+        "shadow": "rgba(39, 98, 130, 0.18) 0px 4px 8px 0px",
+        "gradients": 4
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "textOutsideViewport": []
+      },
+      "actions": [
+        {
+          "label": "Try again",
+          "x": 48,
+          "y": 491.5,
+          "width": 294,
+          "height": 57,
+          "reachable": true
+        },
+        {
+          "label": "Back",
+          "x": 48,
+          "y": 560.5,
+          "width": 294,
+          "height": 54,
+          "reachable": true
+        }
+      ]
+    },
+    {
+      "name": "transport-320-sv-dark-glyph2-reduced",
+      "route": "http://127.0.0.1:4246/lesson",
+      "width": 320,
+      "locale": "sv",
+      "enlarged": true,
+      "title": "Det gick inte att ladda",
+      "images": [
+        {
+          "file": "thinking.cb6e00db9afbf176e10c418426ddcfef.png",
+          "decoded": true,
+          "width": 512,
+          "height": 512
+        }
+      ],
+      "card": {
+        "radius": "24px",
+        "shadow": "rgba(2, 14, 28, 0.18) 0px 4px 8px 0px",
+        "gradients": 4
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "textOutsideViewport": []
+      },
+      "actions": [
+        {
+          "label": "Försök igen",
+          "x": 48,
+          "y": 504,
+          "width": 224,
+          "height": 64,
+          "reachable": true
+        },
+        {
+          "label": "Tillbaka",
+          "x": 48,
+          "y": 456,
+          "width": 224,
+          "height": 64,
+          "reachable": true
+        }
+      ]
+    },
+    {
+      "name": "transport-390-sv-dark-glyph2-reduced",
+      "route": "http://127.0.0.1:4246/lesson",
+      "width": 390,
+      "locale": "sv",
+      "enlarged": true,
+      "title": "Det gick inte att ladda",
+      "images": [
+        {
+          "file": "thinking.cb6e00db9afbf176e10c418426ddcfef.png",
+          "decoded": true,
+          "width": 512,
+          "height": 512
+        }
+      ],
+      "card": {
+        "radius": "24px",
+        "shadow": "rgba(2, 14, 28, 0.18) 0px 4px 8px 0px",
+        "gradients": 4
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "textOutsideViewport": []
+      },
+      "actions": [
+        {
+          "label": "Försök igen",
+          "x": 48,
+          "y": 540,
+          "width": 294,
+          "height": 64,
+          "reachable": true
+        },
+        {
+          "label": "Tillbaka",
+          "x": 48,
+          "y": 616,
+          "width": 294,
+          "height": 64,
+          "reachable": true
+        }
+      ]
+    }
+  ],
+  "interactions": [
+    {
+      "label": "unavailable-en",
+      "requestsAfterSettling": 10,
+      "requestsAfterIdle": 10,
+      "quietWindowMs": 3000,
+      "retryRequests": 0,
+      "returnedTo": "/"
+    },
+    {
+      "label": "unavailable-sv",
+      "requestsAfterSettling": 18,
+      "requestsAfterIdle": 18,
+      "quietWindowMs": 3000,
+      "retryRequests": 0,
+      "returnedTo": "/"
+    },
+    {
+      "fault": "unavailable",
+      "interceptedApiOrigins": [
+        "http://localhost:4174"
+      ],
+      "guestRequestCount": 19
+    },
+    {
+      "label": "transport-en",
+      "requestsAfterSettling": 10,
+      "requestsAfterIdle": 10,
+      "quietWindowMs": 3000,
+      "retryRequests": 1,
+      "returnedTo": "/"
+    },
+    {
+      "label": "transport-sv",
+      "requestsAfterSettling": 22,
+      "requestsAfterIdle": 22,
+      "quietWindowMs": 3000,
+      "retryRequests": 1,
+      "returnedTo": "/"
+    },
+    {
+      "fault": "transport",
+      "interceptedApiOrigins": [
+        "http://localhost:4174"
+      ],
+      "guestRequestCount": 24
+    }
+  ],
+  "pageErrors": [],
+  "blockedExternal": [],
+  "limitations": [
+    "Chromium/react-native-web, not an iPhone.",
+    "200% enlarges rendered glyphs; it does not emulate native fontScale layout branches."
+  ]
+}

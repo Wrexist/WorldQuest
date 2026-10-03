@@ -293,13 +293,13 @@ export class GlobeRenderer {
     this.outline = { buffer: this.buffer(gl.ARRAY_BUFFER, data), count }
   }
 
-  /** One frame. `width`/`height` are the drawing buffer; `viewport` is layout points. */
-  render(camera: Camera, viewport: { width: number; height: number }): void {
-    if (this.disposed) return
+  /** True after a complete frame is submitted; incomplete surfaces stay transparent. */
+  render(camera: Camera, viewport: { width: number; height: number }): boolean {
+    if (this.disposed || !this.ready) return false
     const gl = this.gl
     const width = gl.drawingBufferWidth
     const height = gl.drawingBufferHeight
-    if (width === 0 || height === 0) return
+    if (width === 0 || height === 0) return false
     const scale = width / Math.max(1, viewport.width)
     gl.viewport(0, 0, width, height)
     const [br, bg, bb] = this.theme.background
@@ -318,11 +318,6 @@ export class GlobeRenderer {
     // getError stalls the pipeline, so only development and lab builds pay for it — enough to turn
     // a silently black frame into a named failure while native acceptance is open.
     if (DEBUG_GL) this.check('halo pass')
-
-    if (!this.ready) {
-      gl.endFrameEXP?.()
-      return
-    }
 
     const mvp = viewProjection(camera, width / height)
     const rotation = columnMajor3(globeRotation(camera))
@@ -356,7 +351,9 @@ export class GlobeRenderer {
     const radiusPx = discRadius(camera, viewport) * scale
     const texelsPerPixel = this.idSize[1] / (Math.PI * Math.max(1, radiusPx))
     gl.uniform1f(u('uBorderTexels'), Math.max(0.75, texelsPerPixel * 1.1))
-    gl.uniform1f(u('uGlowTexels'), this.quality === 'high' ? Math.max(2, texelsPerPixel * 7) : 0)
+    // With no highlighted subject, every halo sample resolves to no glow. Avoid the
+    // 8-direction neighbourhood pass for an unselected Explore globe.
+    gl.uniform1f(u('uGlowTexels'), this.focus && this.quality === 'high' ? Math.max(2, texelsPerPixel * 7) : 0)
     // Element by element, with scalar setters — valid on every WebGL implementation. (They
     // were suspected during the first Android run's black globe and ruled out by bisecting:
     // the cause was the texture path, see assetSource.ts. They stay because they are the
@@ -395,6 +392,7 @@ export class GlobeRenderer {
     }
     gl.flush()
     gl.endFrameEXP?.()
+    return true
   }
 
   /** Delete every GL object this renderer created. Safe to call twice. */

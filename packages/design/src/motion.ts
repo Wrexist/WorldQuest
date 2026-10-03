@@ -205,23 +205,35 @@ export function useCountUp(target: number, step: MotionStep = 'celebrate'): numb
   const [value, setValue] = useState(target)
 
   useIsomorphicLayoutEffect(() => {
-    if (reduced) {
+    if (reduced || AppState.currentState === 'background' || AppState.currentState === 'inactive') {
       setValue(target)
       return
     }
 
+    let alive = true
     const id = animated.addListener(({ value: frame }) => setValue(Math.round(frame)))
     animated.setValue(0)
     setValue(0)
     const token = motion[step] as { duration: number; easing: string }
-    Animated.timing(animated, {
+    const animation = Animated.timing(animated, {
       toValue: target,
       duration: token.duration,
       easing: EASINGS[token.easing] ?? Easing.out(Easing.cubic),
       useNativeDriver: false,
-    }).start(() => setValue(target))
+      isInteraction: false,
+    })
+    animation.start(({ finished }) => { if (alive && finished) setValue(target) })
+    const stop = () => {
+      // stop() also delivers a completion callback. Retired totals must not win.
+      alive = false
+      animated.removeListener(id)
+      animation.stop()
+    }
+    const subscription = AppState.addEventListener('change', state => {
+      if (state !== 'active') { stop(); setValue(target) }
+    })
 
-    return () => animated.removeListener(id)
+    return () => { stop(); subscription?.remove?.() }
   }, [target, reduced, step, animated])
 
   return value
@@ -369,20 +381,37 @@ export function useDrift(phase = 0, active = true): Animated.Value {
     if (reduced || !active) return
     const half = motion.drift.duration / 2
     const ease = Easing.inOut(Easing.sin)
-    const loop = Animated.loop(Animated.sequence([
-      Animated.timing(value, { toValue: 1, duration: half, easing: ease, useNativeDriver: true, isInteraction: false }),
-      Animated.timing(value, { toValue: 0, duration: half, easing: ease, useNativeDriver: true, isInteraction: false }),
-    ]))
-    // Starts after the screen has settled, never on the first frame. By then the OS has
-    // answered whether motion is wanted — `useReducedMotion` is seeded optimistically and
-    // corrected asynchronously — so a user who asked for stillness never sees one bob.
-    const start = setTimeout(() => loop.start(), motion.base.duration + Math.max(0, Math.min(1, phase)) * half)
+    let loop: Animated.CompositeAnimation | undefined
+    let timer: ReturnType<typeof setTimeout> | undefined
+    let foreground = AppState.currentState !== 'background' && AppState.currentState !== 'inactive'
+    const stop = () => {
+      if (timer !== undefined) clearTimeout(timer)
+      timer = undefined
+      loop?.stop()
+      loop = undefined
+      value.setValue(0)
+    }
+    const schedule = () => {
+      stop()
+      if (!foreground) return
+      // Cancel the arrival delay as well as the loop when the scene becomes hidden.
+      timer = setTimeout(() => {
+        timer = undefined
+        loop = Animated.loop(Animated.sequence([
+          Animated.timing(value, { toValue: 1, duration: half, easing: ease, useNativeDriver: true, isInteraction: false }),
+          Animated.timing(value, { toValue: 0, duration: half, easing: ease, useNativeDriver: true, isInteraction: false }),
+        ]))
+        loop.start()
+      }, motion.base.duration + Math.max(0, Math.min(1, phase)) * half)
+    }
+    schedule()
     const subscription = AppState.addEventListener('change', state => {
-      if (state === 'active') loop.start()
-      else { loop.stop(); value.setValue(0) }
+      foreground = state === 'active'
+      if (foreground) schedule()
+      else stop()
     })
     // `?.` twice: react-native-web can hand back nothing to unsubscribe (see motion.test).
-    return () => { clearTimeout(start); loop.stop(); subscription?.remove?.() }
+    return () => { stop(); subscription?.remove?.() }
   }, [reduced, active, phase, value])
   return value
 }

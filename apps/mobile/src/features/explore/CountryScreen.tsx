@@ -69,6 +69,16 @@ const ATTRIBUTE_LABEL: Record<string, TranslationKey> = {
   alpha3: 'country:attribute.alpha3',
   'currency-code': 'country:attribute.currencyCode',
   'native-name': 'country:attribute.nativeName',
+  'company': 'country:attribute.company',
+  'athlete': 'country:attribute.athlete',
+  'musician': 'country:attribute.musician',
+  'actor': 'country:attribute.actor',
+  'scientist': 'country:attribute.scientist',
+  'writer': 'country:attribute.writer',
+  'artist': 'country:attribute.artist',
+  'landmark': 'country:attribute.landmark',
+  'club': 'country:attribute.club',
+  'highest-point': 'country:attribute.highestPoint',
 }
 
 /*

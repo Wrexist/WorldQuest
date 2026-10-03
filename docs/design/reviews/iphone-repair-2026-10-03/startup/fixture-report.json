@@ -1,0 +1,7 @@
+{
+  "fixture": true,
+  "description": "Real startup components with injected phases and safe-area fixture; not native launch timing. Includes a 320x568 CSS 200% text failure/retry reachability check.",
+  "layouts": [],
+  "interactions": [],
+  "errors": []
+}

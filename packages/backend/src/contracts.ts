@@ -54,7 +54,7 @@ export class ApiError extends Error {
     readonly retryContext?: { challengeId: string; expiresAt: number; resendAt?: number }) { super(code) }
 }
 export interface Env {
-  DB: D1Database; API_ENABLED: string; LEAGUES_ENABLED?: string; CHALLENGES_ENABLED?: string; AUTH_SECRET?: string
+  DB: D1Database; API_ENABLED: string; EMAIL_AUTH_ENABLED?: string; LEAGUES_ENABLED?: string; CHALLENGES_ENABLED?: string; AUTH_SECRET?: string
   /** Resend credential (a Worker secret) and sender; both set turns real mail on. */
   RESEND_API_KEY?: string; MAIL_FROM?: string
 }

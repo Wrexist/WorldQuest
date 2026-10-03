@@ -17,7 +17,7 @@ import {
   type CollectionTile,
 } from '../../src/features/collection/CollectionScreen.js'
 import { ContentGate } from '../../src/components/ContentGate.js'
-import { useContent } from '../../src/lib/content.js'
+import { useReferenceContent } from '../../src/lib/referenceContent.js'
 import { useFavourites } from '../../src/features/favourites/useFavourites.js'
 import { currentLocale, useT } from '../../src/lib/i18n.js'
 
@@ -28,7 +28,7 @@ const isKind = (value: string): value is Kind => (KINDS as readonly string[]).in
 
 export default function CollectionRoute() {
   const { kind } = useLocalSearchParams<{ kind: string }>()
-  const { index, memory, status, reload, isOffline } = useContent()
+  const { index, memory, status, reload, isOffline } = useReferenceContent()
   const { favourites } = useFavourites()
   const t = useT()
 

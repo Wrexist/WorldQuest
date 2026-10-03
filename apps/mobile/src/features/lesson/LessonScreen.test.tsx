@@ -18,6 +18,9 @@ import { BALANCE } from '@worldquest/engines'
 import { withFullMotion } from '../../test/setup.js'
 import { SceneEntrance } from '../../components/SceneEntrance.js'
 import { LessonScreen } from './LessonScreen.js'
+import { setLocale } from '../../lib/i18n.js'
+import { track } from '../../lib/analytics.js'
+import { enqueueLesson } from '../../lib/sync.js'
 
 // The sync queue writes to MMKV and would try to reach Supabase. The queue's own
 // rules are unit-tested in the engines; here it only has to not explode.
@@ -371,14 +374,86 @@ describe('Lesson — select, then check', () => {
 })
 
 
-describe('the unfamiliar-fact introduction', () => {
-  it('teaches the issued associations before starting the same lesson', () => {
-    render(<LessonScreen showIntroduction onExit={() => {}} />)
-    expect(screen.getByTestId('lesson-introduction')).toBeTruthy()
-    expect(screen.queryByTestId('answer-option')).toBeNull()
-    fireEvent.click(screen.getByTestId('lesson-begin'))
+describe('optional study before the quiz', () => {
+  it('opens the question directly without showing the study answers', () => {
+    render(<LessonScreen onExit={() => {}} />)
     expect(screen.queryByTestId('lesson-introduction')).toBeNull()
     expect(answerButtons()).toHaveLength(4)
+    expect(screen.getByRole('button', { name: 'Learn first' })).toBeTruthy()
+  })
+
+  it('studies only on request, then resumes the same question and selection without restarting', () => {
+    vi.mocked(track).mockClear()
+    const exit = vi.fn()
+    const leave = vi.fn()
+    render(<LessonScreen onExit={exit} onLeave={leave} />)
+    const choices = answerButtons().map(option => option.getAttribute('aria-label'))
+    fireEvent.click(answerButtons()[1]!)
+    fireEvent.click(screen.getByRole('button', { name: 'Learn first' }))
+    expect(screen.getByTestId('lesson-introduction')).toBeTruthy()
+    expect(screen.queryByTestId('answer-option')).toBeNull()
+    expect(screen.queryByTestId('lesson-check')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Back to quiz' }))
+    expect(screen.queryByTestId('lesson-introduction')).toBeNull()
+    expect(answerButtons().map(option => option.getAttribute('aria-label'))).toEqual(choices)
+    expect(answerButtons()[1]!.getAttribute('aria-selected')).toBe('true')
+    expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('0')
+    expect(vi.mocked(track).mock.calls.filter(([event]) => event === 'lesson_started')).toHaveLength(1)
+    expect(exit).not.toHaveBeenCalled()
+    expect(leave).not.toHaveBeenCalled()
+  })
+
+  it('removes the study action after the first answer', () => {
+    render(<LessonScreen onExit={() => {}} />)
+    choose(answerButtons()[0]!)
+    expect(screen.queryByTestId('lesson-study')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    expect(screen.queryByTestId('lesson-study')).toBeNull()
+  })
+
+  it('does not submit anything for studying or count study time as answering time', () => {
+    const clock = vi.spyOn(Date, 'now').mockReturnValue(1_800_000_000_000)
+    vi.mocked(enqueueLesson).mockClear()
+    try {
+      render(<LessonScreen onExit={() => {}} />)
+      fireEvent.click(screen.getByTestId('lesson-study'))
+      clock.mockReturnValue(1_800_000_600_000)
+      fireEvent.click(screen.getByTestId('lesson-begin'))
+      expect(enqueueLesson).not.toHaveBeenCalled()
+      clock.mockReturnValue(1_800_000_600_250)
+      choose(answerButtons()[0]!)
+      fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Pause the lesson' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Finish here' }))
+      expect(enqueueLesson).toHaveBeenCalledOnce()
+      expect(vi.mocked(enqueueLesson).mock.calls[0]![0].answers).toEqual([
+        expect.objectContaining({ elapsedMs: 250 }),
+      ])
+    } finally {
+      cleanup()
+      clock.mockRestore()
+    }
+  })
+
+  it.each([{ placement: true }, { mode: 'speed' as const }])('does not reveal study answers in an assessment or speed round: %j', (props) => {
+    render(<LessonScreen {...props} onExit={() => {}} />)
+    expect(screen.queryByTestId('lesson-study')).toBeNull()
+    expect(screen.queryByTestId('lesson-introduction')).toBeNull()
+    expect(answerButtons()).toHaveLength(4)
+  })
+
+  it('offers the requested Swedish study label and a way back to the quiz', async () => {
+    await act(async () => setLocale('sv'))
+    try {
+      render(<LessonScreen onExit={() => {}} />)
+      fireEvent.click(screen.getByRole('button', { name: 'Lär dig först' }))
+      expect(screen.getByRole('heading', { name: 'Lär dig först' })).toBeTruthy()
+      fireEvent.click(screen.getByRole('button', { name: 'Tillbaka till quizet' }))
+      expect(answerButtons()).toHaveLength(4)
+    } finally {
+      cleanup()
+      await act(async () => setLocale('en'))
+    }
   })
 })
 

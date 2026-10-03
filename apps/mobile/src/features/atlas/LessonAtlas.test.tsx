@@ -73,9 +73,9 @@ describe('the atlas in a lesson', () => {
 })
 
 describe('rollout', () => {
-  it('keeps unverified native platforms on the flat map unless asked', () => {
-    expect(atlasEnabled(false, 'ios', false)).toBe(false)
-    expect(atlasEnabled(false, 'android', false)).toBe(false)
+  it('uses the live atlas on supported platforms, with renderer failure covered above', () => {
+    expect(atlasEnabled(false, 'ios', false)).toBe(true)
+    expect(atlasEnabled(false, 'android', false)).toBe(true)
     expect(atlasEnabled(true, 'ios', false)).toBe(true) // remote flag
     expect(atlasEnabled(false, 'ios', true)).toBe(true) // development build
     expect(atlasEnabled(false, 'web', false)).toBe(true) // verified in Chromium

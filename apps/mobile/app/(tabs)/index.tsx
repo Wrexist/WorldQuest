@@ -9,7 +9,7 @@
 import { useMemo } from 'react'
 import { useRouter } from 'expo-router'
 import { HomeScreen, type HomeProgress } from '../../src/features/home/HomeScreen.js'
-import { useContent } from '../../src/lib/content.js'
+import { useReferenceContent } from '../../src/lib/referenceContent.js'
 import { useOnline } from '../../src/lib/connectivity.js'
 import { useOptimisticProgress } from '../../src/features/home/useOptimisticProgress.js'
 import { useDailyGoal } from '../../src/features/home/useDailyGoal.js'
@@ -59,7 +59,7 @@ export default function HomeRoute() {
   // already disagreed: Home carried a hardcoded `factsTotal: 10` beside a comment
   // saying "the packs are five countries deep today". They are 65 countries and 259
   // facts, and nothing rendered the number, so nobody saw it was wrong.
-  const { index, memory } = useContent()
+  const { index, memory } = useReferenceContent()
   const world = useMemo(
     () => (index === null ? undefined : worldProgress(index.index, memory, Date.now())),
     [index, memory],

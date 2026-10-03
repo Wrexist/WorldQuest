@@ -7,9 +7,10 @@ import { createThemeStyles } from '../theme.js'
  * cheap. Honours reduced motion by simply not pulsing.
  */
 import { useEffect, useRef } from 'react'
-import { AccessibilityInfo, Animated, StyleSheet, type StyleProp, type ViewStyle } from 'react-native'
+import { Animated, AppState, StyleSheet, type StyleProp, type ViewStyle } from 'react-native'
 import { motion, radius } from '../tokens.js'
 import { squircle } from '../shape.js'
+import { useReducedMotion } from '../motion.js'
 
 export type SkeletonProps = {
   width?: number | `${number}%`
@@ -29,21 +30,30 @@ export function Skeleton({
 }: SkeletonProps) {
   const styles = useThemeValues()
   const opacity = useRef(new Animated.Value(0.4)).current
+  const reduced = useReducedMotion()
 
   useEffect(() => {
+    opacity.setValue(0.4)
+    if (reduced) return
     let loop: Animated.CompositeAnimation | undefined
-    AccessibilityInfo.isReduceMotionEnabled().then((reduced) => {
-      if (reduced) return
+    const stop = () => { loop?.stop(); loop = undefined; opacity.setValue(0.4) }
+    const start = () => {
+      stop()
       loop = Animated.loop(
         Animated.sequence([
-          Animated.timing(opacity, { toValue: 0.8, duration: motion.shimmer.duration, useNativeDriver: true }),
-          Animated.timing(opacity, { toValue: 0.4, duration: motion.shimmer.duration, useNativeDriver: true }),
+          Animated.timing(opacity, { toValue: 0.8, duration: motion.shimmer.duration, useNativeDriver: true, isInteraction: false }),
+          Animated.timing(opacity, { toValue: 0.4, duration: motion.shimmer.duration, useNativeDriver: true, isInteraction: false }),
         ]),
       )
       loop.start()
+    }
+    if (AppState.currentState !== 'background' && AppState.currentState !== 'inactive') start()
+    const subscription = AppState.addEventListener('change', state => {
+      if (state === 'active') start()
+      else stop()
     })
-    return () => loop?.stop()
-  }, [opacity])
+    return () => { stop(); subscription?.remove?.() }
+  }, [opacity, reduced])
 
   return (
     <Animated.View

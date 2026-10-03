@@ -40,10 +40,15 @@ Windows Credential Manager.
 `GET` and `HEAD /health` answer without authentication: the app's connectivity probe
 asks with `HEAD`, and a 401 there reads as "offline" on every device.
 
-The checked-in configuration disables workers.dev, preview URLs, and API access.
+The development configuration disables workers.dev, preview URLs, and API access.
 For isolated local API development only, pass `--var API_ENABLED:true` to Wrangler.
-Do not enable public API access before recovery, abuse controls, child policy and
-native acceptance pass. No paid plan is required for these local checks.
+The production beta repair configuration enables guest learning while
+`EMAIL_AUTH_ENABLED=false` holds email linking/sign-in; an absent email flag also
+fails closed. Existing linked-account deletion retains its verified email path,
+and existing sessions can renew. Synthetic email tests set that flag to true.
+See [the deployment candidate and evidence](../../docs/engineering/native-loading-2026-10-03.md).
+Unrestricted public release still needs recovery, abuse controls, child policy and
+native acceptance. No paid plan is required for local checks.
 
 Implemented: restricted guest sessions with hashed tokens, account-derived reads,
 logout revocation, strict 16 KiB request limits, server grading, idempotent receipts,

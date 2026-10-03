@@ -16,7 +16,8 @@
   },
   "vars": {
     "MAIL_FROM": "WorldQuest <accounts@worldquest.dpdns.org>",
-    "API_ENABLED": "false",
+    "API_ENABLED": "true",
+    "EMAIL_AUTH_ENABLED": "false",
     "LEAGUES_ENABLED": "false",
     "CHALLENGES_ENABLED": "false"
   },

@@ -29,9 +29,9 @@ import { createThemeStyles } from '@worldquest/design'
 
 import type { ReactNode } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { Button, Skeleton, space, text } from '@worldquest/design'
+import { Skeleton, space, text } from '@worldquest/design'
 import { useT } from '../lib/i18n.js'
-import { Art } from './Art.js'
+import { FailureState } from './FailureState.js'
 
 export type ContentGateProps = {
   /** `status` from `useContent`. Only `'error'` changes what is rendered. */
@@ -79,18 +79,7 @@ export function ContentGate({
 
   if (status === 'error') {
     return (
-      <View style={styles.screen}>
-        {/* The compass on the ground with its needle spinning — briefed for exactly
-            this screen, and briefed as "calm and recoverable, not alarming". It carries
-            the same message as the copy below, which is why it is decorative: a screen
-            reader announcing a compass adds length, not meaning. */}
-        <Art name="states/error-generic" size={140} />
-        <Text style={styles.title} role="heading">
-          {t('common:error.generic.title')}
-        </Text>
-        <Text style={styles.body}>{t('common:error.generic.body')}</Text>
-        <Button label={t('common:retry')} onPress={onRetry} fullWidth={false} />
-      </View>
+      <FailureState titleKey="common:error.generic.title" bodyKey="common:error.generic.body" ctaKey="common:retry" onPress={onRetry} />
     )
   }
 
@@ -119,15 +108,6 @@ const useThemeValues = createThemeStyles((colors) => {
   // moment the content lands is a visible seam at the one moment a screen is meant to
   // feel like it is filling in.
   loading: { flex: 1, padding: space[4], gap: space[3] },
-  screen: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: space[5],
-    gap: space[3],
-  },
-  title: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
-  body: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
   offline: {
     backgroundColor: colors.bg.surfaceRaised,
     borderBottomWidth: 2,

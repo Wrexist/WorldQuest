@@ -42,8 +42,18 @@ The owner's Profile reference adds a quiet cloud stage behind Atlas and the titl
 Quests and Shop heroes and a small ground layer beside Home's current step.
 Keep the original cloud proportions, place foreground controls above it, and leave
 reward/task panels and map geography clear. Profile's clouds stay behind Atlas
-when enlarged text stacks the identity. Hero mascots use larger square frames;
-sprite margins and existing animation poses are preserved.
+when enlarged text stacks the identity. Hero mascots use larger square frames.
+Atlas now uses complete transparent liquid-clay poses, with a finite whole-image
+greeting after decoding and a tap reaction. Never translate a sprite grid to animate
+the character: neighbouring frames can become visible on native devices. Reduced
+motion changes the expression without moving it. See the
+[artwork and final prompts](assets/atlas-liquid-clay/README.md).
+
+Onboarding groups its mascot and question in a stable prompt, uses clay radio cards
+for daily goals and regions, and confirms the region with Continue. Welcome and
+taster content scroll at small heights or large text sizes; avoid full-height flat
+hero panels and growing empty spacers. Recoverable failures use the same compact
+clay card, thoughtful Atlas, soft clouds, Retry and an available back path.
 
 `illustration.cloudOpacity` dims the artwork at night. The four-point ambient rise
 uses `motion.drift`, stops for Reduced Motion and does not move text or controls.
@@ -333,7 +343,7 @@ alone is never a control unless it is universally understood (back, close, setti
 | `motion.base` | 260 | `easeInOut` | Screen transitions, sheets |
 | `motion.expressive` | 420 | `spring(damping 0.7, stiffness 180)` | Card entrance, mascot, celebration card |
 | `motion.celebrate` | 900 | Lottie | Correct answer, level up, unlock |
-| `motion.drift` | 4200 (looped) | `easeInOut` (sine) | Ambient float of decorative scenery (`useDrift`): path props, the island stage. Off under Reduce Motion and in the background |
+| `motion.drift` | 4200 (looped) | `easeInOut` (sine) | Ambient float of decorative scenery (`useDrift`): path props, the island stage. Off under Reduce Motion, on screen blur and in the background |
 
 **Principles**
 - Things **scale and spring**; they do not fade in place. Fade is for disappearing.
@@ -364,6 +374,15 @@ Reduced motion uses settled states and static press opacity. The shared target
 and celebration helpers stop stale work on retarget/unmount and settle when the
 app backgrounds; changing the motion preference does not replay an old event.
 See [motion feedback review](reviews/motion-feedback-2026-10-02/README.md).
+
+Decorative clouds and scenery use the app's `useSceneDrift` wrapper so a retained
+tab stops its loop on blur. The shared `useDrift` cancels its pending start delay
+when the app backgrounds or its consumer disables motion. Cover artwork and unused
+outer island wrappers do not start loops. Loading skeletons follow both motion
+preferences and AppState; their loops hold no interaction handle. Count-up text
+cancels retired animations and ignores interrupted completions. These lifecycle
+counts are regression-tested; native frame-time verification remains open. See
+[October 3 lifecycle evidence](reviews/motion-lifecycle-2026-10-03/README.md).
 
 Question prompts, flag art and answer blocks arrive together over `motion.quick`
 (180 ms), moving up `space[2]` and settling from 98% scale. Selected Explore country

@@ -26,6 +26,12 @@ vi.mock('@react-navigation/native', async () => ({
   NavigationContext: (await import('react')).createContext(undefined),
 }))
 
+// Native window insets must be verified in the simulator. Keep study content mountable
+// in jsdom without importing the safe-area package's native view implementation.
+vi.mock('react-native-safe-area-context', async () => ({
+  SafeAreaView: (await import('react-native')).View,
+}))
+
 // Native Keychain/Keystore itself is exercised by the isolated native proof build.
 vi.mock('expo-secure-store', () => {
   const values = new Map<string, string>()
@@ -288,5 +294,12 @@ vi.mock('expo-file-system', () => ({
     async bytes(): Promise<Uint8Array> {
       throw new Error('expo-file-system is not available in tests')
     }
+  },
+}))
+
+vi.mock('expo-file-system/legacy', () => ({
+  EncodingType: { UTF8: 'utf8', Base64: 'base64' },
+  readAsStringAsync: async () => {
+    throw new Error('expo-file-system is not available in tests')
   },
 }))

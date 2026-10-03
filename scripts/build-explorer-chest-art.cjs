@@ -38,15 +38,15 @@ async function main() {
   }
   for (let i = 0; i < 40; i++) {
     const file = path.join(SOURCE, 'frames', `${String(i).padStart(2, '0')}.png`)
-    frames.push({ index: i, sha256: digest(fs.readFileSync(file)), geometry: await bounds(file, 240) })
+    frames.push({ index: i, sha256: digest(fs.readFileSync(file)), geometry: await bounds(file, 480) })
   }
-  const sheet = await sharp({ create: { width: 1920, height: 1200, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
-    .composite(frames.map(({ index }) => ({ input: path.join(SOURCE, 'frames', `${String(index).padStart(2, '0')}.png`), left: (index % 8) * 240, top: Math.floor(index / 8) * 240 })))
-    .webp({ quality: 87, alphaQuality: 100, effort: 6 }).toBuffer()
-  assert(sheet.length < 600 * 1024, 'Film exceeds 600KB runtime budget')
+  const sheet = await sharp({ create: { width: 3840, height: 2400, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+    .composite(frames.map(({ index }) => ({ input: path.join(SOURCE, 'frames', `${String(index).padStart(2, '0')}.png`), left: (index % 8) * 480, top: Math.floor(index / 8) * 480 })))
+    .webp({ quality: 92, alphaQuality: 100, effort: 6 }).toBuffer()
+  assert(sheet.length < 1600 * 1024, 'Film exceeds 1600KB runtime budget')
   assert(new Set(frames.map(f => f.sha256)).size >= 25, 'Film is missing motion')
   fs.writeFileSync(path.join(TARGET, 'chest-sheet.webp'), sheet)
-  outputs.push({ file: 'chest-sheet.webp', bytes: sheet.length, sha256: digest(sheet), width: 1920, height: 1200, frames: 40 })
+  outputs.push({ file: 'chest-sheet.webp', bytes: sheet.length, sha256: digest(sheet), width: 3840, height: 2400, frames: 40 })
   const glb = fs.readFileSync(path.join(SOURCE, 'explorer-chest.glb'))
   assert(glb.toString('ascii', 0, 4) === 'glTF' && glb.readUInt32LE(4) === 2, 'Invalid glTF header')
   assert(glb.length === glb.readUInt32LE(8), 'GLB declared length does not match bytes')
@@ -60,7 +60,7 @@ async function main() {
     `import opened from '../../assets/art/explorer-chest/opened.webp'\n` +
     `import sheet from '../../assets/art/explorer-chest/chest-sheet.webp'\n\n` +
     `export const EXPLORER_CHEST = { closed, opened, sheet } as const\n` +
-    `export const EXPLORER_CHEST_SEQUENCE = { frames: 40, columns: 8, rows: 5, fps: 20, frameSize: 240 } as const\n` +
+    `export const EXPLORER_CHEST_SEQUENCE = { frames: 40, columns: 8, rows: 5, fps: 20, frameSize: 480 } as const\n` +
     `export const EXPLORER_CHEST_GEOMETRY = ${JSON.stringify(geometry, null, 2)} as const\n`
   fs.writeFileSync(path.join(ROOT, 'apps/mobile/src/lib/explorerChest.generated.ts'), declaration)
   const validation = {

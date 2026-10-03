@@ -9,16 +9,19 @@ import { createThemeStyles } from '@worldquest/design'
  * Screen catalogue H8 (error) and H9 (404).
  */
 
-import { StyleSheet, Text, View } from 'react-native'
-import { Button, space, text } from '@worldquest/design'
+import type { ReactNode } from 'react'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Button, ClaySurface, clayShadow, radius, space, text } from '@worldquest/design'
 import { useT, type TranslationKey } from '../lib/i18n.js'
 import { Art } from './Art.js'
+import { CloudBackdrop } from './CloudBackdrop.js'
 
 export type FailureStateProps = {
   readonly titleKey: TranslationKey
   readonly bodyKey: TranslationKey
   readonly ctaKey: TranslationKey
   readonly onPress: () => void
+  readonly children?: ReactNode
   /**
    * Shown only in development. A user is not helped by a stack trace, and shipping
    * one leaks file paths and sometimes data into a screenshot they post publicly.
@@ -32,19 +35,19 @@ export function FailureState({
   ctaKey,
   onPress,
   detail,
+  children,
 }: FailureStateProps) {
   const { styles } = useThemeValues()
   const t = useT()
 
   return (
-    <View style={styles.screen}>
-      {/* Atlas, looking at a compass whose needle is spinning. The brief for this one
-          asked for "mildly puzzled, still cheerful" and specified it FOR error screens,
-          which is the same instruction the copy below follows: something went wrong, it
-          is recoverable, nobody is in trouble. The slot that held this place for the art
-          is gone now that the art is here — it was reserved space, not a component. */}
-      <Art name="atlas/broken-compass" size={120} />
-
+    <ScrollView contentContainerStyle={styles.screen}>
+      <View style={styles.card}>
+        <ClaySurface radius={radius.xl} />
+        <View style={styles.scene}>
+          <CloudBackdrop />
+          <Art name="atlas/broken-compass" size={160} />
+        </View>
       <Text style={styles.title} role="heading">
         {t(titleKey)}
       </Text>
@@ -58,7 +61,9 @@ export function FailureState({
       )}
 
       <Button label={t(ctaKey)} onPress={onPress} style={styles.cta} />
-    </View>
+      {children}
+      </View>
+    </ScrollView>
   )
 }
 
@@ -67,12 +72,14 @@ export function FailureState({
 const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
   screen: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: space[5],
     gap: space[3],
   },
+  card: { width: '100%', maxWidth: 480, alignSelf: 'center', alignItems: 'center', padding: space[5], gap: space[3], borderRadius: radius.xl, ...clayShadow(colors) },
+  scene: { width: '100%', alignItems: 'center', justifyContent: 'center', minHeight: 160 },
   title: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   body: { ...text('body'), color: colors.text.secondary, textAlign: 'center', maxWidth: 320 },
   cta: { marginTop: space[3] },

@@ -19,7 +19,7 @@ async function main() {
     bundle: true, write: false, format: 'esm', platform: 'browser', target: 'es2022', external: ['node:*'] })
   const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: compiled.outputFiles[0].text,
     compatibilityDate: '2026-09-13', compatibilityFlags: ['nodejs_compat'], d1Databases: ['DB'],
-    bindings: { API_ENABLED: 'true', AUTH_SECRET: 'synthetic-ci-only-native-account-proof-secret' },
+    bindings: { API_ENABLED: 'true', EMAIL_AUTH_ENABLED: 'true', AUTH_SECRET: 'synthetic-ci-only-native-account-proof-secret' },
     serviceBindings: { MAILBOX: async request => {
       const message = await request.json()
       if (message.email !== 'native-proof@example.invalid') return new Response(null, { status: 400 })

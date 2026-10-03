@@ -59,6 +59,28 @@ function mailFor(env: Env, injected: MailDelivery | undefined, clock: Clock): Ma
   return unavailableMail
 }
 
+/** Holding sign-in must not remove an existing account's verified deletion path. */
+async function requireEmailAvailability(env: Env, owner: string, tokenHash: string, path: string, input: unknown) {
+  if (env.EMAIL_AUTH_ENABLED === 'true') return
+  if (path === '/v1/auth/email/request') {
+    const parsed = codeRequest.safeParse(input)
+    if (parsed.success && parsed.data.purpose === 'delete') {
+      const linked = await env.DB.prepare(`SELECT 1 FROM identities i JOIN auth_user u ON u.id=i.subject_id
+        WHERE i.account_id=? AND u.email=?`).bind(owner, parsed.data.email).first()
+      if (linked) return
+    }
+  } else if (path === '/v1/auth/email/resend' || path === '/v1/auth/email/verify') {
+    const parsed = z.object({ challengeId }).passthrough().safeParse(input)
+    if (parsed.success) {
+      const deletion = await env.DB.prepare(`SELECT 1 FROM email_challenges c JOIN identities i ON i.account_id=c.account_id
+        WHERE c.id=? AND c.account_id=? AND c.session_hash=? AND c.purpose='delete'`)
+        .bind(parsed.data.challengeId, owner, tokenHash).first()
+      if (deletion) return
+    }
+  }
+  throw new ApiError('EMAIL_NOT_READY', 503)
+}
+
 export function createWorker(mail?: MailDelivery, clock: Clock = Date.now) { return {
   async scheduled(_event: ScheduledController, env: Env): Promise<void> {
     await pruneDeletionReceipts(env.DB, clock())
@@ -137,9 +159,10 @@ export function createWorker(mail?: MailDelivery, clock: Clock = Date.now) { ret
         return json(await recordAudience(env.DB, account.id, tokenHash, input.data.birthYear, now))
       }
       if (request.method === 'POST' && path.startsWith('/v1/auth/email/')) {
+        const input = path === '/v1/auth/email/verify' ? deletionBody : await body(request)
+        await requireEmailAvailability(env, account.id, tokenHash, path, input)
         if (!env.AUTH_SECRET || env.AUTH_SECRET.length < 32) throw new ApiError('EMAIL_UNAVAILABLE', 503)
         if (account.audience !== 'eligible') throw new ApiError('ACCOUNT_PROTECTED', 403)
-        const input = path === '/v1/auth/email/verify' ? deletionBody : await body(request)
         if (path === '/v1/auth/email/request') {
           const parsed = codeRequest.safeParse(input)
           if (!parsed.success) throw new ApiError('INVALID_BODY', 400)
@@ -201,7 +224,17 @@ export function createWorker(mail?: MailDelivery, clock: Clock = Date.now) { ret
         return json(await fileReport(env.DB, account.id, tokenHash, parsed.data, now), 202)
       }
       if (request.method === 'GET' && path === '/v1/quest/today') return json(await todayQuest(env.DB, account.id, tokenHash, now))
-      if (request.method === 'GET' && path === '/v1/learning/state') return json(await learningState(env.DB, account.id, tokenHash))
+      if (request.method === 'GET' && path === '/v1/learning/state') {
+        const params = new URL(request.url).searchParams
+        const parsed = z.object({ paged: z.literal('1').optional(),
+          after: z.string().regex(/^[a-zA-Z0-9._-]{1,120}$/).optional(),
+          revision: z.coerce.number().int().min(0).max(Number.MAX_SAFE_INTEGER).optional() }).strict()
+          .refine(value => (value.after === undefined && value.revision === undefined)
+            || (value.paged === '1' && value.after !== undefined && value.revision !== undefined))
+          .safeParse(Object.fromEntries(params))
+        if (!parsed.success) throw new ApiError('INVALID_CURSOR', 400)
+        return json(await learningState(env.DB, account.id, tokenHash, parsed.data))
+      }
       if (request.method === 'GET' && path === '/v1/learning/history') {
         const params = new URL(request.url).searchParams
         const parsed = z.object({ revision: z.coerce.number().int().min(0).max(Number.MAX_SAFE_INTEGER).default(0),

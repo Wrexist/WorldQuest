@@ -13,6 +13,7 @@ type Props = { flow: Flow; online: boolean; onBack: () => void; onSupport?: (() 
 const errorKeys: Readonly<Record<string, TranslationKey>> = {
   INVALID_CODE: 'account:d1.error.code', INVALID_CHALLENGE: 'account:d1.error.code',
   EMAIL_UNAVAILABLE: 'account:d1.error.delivery', RETRY_LATER: 'account:d1.error.rate',
+  EMAIL_NOT_READY: 'account:d1.error.notReady', API_NOT_READY: 'common:error.service.body',
   ACCOUNT_PROTECTED: 'account:d1.protected.body', CREDENTIAL_CLEANUP_REQUIRED: 'account:d1.cleanup.body',
   CREDENTIALS_INVALID: 'account:d1.error.storage', INVALID_REQUEST: 'account:d1.error.input',
   INVALID_BODY: 'account:d1.error.input', RATE_LIMITED: 'account:d1.error.rate',

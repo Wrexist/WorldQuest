@@ -3,7 +3,11 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { WorldProgress } from '@worldquest/engines'
 import { ExploreScreen } from './ExploreScreen.js'
 
-vi.mock('../atlas/WorldAtlasView.js', () => ({ WorldAtlasView: () => <div data-testid="explore-globe" /> }))
+const sceneSpy = vi.hoisted(() => vi.fn())
+vi.mock('../atlas/WorldAtlasView.js', () => ({ WorldAtlasView: ({ onGestureActiveChange, spec }: { onGestureActiveChange?: (active: boolean) => void; spec: unknown }) => {
+  sceneSpy(spec)
+  return <div data-testid="explore-globe" onMouseDown={() => onGestureActiveChange?.(true)} onMouseUp={() => onGestureActiveChange?.(false)} />
+} }))
 
 const world = (overrides: Partial<WorldProgress> = {}): WorldProgress => ({
   regions: [
@@ -38,6 +42,19 @@ const world = (overrides: Partial<WorldProgress> = {}): WorldProgress => ({
 })
 
 describe('Explore', () => {
+  it('locks only the page during a globe gesture and restores scrolling on release', () => {
+    render(<ExploreScreen world={world()} loading={false} onSelectRegion={() => {}} atlas={{ names: { countryName: () => undefined, factValueName: () => undefined } }} />)
+    const page = screen.getByTestId('explore-scroll')
+    const globe = screen.getByTestId('explore-globe')
+    const initialScene = sceneSpy.mock.calls.at(-1)![0]
+    expect(getComputedStyle(page).overflowY).not.toBe('hidden')
+    fireEvent.mouseDown(globe)
+    expect(getComputedStyle(page).overflowY).toBe('hidden')
+    expect(sceneSpy.mock.calls.at(-1)![0]).toBe(initialScene)
+    fireEvent.mouseUp(globe)
+    expect(getComputedStyle(page).overflowY).not.toBe('hidden')
+    expect(sceneSpy.mock.calls.at(-1)![0]).toBe(initialScene)
+  })
   it('shows all seven continents, including ones with no content yet', () => {
     // Hiding Africa until we have written Africa reads as a smaller world, and a user
     // who never sees the gap never learns that more is coming.

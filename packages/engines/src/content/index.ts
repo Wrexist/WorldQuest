@@ -180,7 +180,14 @@ export function itemsForFact(
     const modality = index.templates.get(i.templateId)?.modality
     return modality !== undefined && options.modalities.includes(modality)
   })
-  const shuffled = shuffle(usable, rng)
+  // Described siblings are accessibility alternatives, not another random visual
+  // question. Keep them for readers/text-only clients; a picture-capable lesson
+  // should show the flag/map instead of asking learners to decode a paragraph.
+  const alternatives = new Set(options.screenReaderOnly ? [] : usable.flatMap(item => {
+    const sibling = index.templates.get(item.templateId)?.a11y.equivalentTemplate
+    return sibling === undefined ? [] : [sibling]
+  }))
+  const shuffled = shuffle(usable.filter(item => !alternatives.has(item.templateId)), rng)
   const cap = options.preferModifierAtMost
   if (!options.deprioritizeEntityAnswers && cap === undefined) return shuffled
 
@@ -528,7 +535,8 @@ function resolveShallow(
     // in "the capital of the Netherlands", not in a list of four countries.
     if (param === 'entityName') {
       promptParams[param] =
-        nameOf(entity.namesInSentence) ?? nameOf(entity.names) ?? entity.id
+        entity.namesInSentence?.[locale] ?? entity.names[locale]
+        ?? entity.namesInSentence?.['en'] ?? entity.names['en'] ?? entity.id
     }
     if (param === 'valueName') promptParams[param] = displayValue(fact.value, locale) ?? ''
     if (param === 'description') promptParams[param] = displayValue(fact.value, locale) ?? ''

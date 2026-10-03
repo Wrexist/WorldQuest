@@ -1,3 +1,4 @@
+import { ATLAS_COUNTRIES, ATLAS_REGION_FRAMES } from '../data/atlas.generated.js'
 import { describe, expect, it } from 'vitest'
 import {
   cameraForFrame,
@@ -122,4 +123,18 @@ describe('the camera', () => {
   it('reports a disc that shrinks with distance', () => {
     expect(discRadius({ ...SPAIN, distance: 4 }, VIEW)).toBeLessThan(discRadius({ ...SPAIN, distance: 2 }, VIEW))
   })
+})
+
+
+it('keeps Canada, the US and Mexico in the North America overview', () => {
+  const camera = cameraForFrame(ATLAS_REGION_FRAMES['NA']!, VIEW)
+  for (const id of ['CA', 'US', 'MX']) {
+    const [lat, lon] = ATLAS_COUNTRIES[id]!.anchor
+    const p = project({ lat, lon }, camera, VIEW)
+    expect(p.visible, id).toBe(true)
+    expect(p.x, id).toBeGreaterThan(0)
+    expect(p.x, id).toBeLessThan(VIEW.width)
+    expect(p.y, id).toBeGreaterThan(0)
+    expect(p.y, id).toBeLessThan(VIEW.height)
+  }
 })

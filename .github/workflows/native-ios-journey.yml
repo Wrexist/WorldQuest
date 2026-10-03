@@ -16,6 +16,10 @@ on:
         description: 'Embed current JavaScript into the recorded simulator binary (identical native dependencies/config required)'
         type: boolean
         default: false
+      gesture_diagnostic:
+        description: 'Trace native gesture events in a disposable simulator bundle'
+        type: boolean
+        default: false
   push:
     branches: ['fix/**']
     paths: ['.github/workflows/native-ios-journey.yml']
@@ -43,6 +47,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           BUILD_RUN: ${{ inputs.build_run_id }}
           REFRESH_JS: ${{ inputs.refresh_js }}
+          GESTURE_DIAGNOSTIC: ${{ inputs.gesture_diagnostic }}
         run: |
           set -euo pipefail
           test "$(uname -m)" = arm64
@@ -57,6 +62,7 @@ jobs:
               git show "$BUILD_SHA:$FILE" | cmp - "$FILE"
             done
             ENTRY_FILE=$(cd apps/mobile && node -p 'require.resolve("expo-router/entry")')
+            if [ "$GESTURE_DIAGNOSTIC" = true ]; then node scripts/native-gesture-diagnostic.cjs; fi
             pnpm --filter @worldquest/mobile exec expo export:embed --entry-file "$ENTRY_FILE" --platform ios --dev false --bundle-output "$RUNNER_TEMP/app/WorldQuest.app/main.jsbundle" --assets-dest "$RUNNER_TEMP/app/WorldQuest.app"
             echo "Native binary: $BUILD_SHA; JavaScript: $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
           fi
@@ -67,6 +73,17 @@ jobs:
           xcrun simctl boot "$DEVICE_ID"
           xcrun simctl bootstatus "$DEVICE_ID" -b
           xcrun simctl install "$DEVICE_ID" "$RUNNER_TEMP/app/WorldQuest.app"
+      - name: Approve the disposable simulator's URL bridge
+        run: |
+          set -euo pipefail
+          APPROVAL_PLIST="$HOME/Library/Developer/CoreSimulator/Devices/$DEVICE_ID/data/Library/Preferences/com.apple.launchservices.schemeapproval.plist"
+          APPROVAL_KEY='com.apple.CoreSimulator.CoreSimulatorBridge-->worldquest'
+          if /usr/libexec/PlistBuddy -c "Print $APPROVAL_KEY" "$APPROVAL_PLIST" >/dev/null 2>&1; then
+            /usr/libexec/PlistBuddy -c "Set $APPROVAL_KEY com.wrexist.worldquest" "$APPROVAL_PLIST"
+          else
+            /usr/libexec/PlistBuddy -c "Add $APPROVAL_KEY string com.wrexist.worldquest" "$APPROVAL_PLIST"
+          fi
+          plutil -lint "$APPROVAL_PLIST"
       - name: Run the native journey
         run: |
           set -euo pipefail
@@ -77,13 +94,15 @@ jobs:
           unzip -q maestro.zip
           export PATH="$RUNNER_TEMP/maestro/maestro/bin:$PATH"
           cd "$GITHUB_WORKSPACE"
+          xcrun simctl ui "$DEVICE_ID" appearance dark
           maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/native-flow" apps/mobile/e2e/native-smoke.yaml
-          COUNTRY_SHOT=$(find "$RUNNER_TEMP/native-flow" -name native-country.png -print -quit)
-          test -n "$COUNTRY_SHOT"
-          node scripts/check-native-button.cjs "$COUNTRY_SHOT"
+          node scripts/verify-native-globe-zoom.cjs "$RUNNER_TEMP/native-flow" "$RUNNER_TEMP/native-globe-zoom-proof.json"
       - name: Capture final simulator state
         if: always()
-        run: xcrun simctl io "$DEVICE_ID" screenshot "$RUNNER_TEMP/native-current.png"
+        run: |
+          xcrun simctl io "$DEVICE_ID" screenshot "$RUNNER_TEMP/native-current.png"
+          DATA=$(xcrun simctl get_app_container "$DEVICE_ID" com.wrexist.worldquest data)
+          if [ -f "$DATA/Documents/native-gesture.json" ]; then cp "$DATA/Documents/native-gesture.json" "$RUNNER_TEMP/native-gesture.json"; fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -92,6 +111,8 @@ jobs:
           path: |
             ${{ runner.temp }}/native-flow/
             ${{ runner.temp }}/native-current.png
+            ${{ runner.temp }}/native-globe-zoom-proof.json
+            ${{ runner.temp }}/native-gesture.json
             native-relaunch.png
             native-country.png
           retention-days: 7

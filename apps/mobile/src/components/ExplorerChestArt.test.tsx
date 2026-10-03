@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { act, fireEvent, render } from '@testing-library/react'
 import { AccessibilityInfo, Animated, AppState, type AppStateStatus } from 'react-native'
 import { NavigationContext } from '@react-navigation/native'
-import { setAppReducedMotion } from '@worldquest/design'
+import { motion, setAppReducedMotion } from '@worldquest/design'
 import { withFullMotion } from '../test/setup.js'
 import { ExplorerChestArt } from './ExplorerChestArt.js'
 
@@ -117,6 +117,44 @@ describe('Explorer chest artwork lifecycle', () => {
       expect(timing).not.toHaveBeenCalled()
       expect(view.queryByTestId('explorer-chest-film')).toBeNull()
       expect(view.getByTestId('explorer-chest-opened').style.opacity).toBe('1')
+    })
+  })
+
+  it('keeps both sheet translations on one whole cell when native timing supplies fractional frames', async () => {
+    vi.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false)
+    const decoder = imageRequests()
+    const { timing } = controlledTimelines()
+    await withFullMotion(async () => {
+      const view = render(<ExplorerChestArt size={240} opened revealOnMount />)
+      await act(async () => { await Promise.resolve() })
+      await decoder.finishFilm(view)
+      expect(timing).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
+        duration: motion.celebrate.duration, useNativeDriver: true,
+      }))
+      const frame = timing.mock.calls[0]![0] as Animated.Value
+      const film = view.getByTestId('explorer-chest-film')
+      // iOS interpolates native timing samples, even with a stepped easing function.
+      // Halfway across a row wrap must hold the old cell, never sweep through the sheet.
+      for (const [value, x, y] of [
+        [0.5, 0, 0],
+        [7.5, -1680, 0],
+        [7.999, -1680, 0],
+        [8, 0, -240],
+        [8.5, 0, -240],
+        [15.5, -1680, -240],
+        [16, 0, -480],
+        [23.5, -1680, -480],
+        [24, 0, -720],
+        [31.5, -1680, -720],
+        [32, 0, -960],
+        [38.999, -1440, -960],
+        [39, -1680, -960],
+      ] as const) {
+        act(() => frame.setValue(value))
+        await vi.waitFor(() => {
+          expect(film.style.transform).toBe(`translateX(${x}px) translateY(${y}px)`)
+        })
+      }
     })
   })
 

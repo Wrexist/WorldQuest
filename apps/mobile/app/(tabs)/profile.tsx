@@ -18,7 +18,7 @@ import { usePreferences } from '../../src/features/settings/usePreferences.js'
 import { ProfileScreen } from '../../src/features/profile/ProfileScreen.js'
 import { useOptimisticProgress } from '../../src/features/home/useOptimisticProgress.js'
 import { ContentGate } from '../../src/components/ContentGate.js'
-import { useContent } from '../../src/lib/content.js'
+import { useReferenceContent } from '../../src/lib/referenceContent.js'
 import { useAccountStatus } from '../../src/features/account/useAccountStatus.js'
 import { readStreakGems, subscribeStreakGems } from '../../src/features/streak/dailyChest.js'
 import { useLeagueEnabled } from '../../src/features/league/flag.js'
@@ -29,7 +29,7 @@ export default function ProfileRoute() {
   const { data, shown, status } = useOptimisticProgress()
   // Renamed: `useProgress` already owns `status` on this screen, and two different
   // meanings behind one name is how the wrong one gets read.
-  const { index, memory, status: contentStatus, reload, isOffline } = useContent()
+  const { index, memory, status: contentStatus, reload, isOffline } = useReferenceContent()
   const week = useWeekActivity()
   const shop = useShop()
   const achievements = useAchievements()

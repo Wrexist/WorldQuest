@@ -1,4 +1,5 @@
 import { LessonIntroduction } from './LessonIntroduction.js'
+import { visualQuestion } from './visualQuestion.js'
 import { createThemeStyles } from '@worldquest/design'
 /**
  * The lesson screen — mockup screens 5 and 6.
@@ -50,6 +51,7 @@ import {
 import type { LessonFocus } from '@worldquest/engines'
 import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
+import { FailureState } from '../../components/FailureState.js'
 import { Flag } from '../../components/Flag.js'
 import { LessonAtlas, lessonShowsAtlas } from '../atlas/LessonAtlas.js'
 import { useLesson } from './hooks/useLesson.js'
@@ -93,7 +95,7 @@ import { EarnedReward } from './EarnedReward.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
 import { SceneEntrance } from '../../components/SceneEntrance.js'
 
-type ScreenState = 'loading' | 'error' | 'empty' | 'offline-start' | 'ready'
+type ScreenState = 'loading' | 'error' | 'unavailable' | 'empty' | 'offline-start' | 'ready'
 
 /**
  * The rail down the leading edge of the answers.
@@ -251,7 +253,6 @@ export function LessonScreen({
   onExit,
   onLeave,
   mode = 'normal',
-  showIntroduction = false,
   coins = 0,
   isTaster = false,
   focus,
@@ -260,7 +261,6 @@ export function LessonScreen({
   length,
   placement,
 }: {
-  showIntroduction?: boolean
   onExit: (summary: LessonExit) => void
   /**
    * Leave a lesson that never started — offline with nothing saved, a failure, or a focus
@@ -334,7 +334,7 @@ export function LessonScreen({
   const t = useT()
   const dailyGoal = useDailyGoal()
   const { index, memory, status, reload, isOffline } = useContent()
-  const [introduced, setIntroduced] = useState(false)
+  const [studying, setStudying] = useState(false)
   const [screen, setScreen] = useState<ScreenState>('loading')
   // "Report a problem" open over the answer just given. Only where a backend takes
   // reports (the Worker): a link that could only fail is a link not to show.
@@ -384,6 +384,7 @@ export function LessonScreen({
    */
   const questCompleted = useRef(false)
   const scroller = useRef<ScrollView>(null)
+  const [globeGestureActive, setGlobeGestureActive] = useState(false)
   const optionsTop = useRef(0)
   const optionsBottom = useRef(0)
   /** The scroll view's own height: it shrinks when the feedback sheet mounts below it. */
@@ -434,8 +435,9 @@ export function LessonScreen({
   // Each of a board's questions is also a plain four-option question with the same answer key, so
   // the round simply plays them as that: nothing about grading or the ticket changes.
   const questions = useMemo<readonly Question[]>(
-    () => (mode === 'speed' ? issued.map(({ group: _group, ...q }) => q) : issued),
-    [issued, mode],
+    () => (mode === 'speed' ? issued.map(({ group: _group, ...q }) => q) : issued)
+      .map(question => visualQuestion(question, index?.index, screenReaderOn)),
+    [issued, mode, index, screenReaderOn],
   )
 
   const handleComplete = useCallback((state: LessonState, optimistic: GradeResult) => {
@@ -764,10 +766,11 @@ export function LessonScreen({
       : status
     if (source === 'loading') return setScreen('loading')
     if (source === 'error') return setScreen('error')
+    if (source === 'unavailable') return setScreen('unavailable')
     if (source === 'offline') return setScreen('offline-start')
     if (source === 'too-narrow' || questions.length === 0) return setScreen('empty')
     setScreen('ready')
-    if (lesson.state.phase === 'idle' && (!showIntroduction || introduced || mode === 'speed' || !questions.some(question => question.isNew))) {
+    if (lesson.state.phase === 'idle') {
       // The ticket's id on D1: it is the idempotency key the server issued under.
       lesson.start(remoteLessons && remote.lesson ? remote.lesson.lessonId : makeUuid())
       track('lesson_started', {
@@ -778,15 +781,19 @@ export function LessonScreen({
         was_offline: isOffline,
       })
     }
-  }, [status, questions, lesson, isOffline, remoteLessons, remote.status, remote.lesson, showIntroduction, introduced, mode])
+  }, [status, questions, lesson, isOffline, remoteLessons, remote.status, remote.lesson])
 
   if (screen === 'loading') return <LoadingState />
   if (screen === 'error') return <ErrorState onRetry={remoteLessons ? remote.retry : reload} onLeave={onLeave} />
+  if (screen === 'unavailable') return <ErrorState unavailable onRetry={remote.retry} onLeave={onLeave} />
   if (screen === 'offline-start') return <OfflineStartState onRetry={remote.retry} onLeave={onLeave} />
   if (screen === 'empty') return <EmptyState onLeave={onLeave} />
 
-  if (showIntroduction && !introduced && mode !== 'speed' && questions.some(question => question.isNew)) {
-    return <LessonIntroduction questions={questions} onBegin={() => setIntroduced(true)} onLeave={onLeave} />
+  if (studying) {
+    return <LessonIntroduction questions={lesson.state.questions} onBegin={() => {
+      setStudying(false)
+      lesson.resume()
+    }} />
   }
 
   if (lesson.state.phase === 'summary' || lesson.state.phase === 'abandoned') {
@@ -862,6 +869,10 @@ export function LessonScreen({
   const questionScene = `${lesson.state.lessonId}:${lesson.state.index}`
 
   const answered = lesson.state.phase === 'answered'
+  // Study is an explicit choice before the first answer, never a placement answer key.
+  // Pause/resume preserves this exact lesson and keeps study time out of grading.
+  const canStudy = mode === 'normal' && placement !== true &&
+    lesson.state.phase === 'presenting' && lesson.state.index === 0 && lesson.state.answers.length === 0
 
   /**
    * Whether the ANSWERS are pictures — which changes the layout of half this screen.
@@ -979,13 +990,13 @@ export function LessonScreen({
         <ProgressBar
           current={lesson.progress.current}
           total={lesson.progress.total}
-          label={t('lesson:progress.label')}
+          accessibilityLabel={t('lesson:progress.label')}
           valueText={t('lesson:progress.value', {
             current: lesson.progress.current,
             total: lesson.progress.total,
           })}
           tone={correctRun >= STREAK_PRAISE ? 'streak' : 'progress'}
-          style={styles.flex}
+          style={styles.lessonProgress}
         />
         <Stat
           kind="hearts"
@@ -999,9 +1010,23 @@ export function LessonScreen({
             running={lesson.state.phase === 'presenting'}
           />
         )}
+        {canStudy && <Pressable
+          role="button"
+          aria-label={t('lesson:intro.open')}
+          onPress={() => {
+            hapticSelect()
+            lesson.pause()
+            setStudying(true)
+          }}
+          style={styles.study}
+          testID="lesson-study"
+        >
+          <Text style={styles.studyLabel}>{t('lesson:intro.open')}</Text>
+        </Pressable>}
       </View>
 
       <ScrollView
+        scrollEnabled={!globeGestureActive}
         ref={scroller}
         testID="lesson-scroll"
         // A tap on Check (or anywhere else) while the keyboard is up is a tap, not "dismiss the
@@ -1089,6 +1114,7 @@ export function LessonScreen({
                 (continent, coast, neighbours) gets no map until graded. Answers are
                 still given with the options below — the map selects nothing. */}
             <LessonAtlas
+              onGestureActiveChange={setGlobeGestureActive}
               question={question}
               sceneKey={questionScene}
               index={index?.index}
@@ -1606,17 +1632,13 @@ function practisedCountries(
   return out
 }
 
-function ErrorState({ onRetry, onLeave }: { onRetry: () => void; onLeave: (() => void) | undefined }) {
-  const { styles } = useThemeValues()
-  const t = useT()
-
+function ErrorState({ onRetry, onLeave, unavailable = false }: { onRetry: () => void; onLeave: (() => void) | undefined; unavailable?: boolean }) {
+  if (unavailable) return <FailureState titleKey="common:error.service.title" bodyKey="common:error.service.body"
+    ctaKey={onLeave ? 'common:back' : 'common:retry'} onPress={onLeave ?? onRetry} />
   return (
-    <View style={[styles.screen, styles.centered]}>
-      <Text style={styles.prompt}>{t('common:error.generic.title')}</Text>
-      <Text style={styles.feedbackBody}>{t('common:error.generic.body')}</Text>
-      <Button label={t('common:retry')} onPress={onRetry} style={styles.retry} />
+    <FailureState titleKey="common:error.generic.title" bodyKey="common:error.generic.body" ctaKey="common:retry" onPress={onRetry}>
       <LeaveButton onLeave={onLeave} />
-    </View>
+    </FailureState>
   )
 }
 
@@ -1697,7 +1719,16 @@ const useThemeValues = createThemeStyles((colors) => {
   screen: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[3] },
   centered: { alignItems: 'center', justifyContent: 'center' },
   flex: { flex: 1 },
-  header: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  lessonProgress: { flex: 1, minWidth: space[8] + space[4] },
+  header: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space[3] },
+  study: {
+    minHeight: 44, minWidth: 44, marginStart: 'auto',
+    paddingHorizontal: space[2], paddingVertical: space[2],
+    justifyContent: 'center', alignItems: 'center',
+    borderRadius: radius.full, borderWidth: 1, borderColor: colors.border.subtle,
+    backgroundColor: colors.bg.surface,
+  },
+  studyLabel: { ...text('caption'), color: colors.text.primary },
   // `flexGrow` + `center` so a question shorter than the screen sits in the middle of
   // it rather than jammed under the progress bar with half the display empty beneath.
   // On a tablet that empty half was 45 % of the screen; on a phone the content is

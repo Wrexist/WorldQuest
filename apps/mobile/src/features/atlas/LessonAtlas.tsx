@@ -33,6 +33,7 @@ export function __resetLessonAtlasFailure(): void {
 
 export type LessonAtlasProps = {
   readonly question: Question
+  readonly onGestureActiveChange?: ((active: boolean) => void) | undefined
   /** `${lessonId}:${index}` — events and camera moves for an old question are dropped. */
   readonly sceneKey: string
   readonly index: ContentIndex | null | undefined
@@ -55,7 +56,7 @@ export function lessonShowsAtlas(question: Question, index: ContentIndex | null 
   return policy !== null && (answered || policy.beforeAnswer)
 }
 
-export function LessonAtlas({ question, sceneKey, index, selected, answered, chosenOptionId, width, height, testID }: LessonAtlasProps) {
+export function LessonAtlas({ question, sceneKey, index, selected, answered, chosenOptionId, width, height, testID, onGestureActiveChange }: LessonAtlasProps) {
   const t = useT()
   const names = useAtlasNames(index)
   const enabled = useAtlasEnabled()
@@ -92,6 +93,7 @@ export function LessonAtlas({ question, sceneKey, index, selected, answered, cho
   return (
     <WorldAtlasView
       spec={spec}
+      onGestureActiveChange={onGestureActiveChange}
       onStatusChange={(next) => {
         if (next === 'error') failedThisRun = true
         setStatus(next)

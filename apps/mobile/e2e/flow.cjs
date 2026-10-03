@@ -1,4 +1,4 @@
-const { beginLesson } = require('../../../scripts/lib/lesson-walk.cjs')
+const { beginLesson, answerCurrent, questionShown } = require('../../../scripts/lib/lesson-walk.cjs')
 /**
  * End-to-end smoke test against the REAL exported bundle.
  *
@@ -160,9 +160,7 @@ const skip = (name, why) => {
    */
   const lessonPrompt = async () => {
     await beginLesson(page)
-    await beginLesson(page)
-    const options = await page.getByTestId('answer-option').all()
-    if (options.length === 0) return undefined
+    if (!(await questionShown(page))) return undefined
     // `.first()` matched the PREVIOUS route's heading — expo-router leaves it mounted
     // at zero height, so this reported "Explorer!" as the lesson's question. The step
     // still passed (a heading existed), which is exactly why it went unnoticed: the
@@ -556,14 +554,10 @@ const skip = (name, why) => {
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(600)
 
-  // A slider now, like the level step: it does not advance on being answered, because a
-  // drag passes through every value on its way to one. Its default is ten minutes.
-  const goalTrack = await page.getByRole('slider').first().boundingBox()
-  if (goalTrack !== null) {
-    await page.mouse.click(goalTrack.x + goalTrack.width - 4, goalTrack.y + goalTrack.height / 2)
-    await page.waitForTimeout(300)
-  }
-  step('the goal slider answers to a tap on its track', /20 min/i.test(await body()))
+  // A card selects a pace without navigating; the chosen state stays inspectable.
+  const seriousGoal = page.getByRole('radio', { name: /20 min/ })
+  await seriousGoal.click()
+  step('the daily goal stays selected until Continue', await seriousGoal.getAttribute('aria-checked') === 'true')
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(600)
 
@@ -574,6 +568,8 @@ const skip = (name, why) => {
   step('continent picker appears', (await page.getByRole('radio', { name: 'Europe', exact: true }).count()) > 0)
   await page.screenshot({ path: path.join(SHOTS, 'onboarding-region.png') })
   await page.getByRole('radio', { name: 'Europe' }).first().click()
+  step('the region stays selected until Continue', await page.getByRole('radio', { name: 'Europe' }).first().getAttribute('aria-checked') === 'true')
+  await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(700)
 
   step('starting level appears', /How well do you know the world/i.test(await body()))
@@ -751,7 +747,7 @@ const skip = (name, why) => {
         check: document.querySelector('[data-testid="lesson-check"]')?.getAttribute('aria-disabled'),
       }
     })
-    const graded = /Perfect!|That's [^\n]*|The answer is [^\n]*/.test(await body())
+    const graded = /Perfect!|You picked [^\n]*|That's [^\n]*|The answer is [^\n]*/.test(await body())
     step(
       'a tap selects the option without grading it',
       answered && selection.first && selection.selected === 1 && selection.check !== 'true' && !graded,
@@ -764,7 +760,7 @@ const skip = (name, why) => {
 
     await page.waitForTimeout(1200)
     text = await body()
-    const feedback = (text.match(/Perfect!|That's [^\n]*|The answer is [^\n]*/) ?? [''])[0]
+    const feedback = (text.match(/Perfect!|You picked [^\n]*|That's [^\n]*|The answer is [^\n]*/) ?? [''])[0]
     // The feedback string itself, not just "something changed" — pausing also changes
     // the screen, and that is precisely what went undetected before.
     step('answering produces feedback', answered && feedback.length > 0, feedback)
@@ -1200,8 +1196,7 @@ const skip = (name, why) => {
   // tapping the first option can take nearly twice that. The loop ends with the options.
   for (let i = 0; i < 45; i++) {
     await beginLesson(page)
-    const options = await page.getByTestId('answer-option').all()
-    if (options.length === 0) break
+    if (!(await questionShown(page))) break
     // Think first. `MIN_CREDIBLE_ANSWER_MS` is 400 and grading DISCARDS anything
     // faster — no XP, no coins, and deliberately no reach into the scheduler, because
     // a sub-400ms answer is a bot and letting one through would corrupt the memory
@@ -1210,8 +1205,7 @@ const skip = (name, why) => {
     // case. The quest and achievement steps below passed anyway, so nothing said so.
     await page.waitForTimeout(600)
     // The clock stops at Check, so the think time above is what gets recorded.
-    await options[0].click()
-    await page.getByTestId('lesson-check').click()
+    await answerCurrent(page)
     await page.waitForTimeout(250)
     const next = page.getByRole('button', { name: 'Continue' })
     if (await next.count()) await next.first().click()
@@ -1658,7 +1652,7 @@ const skip = (name, why) => {
   // What this still does NOT prove: announcement quality, focus order sanity to a
   // person, whether the labels make sense read aloud, or that the reader's own
   // gestures work. Those need a device.
-  await page.goto(`http://localhost:${PORT}/lesson`, { waitUntil: 'networkidle' })
+  await page.goto(`http://localhost:${PORT}/lesson?attr=flag&max=1&len=6`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1500)
   await beginLesson(page)
 
@@ -1704,7 +1698,7 @@ const skip = (name, why) => {
         const text = await body()
         // The feedback panel is the proof the answer was actually scored — focus moving
         // is not the same as the control doing its job.
-        const scored = /Perfect!|That's [^\n]*|The answer is [^\n]*/.test(text)
+        const scored = /Perfect!|You picked [^\n]*|That's [^\n]*|The answer is [^\n]*/.test(text)
         step('keyboard: Enter on Check scores it, with no pointer involved', scored, label)
       }
     }

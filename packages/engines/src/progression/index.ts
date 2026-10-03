@@ -92,8 +92,8 @@ export type WorldProgress = {
  */
 function quizzableFactsOf(index: ContentIndex, entityId: EntityId): readonly FactId[] {
   const ids: FactId[] = []
-  for (const fact of index.facts.values()) {
-    if (fact.entity === entityId && isQuizzable(fact)) ids.push(fact.id)
+  for (const fact of index.factsByEntity.get(entityId) ?? []) {
+    if (isQuizzable(fact)) ids.push(fact.id)
   }
   return ids
 }

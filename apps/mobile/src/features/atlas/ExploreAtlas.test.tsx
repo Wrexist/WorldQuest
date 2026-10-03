@@ -6,6 +6,7 @@ import { setAppReducedMotion, useReducedMotion } from '@worldquest/design'
 import { withFullMotion } from '../../test/setup.js'
 import { ExploreAtlas, type ExploreAtlasProps } from './ExploreAtlas.js'
 
+const globe = vi.hoisted(() => ({ status: undefined as undefined | ((status: 'error') => void) }))
 const dimensions = vi.hoisted(() => ({ width: 390, height: 844, scale: 1, fontScale: 1 }))
 vi.mock('react-native', async importOriginal => ({
   ...(await importOriginal<typeof import('react-native')>()),
@@ -15,7 +16,10 @@ vi.mock('react-native', async importOriginal => ({
 // The globe renderer has its own resource-lifetime tests. Here, its element identity
 // proves a card transition never remounts the expensive sibling or its camera.
 vi.mock('./WorldAtlasView.js', () => ({
-  WorldAtlasView: () => <div data-testid="persistent-globe" />,
+  WorldAtlasView: ({ onStatusChange }: { onStatusChange: (status: 'error') => void }) => {
+    globe.status = onStatusChange
+    return <div data-testid="persistent-globe" />
+  },
 }))
 
 const countries = [
@@ -46,6 +50,19 @@ async function readyMotionPreference() {
 }
 
 describe('Explore country-card arrival', () => {
+  it('keeps country selection and opening usable after a GPU failure', () => {
+    const onOpenCountry = vi.fn()
+    const view = render(<ExploreAtlas {...props({ onOpenCountry })} />)
+    act(() => globe.status?.('error'))
+    expect(view.queryByTestId('persistent-globe')).toBeNull()
+    expect(view.getByTestId('explore-map-fallback').querySelector('img')?.getAttribute('src')).toContain('/geo/clay/ES.webp')
+    fireEvent.click(view.getByRole('button', { name: 'Open Spain' }))
+    expect(onOpenCountry).toHaveBeenCalledWith('ES')
+    view.rerender(<ExploreAtlas {...props({ selected: 'JP', onOpenCountry })} />)
+    expect(view.getByTestId('explore-map-fallback').querySelector('img')?.getAttribute('src')).toContain('/geo/clay/JP.webp')
+    expect(view.queryByTestId('persistent-globe')).toBeNull()
+  })
+
   it('opens directly from the compact details and keeps dismissal separate at large text sizes', () => {
     const onOpenCountry = vi.fn()
     const onSelect = vi.fn()

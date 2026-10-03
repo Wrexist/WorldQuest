@@ -14,7 +14,7 @@ import { isOnline, onConnectivityChange } from '../../../lib/connectivity.js'
 import { reportCrash } from '../../../lib/reporting.js'
 import { D1AuthError } from '@worldquest/api/d1-auth'
 
-export type D1LessonStatus = 'idle' | 'loading' | 'ready' | 'offline' | 'too-narrow' | 'error'
+export type D1LessonStatus = 'idle' | 'loading' | 'ready' | 'offline' | 'too-narrow' | 'unavailable' | 'error'
 
 export function useD1Lesson(
   enabled: boolean,
@@ -50,7 +50,7 @@ export function useD1Lesson(
         // never a value from the learner's data.
         reportCrash({ domain: 'lesson', isFatal: false,
           name: error instanceof D1AuthError ? `D1AuthError.${error.code}` : error instanceof Error ? error.name : 'unknown' })
-        if (live) setStatus('error')
+        if (live) setStatus(error instanceof D1AuthError && error.code === 'API_NOT_READY' ? 'unavailable' : 'error')
       })
     return () => {
       live = false

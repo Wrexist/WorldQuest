@@ -26,11 +26,8 @@
  *
  * ## Why the waits are what they are
  *
- * Every single-select step now advances on the tap rather than on a Continue, after a
- * deliberate beat (`ANSWER_BEAT_MS`, 260 ms) in which the answer registers. So a click
- * here is followed by that beat plus the step transition, and the waits below are sized
- * for both. They are generous on purpose: a harness that is 50 ms optimistic fails in
- * CI only, on the machine nobody is watching.
+ * Language applies on tap after a short answer beat. Other preferences wait for
+ * Continue. The generous waits also cover the native step transition.
  */
 
 const ADULT_YEARS_AGO = 30
@@ -102,16 +99,16 @@ async function walkOnboarding(page, at = async () => {}) {
   await page.waitForTimeout(500)
 
   // ── goal ──────────────────────────────────────────────────────────────────
-  // A SLIDER now, like `level`, so it does not advance on being answered. Left on its
-  // default — ten minutes, where the track opens — and continued.
+  // Accept the ten-minute card selected by default.
   await at('goal')
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(500)
 
   // ── region ────────────────────────────────────────────────────────────────
-  // The one question left that IS answered by tapping, so it still advances on its own.
+  // Region selection remains visible until it is confirmed.
   await at('region')
   await page.getByRole('radio', { name: 'Europe' }).first().click()
+  await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(AFTER_ANSWER)
 
   // The level step is a SLIDER, so it does not advance on being answered — a drag passes
