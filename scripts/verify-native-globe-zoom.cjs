@@ -175,4 +175,4 @@ if (require.main === module) {
   if (!report.passed) process.exitCode = 1
 }
 
-module.exports = { geometryFromLog, compareZoom, presentationEvidence, verify }
+module.exports = { geometryFromLog, compareZoom, comparePageBand, presentationEvidence, verify }

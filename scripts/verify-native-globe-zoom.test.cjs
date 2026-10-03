@@ -1,6 +1,6 @@
 const { test } = require('node:test')
 const assert = require('node:assert/strict')
-const { geometryFromLog, compareZoom, presentationEvidence } = require('./verify-native-globe-zoom.cjs')
+const { geometryFromLog, compareZoom, comparePageBand, presentationEvidence } = require('./verify-native-globe-zoom.cjs')
 
 const geometry = { screen: { width: 200, height: 400 }, globe: { x: 10, y: 20, width: 180, height: 200 }, controlsTop: 190 }
 function image(textured = true) {
@@ -29,6 +29,15 @@ test('rejects the unchanged textured globe and changes confined to controls or s
 test('rejects a delayed first paint and a newly blank surface', () => {
   assert.equal(compareZoom(image(false), image(), geometry).passed, false)
   assert.equal(compareZoom(image(), image(false), geometry).passed, false)
+})
+
+test('distinguishes a moving globe from its parent page scrolling', () => {
+  const before = image(), after = image()
+  after.data.fill(0, 0, 200 * 220 * 4)
+  assert.equal(comparePageBand(before, after, geometry), 0)
+  after.data.fill(0, 200 * 236 * 4, 200 * 300 * 4)
+  assert.ok(comparePageBand(before, after, geometry) > .9)
+  assert.throws(() => comparePageBand(before, after, { ...geometry, globe: { ...geometry.globe, height: 350 } }), /Too little/)
 })
 
 test('requires a meaningful changed area and accepts a changed textured scene', () => {

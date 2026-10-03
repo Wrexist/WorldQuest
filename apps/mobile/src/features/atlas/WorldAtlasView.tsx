@@ -543,9 +543,10 @@ export function WorldAtlasView({
       <View style={StyleSheet.absoluteFill} pointerEvents="none" testID="atlas-preview">
         <ClayMap name={spec.focus.kind === 'country' ? spec.focus.countryId : spec.focus.kind === 'region' ? `region-${spec.focus.regionId}` : 'world'} style={StyleSheet.absoluteFill} />
       </View>
-      <View testID="atlas-gesture-surface" collapsable={false} style={StyleSheet.absoluteFill} {...responder.panHandlers}>
-        <GLView key={generation} style={StyleSheet.absoluteFill} onContextCreate={onContextCreate} />
-      </View>
+      <GLView key={generation} pointerEvents="none" style={StyleSheet.absoluteFill} onContextCreate={onContextCreate} />
+      {/* Keep the native touch target in React Native. Expo's native GL subview is
+          only a drawing surface; it must not own the touch history used for pans. */}
+      <View testID="atlas-gesture-surface" collapsable={false} pointerEvents="box-only" style={StyleSheet.absoluteFill} {...responder.panHandlers} />
 
       {viewport !== null && status === 'ready' && (
         // `direction: ltr`: pins and labels sit at PHYSICAL screen positions projected
