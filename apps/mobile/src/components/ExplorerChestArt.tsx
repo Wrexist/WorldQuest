@@ -1,8 +1,9 @@
 import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Animated, AppState, Easing, Image, StyleSheet, View } from 'react-native'
 import { NavigationContext } from '@react-navigation/native'
-import { motion, space, useReducedMotion } from '@worldquest/design'
+import { motion, space, useReducedMotion, useTheme } from '@worldquest/design'
 import { EXPLORER_CHEST, EXPLORER_CHEST_SEQUENCE } from '../lib/explorerChest.generated.js'
+import { Icon } from './Icon.js'
 
 const LAST = EXPLORER_CHEST_SEQUENCE.frames - 1
 const FRAMES = Array.from({ length: EXPLORER_CHEST_SEQUENCE.frames }, (_, index) => index)
@@ -34,6 +35,7 @@ export type ExplorerChestArtProps = {
 
 /** Shared Blender film and high-resolution stills. The art never changes a reward. */
 export function ExplorerChestArt({ size, opened = false, revealOnMount = false, onReveal, onCelebrate, nudge = 0, testID = 'explorer-chest-art' }: ExplorerChestArtProps) {
+  const { colors } = useTheme()
   const reduced = useReducedMotion()
   const navigation = useContext(NavigationContext)
   const frame = useRef(new Animated.Value(opened && !revealOnMount ? LAST : 0)).current
@@ -93,7 +95,7 @@ export function ExplorerChestArt({ size, opened = false, revealOnMount = false, 
       frame.setValue(0)
       animation = Animated.timing(frame, {
         toValue: LAST,
-        duration: LAST / EXPLORER_CHEST_SEQUENCE.fps * 1000,
+        duration: motion.celebrate.duration,
         easing: value => Math.floor(value * LAST) / LAST,
         useNativeDriver: true,
         isInteraction: false,
@@ -150,6 +152,20 @@ export function ExplorerChestArt({ size, opened = false, revealOnMount = false, 
             ],
           }} />
       </View>}
+      {playing && !reduced && [-1, -.4, .4, 1].map((direction, index) => (
+        <Animated.View key={direction} testID="chest-reveal-spark" style={{
+          position: 'absolute', start: size * .5 - space[3], top: size * .48,
+          opacity: frame.interpolate({ inputRange: [0, 10, 17, 29, LAST], outputRange: [0, 0, 1, .8, 0] }),
+          transform: [
+            { translateX: frame.interpolate({ inputRange: [0, 10, LAST], outputRange: [0, 0, direction * size * .43] }) },
+            { translateY: frame.interpolate({ inputRange: [0, 10, 25, LAST], outputRange: [0, 0, -size * (.38 + (index % 2) * .12), -size * .28] }) },
+            { scale: frame.interpolate({ inputRange: [0, 10, 20, LAST], outputRange: [0, 0, 1, .5] }) },
+            { rotate: frame.interpolate({ inputRange: [0, LAST], outputRange: ['0deg', `${direction * 75}deg`] }) },
+          ],
+        }}>
+          <Icon name="star" size={space[5]} color={colors.reward.coin} />
+        </Animated.View>
+      ))}
     </Animated.View>
   </View>
 }

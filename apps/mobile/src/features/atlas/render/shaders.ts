@@ -103,7 +103,17 @@ void main() {
 
   float id = decodeId(uv);
   float s = stateOf(id);
-  float isLand = step(0.5, id);
+  // IDs remain categorical for picking. Interpolate coverage, never the IDs:
+  // nearest-neighbour land masks made coasts turn into staircases at close zoom.
+  vec2 tc = uv * uIdSize - 0.5;
+  vec2 f = fract(tc);
+  vec2 b = (floor(tc) + 0.5) / uIdSize;
+  vec2 o = 1.0 / uIdSize;
+  float i00 = decodeId(b);
+  float i10 = decodeId(b + vec2(o.x, 0.0));
+  float i01 = decodeId(b + vec2(0.0, o.y));
+  float i11 = decodeId(b + o);
+  float isLand = mix(mix(step(0.5, i00), step(0.5, i10), f.x), mix(step(0.5, i01), step(0.5, i11), f.x), f.y);
 
   vec3 base;
   if (uFlat > 0.5) {
@@ -125,14 +135,10 @@ void main() {
   base = mix(base, mix(vec3(g0), base, 0.6) * 0.92 + 0.08, focusFade * 0.45);
 
   // Highlight fill, bilinear over the four nearest ID texels so its edge is smooth.
-  vec2 tc = uv * uIdSize - 0.5;
-  vec2 f = fract(tc);
-  vec2 b = (floor(tc) + 0.5) / uIdSize;
-  vec2 o = 1.0 / uIdSize;
-  float s00 = stateOf(decodeId(b));
-  float s10 = stateOf(decodeId(b + vec2(o.x, 0.0)));
-  float s01 = stateOf(decodeId(b + vec2(0.0, o.y)));
-  float s11 = stateOf(decodeId(b + o));
+  float s00 = stateOf(i00);
+  float s10 = stateOf(i10);
+  float s01 = stateOf(i01);
+  float s11 = stateOf(i11);
   vec4 h00 = vec4(stateColor(s00), 1.0) * stateFill(s00);
   vec4 h10 = vec4(stateColor(s10), 1.0) * stateFill(s10);
   vec4 h01 = vec4(stateColor(s01), 1.0) * stateFill(s01);
@@ -142,16 +148,15 @@ void main() {
   vec3 tinted = h.a > 0.001 ? h.rgb / h.a * (0.55 + 0.6 * dot(base, vec3(0.333))) : base;
   vec3 color = mix(base, tinted, h.a);
 
-  // Country borders: an ID change within a camera-scaled distance.
-  float border = 0.0;
-  if (id > 0.5) {
-    vec2 d = o * uBorderTexels;
-    float e = decodeId(uv + vec2(d.x, 0.0));
-    float w = decodeId(uv - vec2(d.x, 0.0));
-    float nn = decodeId(uv + vec2(0.0, d.y));
-    float ss = decodeId(uv - vec2(0.0, d.y));
-    if ((e > 0.5 && e != id) || (w > 0.5 && w != id) || (nn > 0.5 && nn != id) || (ss > 0.5 && ss != id)) border = 1.0;
-  }
+  // Reuse the coverage samples for soft borders, avoiding four extra lookups and
+  // the hard binary edge that enlarged each ID texel into a blocky white stair.
+  float edgeWidth = clamp(uBorderTexels * 0.5, 0.08, 0.5);
+  vec2 edge = vec2(1.0) - smoothstep(vec2(0.0), vec2(edgeWidth), abs(f - 0.5));
+  float bx0 = (i00 > 0.5 && i10 > 0.5 && i00 != i10) ? edge.x : 0.0;
+  float bx1 = (i01 > 0.5 && i11 > 0.5 && i01 != i11) ? edge.x : 0.0;
+  float by0 = (i00 > 0.5 && i01 > 0.5 && i00 != i01) ? edge.y : 0.0;
+  float by1 = (i10 > 0.5 && i11 > 0.5 && i10 != i11) ? edge.y : 0.0;
+  float border = max(mix(bx0, bx1, f.y), mix(by0, by1, f.x));
   color = mix(color, uBorderColor, border * uBorderAlpha * (1.0 - focusFade * 0.5));
 
   // A highlighted country is lifted off the globe: a soft shadow below-right of it, a thick

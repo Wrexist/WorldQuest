@@ -1,4 +1,4 @@
-const { beginLesson } = require('../../../scripts/lib/lesson-walk.cjs')
+const { beginLesson, answerCurrent, questionShown } = require('../../../scripts/lib/lesson-walk.cjs')
 /**
  * End-to-end smoke test against the REAL exported bundle.
  *
@@ -1198,8 +1198,7 @@ const skip = (name, why) => {
   // tapping the first option can take nearly twice that. The loop ends with the options.
   for (let i = 0; i < 45; i++) {
     await beginLesson(page)
-    const options = await page.getByTestId('answer-option').all()
-    if (options.length === 0) break
+    if (!(await questionShown(page))) break
     // Think first. `MIN_CREDIBLE_ANSWER_MS` is 400 and grading DISCARDS anything
     // faster — no XP, no coins, and deliberately no reach into the scheduler, because
     // a sub-400ms answer is a bot and letting one through would corrupt the memory
@@ -1208,8 +1207,7 @@ const skip = (name, why) => {
     // case. The quest and achievement steps below passed anyway, so nothing said so.
     await page.waitForTimeout(600)
     // The clock stops at Check, so the think time above is what gets recorded.
-    await options[0].click()
-    await page.getByTestId('lesson-check').click()
+    await answerCurrent(page)
     await page.waitForTimeout(250)
     const next = page.getByRole('button', { name: 'Continue' })
     if (await next.count()) await next.first().click()

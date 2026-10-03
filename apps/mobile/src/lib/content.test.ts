@@ -21,7 +21,7 @@
  * other, and this file should hold either.
  */
 
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -29,6 +29,12 @@ import { readdirSync } from 'node:fs'
 import { useContent } from './content.js'
 import { flagSource } from './flags.js'
 import { mapSource } from './maps.js'
+import { buildQuestion, seededRng } from '@worldquest/engines'
+import { visualQuestion } from '../features/lesson/visualQuestion.js'
+
+const reader = vi.hoisted(() => ({ enabled: false }))
+vi.mock('./screenReader.js', () => ({ useScreenReader: () => reader.enabled }))
+afterEach(() => { reader.enabled = false })
 
 const PACK_DIR = join(import.meta.dirname, '../../../../packages/content/packs/geography')
 
@@ -44,6 +50,20 @@ const PACK_DIR = join(import.meta.dirname, '../../../../packages/content/packs/g
 const EXCLUDED_PACKS = ['facts.sensitive-examples.v1.json']
 
 describe('the lesson this app composes', () => {
+  it('upgrades a cached described flag without changing its ticket, options or answer key', () => {
+    const { result } = renderHook(() => useContent())
+    const index = result.current.index!.index
+    const item = index.itemsByFact.get('geo.KE.flag')!.find(item => item.templateId === 'tpl.flag-describe.mc4')!
+    const cached = buildQuestion(index, item, 'sv', seededRng(4))!
+    const visible = visualQuestion(cached, index, false)
+    expect(visible.promptKey).toBe('lesson:prompt.which_flag')
+    expect(visible.promptAsset).toBe(cached.revealAsset)
+    expect(visible.item).toBe(cached.item)
+    expect(visible.options).toBe(cached.options)
+    expect(visible.revealAsset).toBeUndefined()
+    expect(visualQuestion(cached, index, true)).toBe(cached)
+    expect(cached.promptKey).toBe('lesson:prompt.flag_described')
+  })
   it('never asks a question it has no way to present', () => {
     const { result } = renderHook(() => useContent())
     const questions = result.current.index!.compose({ count: 40 })
@@ -98,9 +118,11 @@ describe('the lesson this app composes', () => {
 
     expect(flagQuestions.length).toBeGreaterThan(0)
     expect(flagQuestions.some((q) => q.item.templateId === 'tpl.flag-to-country.mc4')).toBe(true)
+    expect(flagQuestions.some((q) => q.item.templateId === 'tpl.flag-describe.mc4')).toBe(false)
   })
 
   it('still asks about flags in words too, for anyone who cannot see one', () => {
+    reader.enabled = true
     // `tpl.flag-describe.mc4` tests the same fact in prose. It is what a screen-reader
     // user gets instead of the picture (accessibility.md §8), and it must not be
     // crowded out now that its sibling is selectable again — the two share the fact.

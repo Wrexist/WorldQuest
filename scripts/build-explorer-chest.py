@@ -321,7 +321,7 @@ for name,f in [('closed',1),('opened',40)]:
     scene.frame_set(f); scene.render.filepath=str(OUT/f'{name}.png'); bpy.ops.render.render(write_still=True)
     print('EXPLORER_CHEST_STILL_READY '+name,flush=True)
 if not os.environ.get('WQ_CHEST_PREVIEW'):
-    scene.render.resolution_x=240; scene.render.resolution_y=240; scene.cycles.samples=24
+    scene.render.resolution_x=480; scene.render.resolution_y=480; scene.cycles.samples=64
     for i in range(40):
         scene.frame_set(i+1); scene.render.filepath=str(FRAMES/f'{i:02d}.png'); bpy.ops.render.render(write_still=True)
     print('EXPLORER_CHEST_FILM_READY',flush=True)
@@ -342,7 +342,7 @@ record={
     'assetLicense':'Original WorldQuest project asset; existing project usage terms apply. Natural Earth land is public domain.',
     'model':{'units':'meters','sourceUp':'Z','glbUp':'Y','triangles':triangles,'glbBytes':(OUT/'explorer-chest.glb').stat().st_size,
              'sha256':sha(OUT/'explorer-chest.glb'),'animationFrames':40,'fps':20},
-    'policy':{'maxTriangles':100000,'maxGlbBytes':5242880,'stills':{'size':640,'transparent':True},'film':{'frames':40,'size':240,'columns':8,'rows':5}},
+    'policy':{'maxTriangles':100000,'maxGlbBytes':5242880,'stills':{'size':640,'transparent':True},'film':{'frames':40,'size':480,'columns':8,'rows':5}},
     'validation':{'topologyBudget':triangles<100000,'modelSizeBudget':(OUT/'explorer-chest.glb').stat().st_size<5242880,'blenderVersion':bpy.app.version_string,
                   'renderedStills':True,'renderedAllFrames':not bool(os.environ.get('WQ_CHEST_PREVIEW'))},
 }

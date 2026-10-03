@@ -43,6 +43,7 @@ export type ExploreAtlasProps = {
   readonly names: AtlasNames
   readonly selected: string | null
   readonly onSelect: (id: string | null) => void
+  readonly onGestureActiveChange?: ((active: boolean) => void) | undefined
   readonly region: string | null
   readonly onRegion: (region: string | null) => void
   /** Search matches, to highlight on the globe. Empty when there is no query. */
@@ -55,7 +56,7 @@ export type ExploreAtlasProps = {
   readonly onOpenCountry: (id: string) => void
 }
 
-export function ExploreAtlas({ countries, names, selected, onSelect, region, onRegion, matches, onOpenCountry, showBrowse = true, onLayout, openRef }: ExploreAtlasProps) {
+export function ExploreAtlas({ countries, names, selected, onSelect, region, onRegion, matches, onOpenCountry, showBrowse = true, onLayout, openRef, onGestureActiveChange }: ExploreAtlasProps) {
   const { styles, colors } = useThemeValues()
   const t = useT()
   const { width, height, fontScale } = useWindowDimensions()
@@ -89,6 +90,7 @@ export function ExploreAtlas({ countries, names, selected, onSelect, region, onR
         <ClayMap name={selected ?? (region ? `region-${region}` : 'world')} style={{ width: '100%', height: globeHeight }} />
       </View> : <WorldAtlasView
         spec={spec}
+        onGestureActiveChange={onGestureActiveChange}
         onStatusChange={status => { if (status === 'error') setGlobeFailed(true) }}
         controls
         style={{ height: globeHeight }}

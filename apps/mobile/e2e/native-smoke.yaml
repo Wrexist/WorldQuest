@@ -63,6 +63,28 @@ appId: com.wrexist.worldquest
 - assertVisible:
     id: "path-node-current"
 - takeScreenshot: native-relaunch
+# A cold lesson route and a modal pushed from Home have different native frames.
+# Exercise the actual full-screen presentation where the Dynamic Island regression
+# occurred, rather than accepting only the onboarding hand-off screenshot.
+- tapOn:
+    id: "path-node-current"
+- assertVisible:
+    id: "lesson-check"
+- assertVisible:
+    id: "lesson-study"
+- waitForAnimationToEnd:
+    timeout: 10000
+- takeScreenshot: native-home-lesson-safe-area
+- tapOn:
+    id: "lesson-study"
+- takeScreenshot: native-home-study-safe-area
+- tapOn:
+    id: "lesson-begin"
+- tapOn: "Pause the lesson"
+- tapOn: "Finish here"
+- tapOn: "Continue"
+- assertVisible:
+    id: "path-node-current"
 - tapOn: "Explore"
 # Zoom controls exist only after the native renderer acknowledges its first frame.
 - extendedWaitUntil:
@@ -98,6 +120,21 @@ appId: com.wrexist.worldquest
 - assertNotVisible:
     id: "explore-map-fallback"
 - takeScreenshot: native-explore-zoomed
+# Drag inside the centred globe, then scroll outside it. The viewport and controls
+# must remain in place for the first gesture; the page must unlock for the second.
+- swipe:
+    start: "50%, 52%"
+    end: "66%, 40%"
+    duration: 800
+- waitForAnimationToEnd:
+    timeout: 10000
+- assertVisible: "Zoom in"
+- takeScreenshot: native-explore-dragged
+- swipe:
+    start: "3%, 38%"
+    end: "3%, 80%"
+    duration: 800
+- takeScreenshot: native-explore-page-scroll
 # Start the first link from a stopped app, as in Maestro's deep-link recipe.
 - stopApp
 - openLink: "worldquest://country/%53%45"

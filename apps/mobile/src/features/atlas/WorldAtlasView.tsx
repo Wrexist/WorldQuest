@@ -63,6 +63,8 @@ export type AtlasStatus = 'loading' | 'ready' | 'error'
 export type WorldAtlasViewProps = {
   readonly spec: AtlasSceneSpec
   readonly onEvent?: ((event: AtlasEvent) => void) | undefined
+  /** Suspend the containing page while fingers own the globe. */
+  readonly onGestureActiveChange?: ((active: boolean) => void) | undefined
   /** The renderer failed. The parent swaps in the fallback; the lesson is untouched. */
   readonly onStatusChange?: ((status: AtlasStatus, error?: Error) => void) | undefined
   readonly quality?: GlobeQuality
@@ -106,6 +108,7 @@ function applyScene(renderer: GlobeRenderer, geometry: AtlasGeometry | null, spe
 export function WorldAtlasView({
   spec,
   onEvent,
+  onGestureActiveChange,
   onStatusChange,
   quality = 'high',
   insets,
@@ -407,7 +410,14 @@ export function WorldAtlasView({
   )
 
   // Gestures: one finger pans, two pinch, a short still press is a tap.
-  const gesture = useRef({ x: 0, y: 0, at: 0, moved: false, pinch: 0, base: WORLD_CAMERA })
+  const gesture = useRef({ x: 0, y: 0, at: 0, moved: false, pinch: 0, dx: 0, dy: 0, base: WORLD_CAMERA })
+  const gestureCallback = useRef(onGestureActiveChange)
+  gestureCallback.current = onGestureActiveChange
+  const endGesture = useCallback(() => gestureCallback.current?.(false), [])
+  useEffect(() => {
+    if (!appActive || status !== 'ready') endGesture()
+    return endGesture
+  }, [appActive, endGesture, status])
   const handleTap = useCallback((x: number, y: number) => {
     const s = sizeRef.current
     const g = geometry.current
@@ -435,12 +445,13 @@ export function WorldAtlasView({
       PanResponder.create({
         onStartShouldSetPanResponder: () => statusRef.current === 'ready',
         onMoveShouldSetPanResponder: () => statusRef.current === 'ready',
-        // Inside a scroll view (a lesson, Explore) the page may take the gesture back
-        // until the globe has started turning — so a drag that begins on the map can
-        // still scroll the screen, and nobody is trapped above the answers. Once the
-        // globe is moving it keeps the finger.
-        onPanResponderTerminationRequest: () => !gesture.current.moved,
+        // A gesture starting on the globe belongs to the globe from touch-down.
+        // Scrolling stays available outside it; yielding before the first move lets
+        // UIScrollView steal pans and pinches before the map can respond.
+        onPanResponderTerminationRequest: () => false,
+        onShouldBlockNativeResponder: () => true,
         onPanResponderGrant: (e) => {
+          gestureCallback.current?.(true)
           stopAnimation()
           gesture.current = {
             x: e.nativeEvent.locationX,
@@ -448,12 +459,14 @@ export function WorldAtlasView({
             at: Date.now(),
             moved: false,
             pinch: pinchDistance(e),
+            dx: 0,
+            dy: 0,
             base: cameraRef.current,
           }
         },
         onPanResponderMove: (e, state) => {
           const s = sizeRef.current
-          if (s === null || !specRef.current.interaction.rotate) return
+          if (s === null) return
           if (touches(e).length >= 2 && specRef.current.interaction.zoom) {
             const d = pinchDistance(e)
             if (gesture.current.pinch === 0) {
@@ -464,17 +477,29 @@ export function WorldAtlasView({
             gesture.current.moved = true
             return
           }
-          if (Math.hypot(state.dx, state.dy) > TAP_SLOP) gesture.current.moved = true
-          if (gesture.current.moved) moveCamera(panCamera(gesture.current.base, state.dx, state.dy, s))
+          // Lifting one finger must continue from the zoomed camera, not jump back
+          // to the original pan/zoom baseline.
+          if (gesture.current.pinch > 0) {
+            gesture.current.pinch = 0
+            gesture.current.base = cameraRef.current
+            gesture.current.dx = state.dx
+            gesture.current.dy = state.dy
+          }
+          const dx = state.dx - gesture.current.dx
+          const dy = state.dy - gesture.current.dy
+          if (Math.hypot(dx, dy) > TAP_SLOP) gesture.current.moved = true
+          if (gesture.current.moved && specRef.current.interaction.rotate) moveCamera(panCamera(gesture.current.base, dx, dy, s))
         },
         onPanResponderRelease: () => {
+          endGesture()
           const g = gesture.current
           if (!g.moved && Date.now() - g.at < TAP_MS) handleTap(g.x, g.y)
           const c = cameraRef.current
           eventCallback.current?.({ type: 'viewChanged', sceneKey: specRef.current.sceneKey, lat: c.lat, lon: c.lon, distance: c.distance })
         },
+        onPanResponderTerminate: endGesture,
       }),
-    [handleTap, moveCamera, stopAnimation],
+    [endGesture, handleTap, moveCamera, stopAnimation],
   )
 
   const onLayout = (event: LayoutChangeEvent) => {
@@ -518,7 +543,7 @@ export function WorldAtlasView({
       <View style={StyleSheet.absoluteFill} pointerEvents="none" testID="atlas-preview">
         <ClayMap name={spec.focus.kind === 'country' ? spec.focus.countryId : spec.focus.kind === 'region' ? `region-${spec.focus.regionId}` : 'world'} style={StyleSheet.absoluteFill} />
       </View>
-      <View style={StyleSheet.absoluteFill} {...responder.panHandlers}>
+      <View testID="atlas-gesture-surface" collapsable={false} style={StyleSheet.absoluteFill} {...responder.panHandlers}>
         <GLView key={generation} style={StyleSheet.absoluteFill} onContextCreate={onContextCreate} />
       </View>
 

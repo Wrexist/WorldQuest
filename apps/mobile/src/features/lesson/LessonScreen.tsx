@@ -1,4 +1,5 @@
 import { LessonIntroduction } from './LessonIntroduction.js'
+import { visualQuestion } from './visualQuestion.js'
 import { createThemeStyles } from '@worldquest/design'
 /**
  * The lesson screen — mockup screens 5 and 6.
@@ -383,6 +384,7 @@ export function LessonScreen({
    */
   const questCompleted = useRef(false)
   const scroller = useRef<ScrollView>(null)
+  const [globeGestureActive, setGlobeGestureActive] = useState(false)
   const optionsTop = useRef(0)
   const optionsBottom = useRef(0)
   /** The scroll view's own height: it shrinks when the feedback sheet mounts below it. */
@@ -433,8 +435,9 @@ export function LessonScreen({
   // Each of a board's questions is also a plain four-option question with the same answer key, so
   // the round simply plays them as that: nothing about grading or the ticket changes.
   const questions = useMemo<readonly Question[]>(
-    () => (mode === 'speed' ? issued.map(({ group: _group, ...q }) => q) : issued),
-    [issued, mode],
+    () => (mode === 'speed' ? issued.map(({ group: _group, ...q }) => q) : issued)
+      .map(question => visualQuestion(question, index?.index, screenReaderOn)),
+    [issued, mode, index, screenReaderOn],
   )
 
   const handleComplete = useCallback((state: LessonState, optimistic: GradeResult) => {
@@ -1023,6 +1026,7 @@ export function LessonScreen({
       </View>
 
       <ScrollView
+        scrollEnabled={!globeGestureActive}
         ref={scroller}
         testID="lesson-scroll"
         // A tap on Check (or anywhere else) while the keyboard is up is a tap, not "dismiss the
@@ -1110,6 +1114,7 @@ export function LessonScreen({
                 (continent, coast, neighbours) gets no map until graded. Answers are
                 still given with the options below — the map selects nothing. */}
             <LessonAtlas
+              onGestureActiveChange={setGlobeGestureActive}
               question={question}
               sceneKey={questionScene}
               index={index?.index}

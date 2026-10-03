@@ -8,7 +8,8 @@ import { createThemeStyles } from '@worldquest/design'
  */
 
 import { useRef, useState } from 'react'
-import { View } from 'react-native'
+import { Platform } from 'react-native'
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 
 import { router, useLocalSearchParams } from 'expo-router'
 import { LessonScreen } from '../src/features/lesson/LessonScreen.js'
@@ -126,9 +127,12 @@ export default function LessonRoute() {
   const online = useOnline()
   const leaving = useRef(false)
 
-  // RootLayout already insets the navigator; a second safe area hides lesson options.
+  // Native full-screen modals escape the root navigator's inset frame. Measure this
+  // presentation itself: a cold route already inside the root reports zero inset,
+  // while a pushed modal reports the Dynamic Island and home-indicator insets.
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg.canvas }}>
+    <SafeAreaProvider style={{ flex: 1 }}>
+    <SafeAreaView testID="lesson-safe-area" edges={Platform.OS === 'web' ? [] : ['top', 'bottom', 'left', 'right']} style={{ flex: 1, backgroundColor: colors.bg.canvas }}>
     <LessonScreen
       mode={mode === 'speed' ? 'speed' : 'normal'}
       {...(focus ? { focus } : {})}
@@ -221,7 +225,8 @@ export default function LessonRoute() {
         else router.replace('/')
       })()}
     />
-    </View>
+    </SafeAreaView>
+    </SafeAreaProvider>
   )
 }
 

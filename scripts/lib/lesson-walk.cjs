@@ -52,7 +52,11 @@ async function beginLesson(page, at = async () => {}) {
 async function solveBoard(page) {
   const count = await page.getByTestId('pairs-left').count()
   for (let i = 0; i < count; i++) {
-    const matched = async () => ((await page.getByTestId('pairs-left').nth(i).getAttribute('aria-label')) ?? '').endsWith('matched')
+    const matched = async () => {
+      const left = page.getByTestId('pairs-left').nth(i)
+      // Completing the last pair replaces the board with feedback immediately.
+      return !(await left.count()) || ((await left.getAttribute('aria-label')) ?? '').endsWith('matched')
+    }
     for (let j = 0; j < count && !(await matched()); j++) {
       const right = page.getByTestId('pairs-right').nth(j)
       if ((await right.getAttribute('aria-disabled')) === 'true') continue

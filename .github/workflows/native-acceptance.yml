@@ -175,6 +175,7 @@ jobs:
           unzip -q maestro.zip
           export PATH="$RUNNER_TEMP/maestro/maestro/bin:$PATH"
           cd "$GITHUB_WORKSPACE"
+          xcrun simctl ui "$DEVICE_ID" appearance dark
           maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/native-flow" apps/mobile/e2e/native-smoke.yaml
       - name: Collect native deep link diagnostic
         if: ${{ always() && inputs.link_diagnostics }}

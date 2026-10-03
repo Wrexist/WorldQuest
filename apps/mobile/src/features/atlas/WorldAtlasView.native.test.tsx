@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { AccessibilityInfo, AppState, type AppStateStatus } from 'react-native'
+import { AccessibilityInfo, AppState, PanResponder, type AppStateStatus, type GestureResponderEvent, type PanResponderGestureState } from 'react-native'
 import { GLView } from 'expo-gl'
 import { motion } from '@worldquest/design'
 import { fakeGl, type FakeGl } from '../../test/fakeGl.js'
@@ -82,6 +82,36 @@ async function animatedAtlas() {
 }
 
 describe('native GPU frame completion', () => {
+  it('owns pans from touch-down and preserves zoom when a pinch returns to one finger', async () => {
+    const create = vi.spyOn(PanResponder, 'create')
+    const onGestureActiveChange = vi.fn()
+    const onEvent = vi.fn()
+    const view = render(<WorldAtlasView spec={spec} onGestureActiveChange={onGestureActiveChange} onEvent={onEvent} />)
+    await waitFor(() => expect(pending).toHaveLength(1))
+    await act(async () => { pending[0]!.resolve() })
+    const handlers = create.mock.calls.at(-1)![0]
+    const touch = (separation: number, count: number) => ({ nativeEvent: { locationX: 250, locationY: 200,
+      touches: Array.from({ length: count }, (_, index) => ({ pageX: 250 + index * separation, pageY: 200 })),
+    } }) as GestureResponderEvent
+    const state = { dx: 0, dy: 0, numberActiveTouches: 1 } as PanResponderGestureState
+    expect(handlers.onStartShouldSetPanResponder?.(touch(0, 1), state)).toBe(true)
+    act(() => { handlers.onPanResponderGrant?.(touch(0, 1), state) })
+    expect(onGestureActiveChange).toHaveBeenLastCalledWith(true)
+    expect(handlers.onPanResponderTerminationRequest?.(touch(0, 1), state)).toBe(false)
+    act(() => {
+      handlers.onPanResponderMove?.(touch(100, 2), { ...state, numberActiveTouches: 2 })
+      handlers.onPanResponderMove?.(touch(200, 2), { ...state, numberActiveTouches: 2 })
+      handlers.onPanResponderMove?.(touch(0, 1), { ...state, dx: 80, dy: 40 })
+      handlers.onPanResponderRelease?.(touch(0, 0), state)
+    })
+    expect(onGestureActiveChange).toHaveBeenLastCalledWith(false)
+    expect(onEvent).toHaveBeenLastCalledWith(expect.objectContaining({ type: 'viewChanged', distance: zoomCamera({ lat: 20, lon: 10, distance: 4.6 * .86 }, 2).distance }))
+    act(() => { handlers.onPanResponderGrant?.(touch(0, 1), state); handlers.onPanResponderTerminate?.(touch(0, 0), state) })
+    expect(onGestureActiveChange).toHaveBeenLastCalledWith(false)
+    act(() => { handlers.onPanResponderGrant?.(touch(0, 1), state) })
+    view.unmount()
+    expect(onGestureActiveChange).toHaveBeenLastCalledWith(false)
+  })
   it('keeps controls loading until the GPU completes the first frame', async () => {
     const onStatusChange = vi.fn()
     render(<WorldAtlasView spec={spec} controls onStatusChange={onStatusChange} />)

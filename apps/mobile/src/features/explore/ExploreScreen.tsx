@@ -96,6 +96,7 @@ export function ExploreScreen({
   const [allResults, setAllResults] = useState(false)
   const [selected, setSelected] = useState<string | null>(null)
   const [atlasRegion, setAtlasRegion] = useState<string | null>(null)
+  const [globeGestureActive, setGlobeGestureActive] = useState(false)
   const scroll = useRef<ScrollView>(null)
   const atlasTop = useRef(0)
   const revealSelection = useRef(false)
@@ -139,7 +140,7 @@ export function ExploreScreen({
   const byRegion = new Map(world.regions.map((r) => [r.region, r]))
 
   return (
-    <ScrollView ref={scroll} style={styles.screen} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
+    <ScrollView ref={scroll} testID="explore-scroll" scrollEnabled={!globeGestureActive} style={styles.screen} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
       <TopBar
         initials="EX"
         {...(coins !== undefined ? { coins } : {})}
@@ -187,6 +188,7 @@ export function ExploreScreen({
       </View>}
       {atlas !== undefined && (
         <ExploreAtlas
+          onGestureActiveChange={setGlobeGestureActive}
           countries={countries}
           names={atlas.names}
           selected={selected}

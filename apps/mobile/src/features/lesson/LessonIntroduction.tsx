@@ -1,5 +1,4 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Card, createThemeStyles, space, text } from '@worldquest/design'
 import type { Question } from '@worldquest/engines'
 import { CountryMap } from '../../components/CountryMap.js'
@@ -19,9 +18,8 @@ export function LessonIntroduction({ questions, onBegin }: {
     seen.add(question.item.factId)
     return true
   })
-  // Native full-screen modal content can extend beneath the status bar. Only this
-  // scrollable study surface owns these insets; the quiz keeps its answer viewport.
-  return <SafeAreaView style={styles.screen} edges={['top', 'bottom']} testID="lesson-introduction">
+  // The lesson route owns safe areas for every state, including optional study.
+  return <View style={styles.screen} testID="lesson-introduction">
     <ScrollView contentContainerStyle={styles.content}>
       <View style={styles.heading}>
         <WorldMascot mood="encouraging" style={{ width: 80, height: 88 }} />
@@ -45,7 +43,7 @@ export function LessonIntroduction({ questions, onBegin }: {
     <View style={styles.footer}>
       <Button label={t('lesson:intro.begin')} onPress={onBegin} testID="lesson-begin" />
     </View>
-  </SafeAreaView>
+  </View>
 }
 
 const useStyles = createThemeStyles(colors => ({ styles: StyleSheet.create({

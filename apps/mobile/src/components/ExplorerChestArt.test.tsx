@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { act, fireEvent, render } from '@testing-library/react'
 import { AccessibilityInfo, Animated, AppState, type AppStateStatus } from 'react-native'
 import { NavigationContext } from '@react-navigation/native'
-import { setAppReducedMotion } from '@worldquest/design'
+import { motion, setAppReducedMotion } from '@worldquest/design'
 import { withFullMotion } from '../test/setup.js'
 import { ExplorerChestArt } from './ExplorerChestArt.js'
 
@@ -129,7 +129,7 @@ describe('Explorer chest artwork lifecycle', () => {
       await act(async () => { await Promise.resolve() })
       await decoder.finishFilm(view)
       expect(timing).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
-        duration: 1950, useNativeDriver: true,
+        duration: motion.celebrate.duration, useNativeDriver: true,
       }))
       const frame = timing.mock.calls[0]![0] as Animated.Value
       const film = view.getByTestId('explorer-chest-film')
