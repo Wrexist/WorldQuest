@@ -549,7 +549,9 @@ export function WorldAtlasView({
       <View style={StyleSheet.absoluteFill} pointerEvents="none" testID="atlas-preview">
         <ClayMap name={spec.focus.kind === 'country' ? spec.focus.countryId : spec.focus.kind === 'region' ? `region-${spec.focus.regionId}` : 'world'} style={StyleSheet.absoluteFill} />
       </View>
-      <GLView key={generation} pointerEvents="none" style={StyleSheet.absoluteFill} onContextCreate={onContextCreate} />
+      {/* Coastlines are filtered in the shader at native pixel density. Avoid a
+          second four-sample iOS render target and resolve on every drag frame. */}
+      <GLView key={generation} msaaSamples={0} pointerEvents="none" style={StyleSheet.absoluteFill} onContextCreate={onContextCreate} />
       {/* Keep the native touch target in React Native. Expo's native GL subview is
           only a drawing surface; it must not own the touch history used for pans. */}
       <View testID="atlas-gesture-surface" collapsable={false} pointerEvents="box-only" style={StyleSheet.absoluteFill} {...responder.panHandlers} />
