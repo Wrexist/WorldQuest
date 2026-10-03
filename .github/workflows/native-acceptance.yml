@@ -15,6 +15,10 @@ on:
         description: 'Trace the synthetic country deep link in the simulator build'
         type: boolean
         default: false
+      atlas_diagnostics:
+        description: 'Trace native globe layout, drawing buffers and framebuffer pixels'
+        type: boolean
+        default: false
   push:
     branches: ['fix/**']
     paths: ['.github/workflows/native-acceptance.yml']
@@ -55,10 +59,10 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
-      - name: Require one diagnostic entry at a time
-        if: ${{ inputs.asset_diagnostics && inputs.link_diagnostics }}
+      - name: Require one diagnostic mode at a time
+        if: ${{ (inputs.asset_diagnostics && inputs.link_diagnostics) || (inputs.asset_diagnostics && inputs.atlas_diagnostics) || (inputs.link_diagnostics && inputs.atlas_diagnostics) }}
         run: |
-          echo "::error::Choose either asset_diagnostics or link_diagnostics for a diagnostic run"
+          echo "::error::Choose at most one of asset_diagnostics, link_diagnostics or atlas_diagnostics"
           exit 1
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
@@ -72,6 +76,9 @@ jobs:
       - name: Add deep link diagnostic to the simulator entry
         if: ${{ inputs.link_diagnostics }}
         run: node scripts/native-link-diagnostic.cjs entry
+      - name: Add native globe drawing diagnostic
+        if: ${{ inputs.atlas_diagnostics }}
+        run: node scripts/native-atlas-diagnostic.cjs
       - run: pnpm --filter @worldquest/mobile exec expo prebuild --platform ios --no-install
       - name: Trace the generated native URL callback
         if: ${{ inputs.link_diagnostics }}
@@ -145,6 +152,28 @@ jobs:
               fi
             fi
           fi
+      - name: Collect native globe drawing diagnostic
+        if: ${{ always() && inputs.atlas_diagnostics }}
+        run: |
+          set -euo pipefail
+          if [ -n "${DEVICE_ID:-}" ]; then
+            if APP_DATA_CONTAINER=$(xcrun simctl get_app_container "$DEVICE_ID" com.wrexist.worldquest data); then
+              if [ -f "$APP_DATA_CONTAINER/Documents/native-atlas-diagnostic.json" ]; then
+                cp "$APP_DATA_CONTAINER/Documents/native-atlas-diagnostic.json" "$RUNNER_TEMP/native-atlas-diagnostic.json"
+              else
+                echo "::warning::Native globe diagnostic report was not written"
+              fi
+              if [ -f "$APP_DATA_CONTAINER/Documents/native-atlas-native.jsonl" ]; then
+                cp "$APP_DATA_CONTAINER/Documents/native-atlas-native.jsonl" "$RUNNER_TEMP/native-atlas-native.jsonl"
+              else
+                echo "::warning::Native globe lifecycle trace was not written"
+              fi
+              shopt -s nullglob
+              for FRAME_PATH in "$APP_DATA_CONTAINER/Documents"/native-atlas-frame-*.png; do
+                cp "$FRAME_PATH" "$RUNNER_TEMP/"
+              done
+            fi
+          fi
       - name: Save native evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -158,9 +187,14 @@ jobs:
             ${{ runner.temp }}/native-image-first-launch.json
             ${{ runner.temp }}/native-image-second-launch.json
             ${{ runner.temp }}/native-link-diagnostic.json
+            ${{ runner.temp }}/native-atlas-diagnostic.json
+            ${{ runner.temp }}/native-atlas-native.jsonl
+            ${{ runner.temp }}/native-atlas-frame-*.png
             ${{ runner.temp }}/native-flow/
             apps/mobile/ios/WorldQuest/AppDelegate.swift
             apps/mobile/native-link-diagnostic-AppDelegate.original.swift
+            apps/mobile/native-atlas-diagnostic-GLView.original.swift
+            node_modules/expo-gl/ios/GLView.swift
             native-relaunch.png
             native-country-se.png
             native-country-warm-fr.png

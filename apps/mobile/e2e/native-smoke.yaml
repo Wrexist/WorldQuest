@@ -60,10 +60,21 @@ appId: com.wrexist.worldquest
 - extendedWaitUntil:
     visible: "Zoom in"
     timeout: 30000
+# The native accessibility tree includes controls under the fixed tab bar. Centre the
+# whole globe in the scroll viewport before capturing or physically tapping zoom.
+- scrollUntilVisible:
+    element:
+      id: "explore-globe"
+    direction: DOWN
+    timeout: 30000
+    visibilityPercentage: 100
+    centerElement: true
 - assertVisible:
     id: "explore-globe"
 - assertNotVisible:
     id: "atlas-fallback"
+- assertNotVisible:
+    id: "explore-map-fallback"
 - takeScreenshot: native-explore-globe
 - tapOn: "Zoom in"
 - assertVisible: "Zoom out"
