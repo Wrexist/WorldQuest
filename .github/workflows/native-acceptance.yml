@@ -140,6 +140,7 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/native-flow" apps/mobile/e2e/native-smoke.yaml
       - name: Verify rendered native globe zoom
+        if: always()
         run: |
           node --test scripts/verify-native-globe-zoom.test.cjs
           node scripts/verify-native-globe-zoom.cjs "$RUNNER_TEMP/native-flow" "$RUNNER_TEMP/native-globe-zoom.json"
