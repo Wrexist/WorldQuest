@@ -349,6 +349,19 @@ describe('optional study before the quiz', () => {
     expect(screen.getByTestId('lesson-introduction')).toBeTruthy()
     expect(screen.queryByTestId('answer-option')).toBeNull()
     expect(screen.queryByTestId('lesson-check')).toBeNull()
+    const firstDiscovery = screen.getByTestId('study-card').textContent
+    expect(screen.getAllByTestId('study-card')).toHaveLength(1)
+    expect(screen.getByRole('button', { name: 'Previous' }).getAttribute('aria-disabled')).toBe('true')
+    fireEvent.click(screen.getByRole('button', { name: 'Next discovery' }))
+    expect(screen.getByTestId('study-card').textContent).not.toBe(firstDiscovery)
+    fireEvent.click(screen.getByRole('button', { name: 'Previous' }))
+    expect(screen.getByTestId('study-card').textContent).toBe(firstDiscovery)
+    const nextDiscovery = screen.getByRole('button', { name: 'Next discovery' })
+    for (let step = 0; step < 30 && nextDiscovery.getAttribute('aria-disabled') !== 'true'; step++) {
+      fireEvent.click(nextDiscovery)
+    }
+    expect(nextDiscovery.getAttribute('aria-disabled')).toBe('true')
+    expect(screen.getAllByTestId('study-card')).toHaveLength(1)
     fireEvent.click(screen.getByRole('button', { name: 'Back to quiz' }))
     expect(screen.queryByTestId('lesson-introduction')).toBeNull()
     expect(answerButtons().map(option => option.getAttribute('aria-label'))).toEqual(choices)

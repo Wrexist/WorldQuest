@@ -77,7 +77,10 @@ The question opens directly. Before the first answer, **Learn first** opens opti
 study cards from this exact quiz; returning preserves the question and selection.
 Study time is paused and records no answer. Level checks and speed rounds do not
 offer study. The scrollable study view keeps its heading and return action within
-the native safe area.
+the native safe area. Study shows one unique fact at a time, with a discovery count
+and Previous/Next controls. Short, reduced-motion-aware card transitions never
+advance automatically. Back to quiz stays outside the scroll area and does not
+require reviewing every card; revisiting cards does not award progress.
 **Question types (v1.0):** tap-the-country (map) · flag → country · country → capital ·
 landmark → country · speed round.
 **Interaction rules:** options are at least 56 pt tall. Activating an answer option

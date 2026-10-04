@@ -690,7 +690,10 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "intro.body": "Study the associations in this quiz. Return to the first question when you are ready.",
       "intro.begin": "Back to quiz",
       "intro.leave": "Back",
-      "review.purpose": "Try it once more to help it stick."
+      "review.purpose": "Try it once more to help it stick.",
+      "intro.position": "Discovery {current} of {total}",
+      "intro.previous": "Previous",
+      "intro.next": "Next discovery"
     },
     "nav": {
       "home": "Home",
@@ -1802,7 +1805,10 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "intro.body": "Läs på om sambanden i quizet. Gå tillbaka till första frågan när du är redo.",
       "intro.begin": "Tillbaka till quizet",
       "intro.leave": "Tillbaka",
-      "review.purpose": "Prova igen så blir det lättare att minnas."
+      "review.purpose": "Prova igen så blir det lättare att minnas.",
+      "intro.position": "Upptäckt {current} av {total}",
+      "intro.previous": "Föregående",
+      "intro.next": "Nästa upptäckt"
     },
     "nav": {
       "home": "Hem",

@@ -296,5 +296,11 @@
   "lesson:intro.leave": "Back",
   "lesson:intro.leave__note": "Pre-lesson teaching preview of new facts from the actual lesson. Count is total questions, not guaranteed XP.",
   "lesson:review.purpose": "Try it once more to help it stick.",
-  "lesson:review.purpose__note": "Learning loop guidance. Position and total are actual course steps; no invented rewards or mastery."
+  "lesson:review.purpose__note": "Learning loop guidance. Position and total are actual course steps; no invented rewards or mastery.",
+  "lesson:intro.position": "Discovery {current} of {total}",
+  "lesson:intro.position__note": "Optional study deck navigation. Counts unique facts, not answers or earned progress.",
+  "lesson:intro.previous": "Previous",
+  "lesson:intro.previous__note": "Optional study deck navigation. Counts unique facts, not answers or earned progress.",
+  "lesson:intro.next": "Next discovery",
+  "lesson:intro.next__note": "Optional study deck navigation. Counts unique facts, not answers or earned progress."
 }
