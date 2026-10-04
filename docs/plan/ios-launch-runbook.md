@@ -1,6 +1,6 @@
 # WorldQuest free-launch runbook
 
-Updated 3 October 2026. Owner decision: **free first release; Premium later**.
+Updated 4 October 2026. Owner decision: **free first release; Premium later**.
 Primary acceptance device: iPhone. Follow with a shorter Android pass. This is a
 release checklist, not a statement that public launch is ready.
 
@@ -69,8 +69,10 @@ beta account. Never post verification codes or credentials in the test report.
 - Fresh install: complete onboarding, play the introduction, verify first-step credit.
 - Lesson: correct and wrong answers, map/flag/capital questions, sound and haptics.
 - Interrupt: lock/unlock and background/foreground during a lesson. Separately
-  force-close and relaunch; record whether partial progress is preserved. Durable
-  unfinished-lesson resume is still open, so do not claim it is implemented.
+  force-close and relaunch, then reopen the same course step or practice entry.
+  D1 lesson input is now saved locally and replayed against the same issued ticket;
+  native acceptance remains open. Run `apps/mobile/e2e/native-lesson-recovery.yaml`
+  from Home on a D1 candidate and compare the before/after feedback screenshots.
 - Offline: prepare a lesson online, enable airplane mode, finish it, reconnect.
   XP, coins, quest credit and course progress must settle once, without duplication.
 - Account: receive a real code; test wrong code, expiration and resend behavior.
@@ -97,8 +99,10 @@ iPad support is still configured; iPad acceptance and store screenshots remain o
   is needed for this free release.
 - Real-device acceptance, delivery reliability, quota/health monitoring, incident
   response and restore rehearsal need recorded evidence.
-- Durable unfinished-lesson resume and due-review-first Home selection remain open
-  product work. Browser tests are not evidence of native gestures or performance.
+- Durable unfinished-lesson recovery is implemented for D1 and awaits native
+  force-close acceptance. Due-review-first Home selection remains open product work.
+  See the [recovery implementation and acceptance notes](../engineering/lesson-recovery-2026-10-04.md).
+  Browser tests are not evidence of native gestures or performance.
 - Course English/Swedish copy and content review remain launch checks. Existing
   authored-difficulty warnings are not silently waived.
 

@@ -1,5 +1,6 @@
 import { LessonIntroduction } from './LessonIntroduction.js'
 import { visualQuestion } from './visualQuestion.js'
+import { captureStorage } from '../../lib/storage.js'
 import { createThemeStyles } from '@worldquest/design'
 /**
  * The lesson screen — mockup screens 5 and 6.
@@ -426,7 +427,7 @@ export function LessonScreen({
     [issued, mode, index, screenReaderOn],
   )
 
-  const handleComplete = useCallback((state: LessonState, optimistic: GradeResult) => {
+  const handleComplete = useCallback(async (state: LessonState, optimistic: GradeResult) => {
     /**
      * Today's quest, composed once and used twice.
      *
@@ -456,9 +457,10 @@ export function LessonScreen({
       // few more lessons are fetched for the next offline start. An early exit sends
       // the answered prefix; the server decides whether it was a finished lesson.
       if (remote.lesson) {
-        void submitD1Lesson(remote.lesson, state.answers).then(() =>
-          prefetchLessons({ count: remote.lesson!.request.count, locale: remote.lesson!.request.locale, screenReader: screenReaderOn, maxModifier, introduceFrom }),
-        )
+        const completionScope = captureStorage()
+        await submitD1Lesson(remote.lesson, state.answers)
+        if (!completionScope.isCurrent()) return
+        void prefetchLessons({ count: remote.lesson.request.count, locale: remote.lesson.request.locale, screenReader: screenReaderOn, maxModifier, introduceFrom })
       }
     } else {
       // Enqueue, never await. A lesson finishing must not depend on the network —
@@ -628,6 +630,7 @@ export function LessonScreen({
 
   const timeLimitMs = mode === 'speed' ? SPEED_SECONDS * 1000 : null
   const lesson = useLesson({
+    recover: remoteLessons,
     questions,
     memory,
     timeLimitMs,
@@ -636,7 +639,7 @@ export function LessonScreen({
   })
   // Haptic, sound and `question_answered`, from the GRADED answer — whether Check graded
   // it or the speed round's clock did. See the hook for why not from a tap.
-  useAnswerCues(lesson.state, itemMs)
+  useAnswerCues(lesson.state, itemMs, lesson.restoredAnswerCount)
 
   /**
    * Screen-reader focus to the verdict when the sheet arrives.
@@ -748,8 +751,8 @@ export function LessonScreen({
     setScreen('ready')
     if (lesson.state.phase === 'idle') {
       // The ticket's id on D1: it is the idempotency key the server issued under.
-      lesson.start(remoteLessons && remote.lesson ? remote.lesson.lessonId : makeUuid())
-      track('lesson_started', {
+      const fresh = lesson.start(remoteLessons && remote.lesson ? remote.lesson.lessonId : makeUuid())
+      if (fresh !== false) track('lesson_started', {
         lesson_id: 'pending',
         kind: 'lesson',
         item_count: questions.length,

@@ -32,6 +32,7 @@ import { announceFocusFinished, FOCUS_FINISHED_KEY, MEMORY_KEY, NODE_FINISHED_KE
 import { queueUnlocks, type PendingUnlock } from '../features/achievements/pending.js'
 import { currentUser } from './supabase.js'
 import { markAwardDelivered, peekAwards } from './awards.js'
+import { clearLessonRecovery, hasLessonRecovery } from './lesson-recovery.js'
 
 const QUEUE_KEY = 'd1.lessons.v1'
 /** Unfocused lessons kept ready for offline starts. Well inside the server's 20. */
@@ -179,6 +180,9 @@ async function take(request: LessonRequest): Promise<TakeResult> {
   // saved for that very focus, which is the same lesson and so no substitution at all.
   const flexible = !request.explicitFocus
   const fits = fitsRequest(request)
+  const interrupted = (await queue.inspect()).tickets.find(t => fits(t)
+    && sameLesson(t, wanted, request.node) && hasLessonRecovery(t.lessonId))
+  if (interrupted) return { kind: 'ready', lesson: interrupted }
   if (focused) {
     // Online or not: the ticket was issued for this focus after the last receipt, so
     // playing it is playing what was asked for. It also retires a ticket a learner took
@@ -336,9 +340,12 @@ export function toSubmission(lesson: D1PreparedLesson, answers: readonly Answere
  * receipt, when it arrives, refreshes progress and the cached memory.
  */
 export async function submitLesson(lesson: D1PreparedLesson, answers: readonly AnsweredItem[]): Promise<void> {
-  if (answers.length === 0) return
+  const scope = captureStorage()
+  if (answers.length === 0) { clearLessonRecovery(lesson.lessonId, scope); return }
   const { queue } = await open()
+  if (!scope.isCurrent()) throw new AccountChangedError()
   await queue.enqueue(toSubmission(lesson, answers))
+  clearLessonRecovery(lesson.lessonId, scope)
   void flushLessons()
 }
 

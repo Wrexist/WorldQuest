@@ -11,8 +11,11 @@
 
 import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
 import { AppState, type AppStateStatus } from 'react-native'
+import { clearLessonRecovery, openLessonRecovery } from '../../../lib/lesson-recovery.js'
+import { reportCrash } from '../../../lib/reporting.js'
 import {
   accuracy,
+  answerCount,
   awardForAnswer,
   SPEED_BONUS_MS,
   currentQuestion,
@@ -30,6 +33,7 @@ import {
 } from '@worldquest/engines'
 
 export type UseLessonOptions = {
+  readonly recover?: boolean
   readonly questions: readonly Question[]
   /** The user's current memory state, for optimistic grading. */
   readonly memory: ReadonlyMap<string, MemoryState>
@@ -37,7 +41,7 @@ export type UseLessonOptions = {
   /** Milliseconds per question, or null for an untimed lesson. */
   readonly timeLimitMs?: number | null
   /** Called once the lesson ends. Enqueues the submit; never awaits the network. */
-  readonly onComplete: (state: LessonState, optimistic: GradeResult) => void
+  readonly onComplete: (state: LessonState, optimistic: GradeResult) => void | Promise<void>
 }
 
 /**
@@ -52,14 +56,20 @@ export function useLesson({
   heartsEnabled = true,
   timeLimitMs = null,
   onComplete,
+  recover = false,
 }: UseLessonOptions) {
-  const [state, dispatch] = useReducer(transition, undefined, () =>
+  const recovery = useRef<ReturnType<typeof openLessonRecovery> | null>(null)
+  const [state, dispatch] = useReducer((previous: LessonState, event: LessonEvent | { type: 'RESTORE'; state: LessonState }) =>
+    event.type === 'RESTORE' ? event.state : transition(previous, event), undefined, () =>
     initialState({ heartsEnabled, timeLimitMs }),
   )
   // Completion must fire exactly once even if React re-renders or double-invokes.
   const completed = useRef(false)
 
-  const send = useCallback((event: LessonEvent) => dispatch(event), [])
+  const send = useCallback((event: LessonEvent) => {
+    if (recovery.current) dispatch({ type: 'RESTORE', state: recovery.current.apply(event) })
+    else dispatch(event)
+  }, [])
 
   /**
    * The countdown, in a timed lesson.
@@ -79,50 +89,56 @@ export function useLesson({
     if (state.shownAt === null) return
 
     const remaining = state.shownAt + state.timeLimitMs - now()
-    const timer = setTimeout(() => dispatch({ type: 'TIMEOUT', now: now() }), Math.max(0, remaining))
+    const timer = setTimeout(() => send({ type: 'TIMEOUT', now: now() }), Math.max(0, remaining))
     return () => clearTimeout(timer)
-  }, [state.phase, state.index, state.shownAt, state.timeLimitMs])
+  }, [state.phase, state.index, state.shownAt, state.timeLimitMs, send])
 
   const start = useCallback(
     (lessonId: string) => {
       const t = now()
-      dispatch({ type: 'LOAD', lessonId, now: t })
-      dispatch({ type: 'LOADED', questions, now: t })
+      if (recover) {
+        if (recovery.current) return false
+        recovery.current = openLessonRecovery({ lessonId, questions, heartsEnabled, timeLimitMs, now: t })
+        dispatch({ type: 'RESTORE', state: recovery.current.state })
+        return !recovery.current.recovered
+      }
+      send({ type: 'LOAD', lessonId, now: t })
+      send({ type: 'LOADED', questions, now: t })
     },
-    [questions],
+    [questions, recover, heartsEnabled, timeLimitMs, send],
   )
 
   const answer = useCallback((optionId: string) => {
-    dispatch({ type: 'ANSWER', optionId, now: now() })
-  }, [])
+    send({ type: 'ANSWER', optionId, now: now() })
+  }, [send])
 
   /** Pick an option. Nothing is graded and the clock keeps running. */
   const select = useCallback((optionId: string) => {
-    dispatch({ type: 'SELECT', optionId, now: now() })
-  }, [])
+    send({ type: 'SELECT', optionId, now: now() })
+  }, [send])
 
   /** Answer a whole matching board: item id → the first partner tried for it. */
   const answerGroup = useCallback((choices: Readonly<Record<string, string>>) => {
-    dispatch({ type: 'ANSWER_GROUP', choices, now: now() })
-  }, [])
+    send({ type: 'ANSWER_GROUP', choices, now: now() })
+  }, [send])
 
   /** Replace what has been typed into a typed question. Nothing is graded until `check`. */
   const type = useCallback((text: string) => {
-    dispatch({ type: 'TYPE', text, now: now() })
-  }, [])
+    send({ type: 'TYPE', text, now: now() })
+  }, [send])
 
   /** Grade the selection. This is the moment the answer timer stops. */
   const check = useCallback(() => {
-    dispatch({ type: 'CHECK', now: now() })
-  }, [])
+    send({ type: 'CHECK', now: now() })
+  }, [send])
 
   const advance = useCallback(() => {
-    dispatch({ type: 'CONTINUE', now: now() })
-  }, [])
+    send({ type: 'CONTINUE', now: now() })
+  }, [send])
 
   const abandon = useCallback(() => {
-    dispatch({ type: 'ABANDON', now: now() })
-  }, [])
+    send({ type: 'ABANDON', now: now() })
+  }, [send])
 
   /**
    * Spend coins to finish the lesson you are in.
@@ -137,16 +153,16 @@ export function useLesson({
    * less than interrupting a child mid-lesson to wait for a round trip.
    */
   const revive = useCallback(() => {
-    dispatch({ type: 'REVIVE', now: now() })
-  }, [])
+    send({ type: 'REVIVE', now: now() })
+  }, [send])
 
   const pause = useCallback(() => {
-    dispatch({ type: 'PAUSE', now: now() })
-  }, [])
+    send({ type: 'PAUSE', now: now() })
+  }, [send])
 
   const resume = useCallback(() => {
-    dispatch({ type: 'RESUME', now: now() })
-  }, [])
+    send({ type: 'RESUME', now: now() })
+  }, [send])
 
   /**
    * Leaving the app pauses the lesson.
@@ -163,11 +179,15 @@ export function useLesson({
    */
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (next: AppStateStatus) => {
-      if (next !== 'active') dispatch({ type: 'PAUSE', now: now() })
+      if (next !== 'active') send({ type: 'PAUSE', now: now() })
     }) as { remove?: () => void } | undefined
 
     return () => subscription?.remove?.()
-  }, [])
+  }, [send])
+
+  useEffect(() => {
+    if (recover && recovery.current?.isCurrent() && isFinished(state) && state.answers.length === 0) clearLessonRecovery(state.lessonId)
+  }, [recover, state])
 
   // Optimistic grading: the SAME module the server will run. The number shown is a
   // prediction, and the server's answer replaces it on reconcile.
@@ -216,8 +236,12 @@ export function useLesson({
 
   useEffect(() => {
     if (!isFinished(state) || !optimistic || completed.current) return
+    if (recovery.current && !recovery.current.isCurrent()) return
     completed.current = true
-    onCompleteRef.current(state, optimistic)
+    void Promise.resolve(onCompleteRef.current(state, optimistic)).catch(() => {
+      // The journal stays available until durable queue handoff succeeds.
+      reportCrash({ domain: 'lesson', isFatal: false, name: 'LessonCompletionPersistenceFailed' })
+    })
   }, [state, optimistic])
 
   /**
@@ -249,6 +273,7 @@ export function useLesson({
 
   return {
     state,
+    restoredAnswerCount: recovery.current?.recovered ? answerCount(recovery.current.state) : 0,
     awardFor,
     question: currentQuestion(state),
     // Settled questions out of the lesson's own, in the engine: it never goes backwards

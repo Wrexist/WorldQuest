@@ -228,9 +228,30 @@ function relatedIds(index: ContentIndex, entityId: EntityId, attribute: string):
   return ids
 }
 
-/** The quizzable facts an entity holds for an attribute. */
-const quizzableFactsOf = (index: ContentIndex, entityId: EntityId, attribute: string): Fact[] =>
-  (index.factsByEntity.get(entityId) ?? []).filter((f) => f.attribute === attribute && isQuizzable(f))
+// Content indices are immutable. Weak ownership releases this lookup with its pack;
+// arrays retain source order, so seeded distractor selection is unchanged.
+const quizzableByEntity = new WeakMap<ContentIndex, Map<EntityId, Map<string, Fact[]>>>()
+
+/** Index each entity's facts once instead of rescanning them for every distractor. */
+function quizzableFactsOf(index: ContentIndex, entityId: EntityId, attribute: string): readonly Fact[] {
+  let entities = quizzableByEntity.get(index)
+  if (!entities) {
+    entities = new Map()
+    quizzableByEntity.set(index, entities)
+  }
+  let attributes = entities.get(entityId)
+  if (!attributes) {
+    attributes = new Map()
+    for (const fact of index.factsByEntity.get(entityId) ?? []) {
+      if (!isQuizzable(fact)) continue
+      const facts = attributes.get(fact.attribute)
+      if (facts) facts.push(fact)
+      else attributes.set(fact.attribute, [fact])
+    }
+    entities.set(entityId, attributes)
+  }
+  return attributes.get(attribute) ?? []
+}
 
 /** How far apart two counts or sizes are, on the scale a person judges them by. */
 const logDistance = (a: number, b: number): number => Math.abs(Math.log((a + 1) / (b + 1)))

@@ -1,17 +1,47 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { D1AuthError } from '@worldquest/api/d1-auth'
 import { LessonScreen } from './LessonScreen.js'
+import { clearAll, setStorageAccount } from '../../lib/storage.js'
 
-const { takeLesson } = vi.hoisted(() => ({ takeLesson: vi.fn() }))
+const { takeLesson, submitLesson, recordLessonCompleted } = vi.hoisted(() => ({ takeLesson: vi.fn(), submitLesson: vi.fn(), recordLessonCompleted: vi.fn() }))
 vi.mock('../../lib/backendConfig.js', () => ({ isD1: () => true, backendConfig: () => ({ kind: 'd1', url: 'https://api.example.invalid' }) }))
-vi.mock('../../lib/d1-lessons.js', () => ({ takeLesson }))
+vi.mock('../../lib/d1-lessons.js', () => ({
+  takeLesson, submitLesson, prefetchLessons: vi.fn(),
+  flushLessons: vi.fn(async () => []), refreshMemoryOnce: vi.fn(async () => {}),
+}))
+vi.mock('../profile/useWeekActivity.js', async (original) => ({ ...(await original<Record<string, unknown>>()), recordLessonCompleted }))
 vi.mock('../../lib/analytics.js', () => ({ track: vi.fn() }))
 vi.mock('../home/useOptimisticProgress.js', () => ({ useOptimisticProgress: () => ({ shown: null }) }))
 
-beforeEach(() => { takeLesson.mockReset() })
+beforeEach(() => { clearAll(); takeLesson.mockReset(); submitLesson.mockReset(); recordLessonCompleted.mockReset() })
 
 describe('issued lesson failures', () => {
+  it.each([false, true])('waits for durable submission and respects account changes (%s)', async (switchAccount) => {
+    let commit!: () => void
+    submitLesson.mockReturnValue(new Promise<void>(resolve => { commit = resolve }))
+    takeLesson.mockResolvedValue({ kind: 'ready', lesson: {
+      lessonId: 'durable-completion', issuedAt: 1,
+      request: { lessonId: 'durable-completion', count: 5, locale: 'en', screenReader: false },
+      questions: Array.from({ length: 5 }, (_, i) => ({
+        item: { id: `item${i}`, factId: `fact${i}`, entityId: `entity${i}`, templateId: 'template', difficulty: 1, screenReaderSafe: true },
+        promptKey: 'prompt', promptParams: {}, modality: 'text', isNew: true, timeLimitMs: null,
+        options: [{ id: 'yes', label: 'Yes', isCorrect: true }, { id: 'no', label: 'No', isCorrect: false }],
+      })),
+    } })
+    render(<LessonScreen onExit={vi.fn()} />)
+    await screen.findAllByTestId('answer-option')
+    for (let i = 0; i < 5; i++) {
+      fireEvent.click(screen.getAllByTestId('answer-option')[0]!)
+      fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    }
+    await waitFor(() => expect(submitLesson).toHaveBeenCalledOnce())
+    expect(recordLessonCompleted).not.toHaveBeenCalled()
+    if (switchAccount) setStorageAccount('another-account')
+    await act(async () => commit())
+    expect(recordLessonCompleted).toHaveBeenCalledTimes(switchAccount ? 0 : 1)
+  })
+
   it('explains a closed service and offers Back without suggesting an immediate retry', async () => {
     takeLesson.mockRejectedValue(new D1AuthError('API_NOT_READY', 503))
     const leave = vi.fn()

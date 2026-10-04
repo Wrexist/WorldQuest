@@ -22,11 +22,13 @@ import { hapticCorrect, hapticWrong } from '../../../lib/haptics.js'
 import { soundCorrect, soundWrong } from '../../../lib/sound.js'
 import { track } from '../../../lib/analytics.js'
 
-export function useAnswerCues(state: LessonState, itemMs: number): void {
+export function useAnswerCues(state: LessonState, itemMs: number, restoredAnswers = 0): void {
   // Every answer gets its cue, the review round's included.
   const announced = useRef(answerCount(state))
 
   useEffect(() => {
+    // Recovery is not another answer: no repeated haptic, sound or analytics event.
+    announced.current = Math.max(announced.current, restoredAnswers)
     const count = answerCount(state)
     if (count <= announced.current) {
       announced.current = count
@@ -69,5 +71,5 @@ export function useAnswerCues(state: LessonState, itemMs: number): void {
         position: state.index - (fresh.length - 1 - i),
       })
     })
-  }, [state, itemMs])
+  }, [state, itemMs, restoredAnswers])
 }

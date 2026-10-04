@@ -30,6 +30,18 @@ const withAnswers = (answers: readonly AnsweredItem[]): LessonState => ({
 describe('useAnswerCues', () => {
   beforeEach(() => vi.clearAllMocks())
 
+  it('does not replay restored answers but announces the next newly submitted answer', () => {
+    const { rerender } = renderHook(({ s, restored }) => useAnswerCues(s, 5000, restored), {
+      initialProps: { s: withAnswers([]), restored: 0 },
+    })
+    rerender({ s: withAnswers([answer({})]), restored: 1 })
+    expect(track).not.toHaveBeenCalled()
+    expect(hapticCorrect).not.toHaveBeenCalled()
+    rerender({ s: withAnswers([answer({}), answer({ itemId: 'next' })]), restored: 1 })
+    expect(track).toHaveBeenCalledOnce()
+    expect(hapticCorrect).toHaveBeenCalledOnce()
+  })
+
   it('fires nothing for a question still being thought about', () => {
     renderHook(() => useAnswerCues(withAnswers([]), 5_000))
     expect(track).not.toHaveBeenCalled()

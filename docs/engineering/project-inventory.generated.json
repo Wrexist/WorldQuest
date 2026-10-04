@@ -238,6 +238,7 @@
     "apps/mobile/src/lib/featureFlags.ready.test.tsx",
     "apps/mobile/src/lib/featureFlags.test.ts",
     "apps/mobile/src/lib/haptics.test.ts",
+    "apps/mobile/src/lib/lesson-recovery.test.ts",
     "apps/mobile/src/lib/locale.test.ts",
     "apps/mobile/src/lib/notifications.test.ts",
     "apps/mobile/src/lib/query.scope.test.ts",
