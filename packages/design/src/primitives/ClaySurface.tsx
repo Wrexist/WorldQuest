@@ -27,8 +27,8 @@ export function ClaySurface({ tone = 'ice', radius = corners.xl, transparent = f
       {/* Fabric and RN Web share this soft inset bevel. It is on the final
           decorative child so gradients never cover the rounded edge lighting. */}
       <View style={[StyleSheet.absoluteFill, { borderRadius: radius, boxShadow: [
-        { inset: true, offsetX: depth.button, offsetY: depth.button, blurRadius: space[2], color: material.highlight },
-        { inset: true, offsetX: -depth.button, offsetY: -space[1], blurRadius: space[2], color: material.shade },
+        { inset: true, offsetX: depth.card, offsetY: depth.card, blurRadius: space[4], color: material.highlight },
+        { inset: true, offsetX: -depth.card, offsetY: -depth.card, blurRadius: space[4], color: material.shade },
       ] }]} />
     </View>
   )

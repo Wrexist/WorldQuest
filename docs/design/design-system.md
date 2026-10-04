@@ -13,6 +13,10 @@ in both light and dark themes. Each carries gradient endpoints, a rim and readab
 ink/muted text. `ClaySurface` draws bounded lighting beneath content and never owns
 content height or input. `clayShadow(colors)` supplies shared native elevation.
 Reflection and bevels describe rounded volume; they do not animate while reading.
+Inset lighting uses a broad 16-point falloff with a minimal offset, rather than a
+dark contact stripe. Light ice surfaces use subdued highlights and shading; shared
+outer shadows use 12-point blur at 11% opacity and a 2-point offset. Semantic answer
+and focus outlines remain distinct from decorative material lighting.
 This explicitly replaces the older ban on highlights on button faces: the new
 owner-approved reference calls for rounded, softly reflective controls. Text stays
 flat and high-contrast; shadows and highlights must never obscure labels or inputs.
