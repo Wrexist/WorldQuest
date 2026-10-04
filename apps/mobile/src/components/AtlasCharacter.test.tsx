@@ -43,6 +43,25 @@ function lifecycle(initialFocus = true) {
 }
 
 describe('Atlas and motion preferences', () => {
+  it('does not repeat a greeting when the learner returns to the same screen', async () => {
+    vi.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false)
+    const events = lifecycle()
+    const start = vi.fn()
+    vi.spyOn(Animated, 'timing').mockReturnValue({ start, stop: vi.fn(), reset: vi.fn() })
+    await withFullMotion(async () => {
+      const hook = renderHook(() => useMascotMotion('welcome', 112, art('welcome')), { wrapper: events.wrapper })
+      await flushPreference()
+      expect(start).toHaveBeenCalledOnce()
+      events.app('background')
+      events.app('active')
+      events.focus(false)
+      events.focus(true)
+      expect(start).toHaveBeenCalledOnce()
+      hook.unmount()
+      expect(events.listenerCount()).toBe(0)
+    })
+  })
+
   it('waits for the exact pose to decode, plays once with native transforms, and schedules no idle work', async () => {
     vi.useFakeTimers()
     vi.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false)

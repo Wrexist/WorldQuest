@@ -55,6 +55,7 @@ import { LaunchHero } from '../../components/LaunchHero.js'
 import { WheelPicker, type WheelOption } from '../../components/WheelPicker.js'
 import type { LevelChoice } from './levels.js'
 import { ART_GEOMETRY, type ArtName } from '../../lib/art.generated.js'
+import { OnboardingDemo } from './OnboardingDemo.js'
 
 /** The age at which the child branch applies. COPPA; GDPR-K varies by country and is stricter in places. */
 export const CHILD_AGE = 13
@@ -429,6 +430,7 @@ export function OnboardingScreen({
   // The head of `STEPS`, and it is a greeting rather than a question — see that list.
   const [step, setStep] = useState<Step>('welcome')
   const [slide, setSlide] = useState(0)
+  const [demoOpen, setDemoOpen] = useState(false)
   const [birthYear, setBirthYear] = useState<number | null>(null)
   const [goal, setGoal] = useState<DailyGoal>(10)
   // `null` is "anywhere", a real answer rather than a missing one — see the copy note
@@ -733,6 +735,9 @@ export function OnboardingScreen({
     finished.current = true
     onFinish({ birthYear, isChild, dailyGoalMinutes: goal, language, startRegion, level })
   }
+
+  if (demoOpen) return <OnboardingDemo onBack={() => setDemoOpen(false)}
+    onContinue={() => { setDemoOpen(false); go('language') }} />
 
   return (
     <View style={styles.root} onLayout={onFrameLayout}>
@@ -1154,6 +1159,7 @@ export function OnboardingScreen({
              has been told what they are agreeing to. */
           <Animated.View style={[styles.actionsStack, staggerStyle(doorsIn)]}>
             <Button label={t('onboarding:cta.start')} onPress={() => go('language')} />
+            <Button variant="secondary" label={t('onboarding:demo.open')} onPress={() => setDemoOpen(true)} />
             {/* The door this frame exists for.
                 Not guarded by `isChild`, unlike the copy of this button on the taster,
                 and that is not an oversight: nobody has been asked their age yet, so

@@ -1,15 +1,12 @@
 import { createThemeStyles } from '@worldquest/design'
 import { useEffect, useState } from 'react'
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native'
-import { Button, Card, ClaySurface, radius, space, text } from '@worldquest/design'
-import { BALANCE } from '@worldquest/engines'
+import { Button, Card, ClaySurface, ProgressBar, radius, space, text } from '@worldquest/design'
 import { AdventureArt } from '../../../components/AdventureArt.js'
 import { CloudBackdrop } from '../../../components/CloudBackdrop.js'
 import { FloatingProp, PATH_PROPS, SceneryBanner, isSceneryName } from '../../../components/Scenery.js'
 import { HeaderJewel } from '../../../components/HeaderJewel.js'
-import { RewardMotion } from '../../../components/RewardMotion.js'
 import { SceneEntrance } from '../../../components/SceneEntrance.js'
-import { Icon } from '../../../components/Icon.js'
 import { tContent, useT } from '../../../lib/i18n.js'
 import type { PathNodeView, PathUnitView } from '../pathView.js'
 import { PathNode } from './PathNode.js'
@@ -62,7 +59,7 @@ export function PlatformUnit({ unit, width, total, open, onPress, onPractise, on
 }
 
 function PlatformStop({ node, index, width, total, open, onPress, onPractise, onCurrentLayout }: Omit<Props, 'unit'> & { node: PathNodeView; index: number }) {
-  const { colors, styles } = useThemeValues()
+  const { styles } = useThemeValues()
   const t = useT()
   const current = node.state === 'current'
   const selected = open === node.id
@@ -92,16 +89,15 @@ function PlatformStop({ node, index, width, total, open, onPress, onPractise, on
       <View pointerEvents="none" aria-hidden style={[styles.tail, { start: center - space[2] }]} />
       <View style={styles.action}>
         <ClaySurface radius={radius.xl} />
+        <Text style={styles.lesson}>{t('home:path.next')}</Text>
+        <Text style={styles.objective}>{tContent(node.objectiveKey, { count: node.count })}</Text>
+        <ProgressBar current={node.position - 1} total={total} showCount={false}
+          accessibilityLabel={t('home:path.courseProgress')}
+          valueText={t('home:path.position', { position: node.position, total })} />
         <View style={styles.rewardRow}>
           <Text style={styles.lesson}>{t('home:path.lesson', { lesson: Math.min(node.finished + 1, node.lessons), lessons: node.lessons })}</Text>
-          <View style={styles.xpBadge}>
-            <ClaySurface tone="gold" radius={radius.full} />
-            <RewardMotion><Icon name="star" size={space[5]} color={colors.reward.coin} /></RewardMotion>
-            <Text style={styles.xpValue}>{t('home:path.xp', { amount: BALANCE.xp.correctAnswer })}</Text>
-          </View>
+          <Text style={styles.rewardHint}>{t('home:path.position', { position: node.position, total })}</Text>
         </View>
-        <Text style={styles.objective}>{tContent(node.objectiveKey, { count: node.count })}</Text>
-        <Text style={styles.rewardHint}>{t('home:path.xp.detail')}</Text>
         <Button variant="discovery" label={t(node.finished > 0 ? 'home:path.continueChallenge' : 'home:path.startChallenge')} accessibilityHint={tContent(node.objectiveKey, { count: node.count })} onPress={() => onPress(node)} />
       </View>
     </View>}
@@ -147,8 +143,6 @@ const useThemeValues = createThemeStyles((colors) => {
   unitSegment: { flex: 1, height: space[2], borderRadius: radius.full, backgroundColor: colors.status.progressTrack },
   unitSegmentDone: { backgroundColor: colors.action.primaryFace },
   rewardRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: space[2] },
-  xpBadge: { flexDirection: 'row', alignItems: 'center', gap: space[1], backgroundColor: colors.journey.sand, paddingHorizontal: space[2], paddingVertical: space[1], borderRadius: radius.full },
-  xpValue: { ...text('bodyStrong', { numeric: true }), color: colors.clay.gold.ink },
   rewardHint: { ...text('caption'), color: colors.text.secondary },
   path: { gap: space[1] },
   stop: { gap: space[2], paddingBottom: space[1] },

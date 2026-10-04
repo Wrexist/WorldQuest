@@ -195,7 +195,7 @@ export function useAnimatedTo(target: number, step: MotionStep = 'base'): Animat
  * it just does not travel. And the caller must hide the ticking text from screen
  * readers: a reader announcing "1, 2, 3, …, 40" is worse than useless.
  */
-export function useCountUp(target: number, step: MotionStep = 'celebrate'): number {
+export function useCountUp(target: number, step: MotionStep = 'celebrate', delayMs = 0): number {
   const reduced = useReducedMotion()
   const animated = useRef(new Animated.Value(target)).current
   // Seeded with the TARGET, not zero. Anything that renders without running effects
@@ -217,6 +217,7 @@ export function useCountUp(target: number, step: MotionStep = 'celebrate'): numb
     const token = motion[step] as { duration: number; easing: string }
     const animation = Animated.timing(animated, {
       toValue: target,
+      delay: delayMs,
       duration: token.duration,
       easing: EASINGS[token.easing] ?? Easing.out(Easing.cubic),
       useNativeDriver: false,
@@ -234,7 +235,7 @@ export function useCountUp(target: number, step: MotionStep = 'celebrate'): numb
     })
 
     return () => { stop(); subscription?.remove?.() }
-  }, [target, reduced, step, animated])
+  }, [target, reduced, step, animated, delayMs])
 
   return value
 }
@@ -333,7 +334,7 @@ export function useCelebration(trigger: unknown, enabled = true): Animated.Value
  * the lesson summary's tiles would have vanished from its frames when they started to
  * arrive in turn.
  */
-export function useStagger(index: number, step: MotionStep = 'base'): Animated.Value {
+export function useStagger(index: number, step: MotionStep = 'base', delayMs = 0): Animated.Value {
   const reduced = useReducedMotion()
   const timing = useTiming(step)
   const value = useRef(new Animated.Value(1)).current
@@ -344,21 +345,25 @@ export function useStagger(index: number, step: MotionStep = 'base'): Animated.V
   }, [])
 
   useEffect(() => {
-    if (reduced) {
+    if (reduced || AppState.currentState === 'background' || AppState.currentState === 'inactive') {
       value.setValue(1)
       return
     }
     const animation = Animated.timing(value, {
       toValue: 1,
-      delay: Math.min(index, motion.stagger.maxItems) * motion.stagger.stepMs,
+      delay: delayMs + Math.min(index, motion.stagger.maxItems) * motion.stagger.stepMs,
       duration: timing.duration,
       easing: timing.easing,
       useNativeDriver: true,
+      isInteraction: false,
     })
     animation.start()
-    return () => animation.stop()
+    const subscription = AppState.addEventListener('change', state => {
+      if (state !== 'active') { animation.stop(); value.setValue(1) }
+    })
+    return () => { animation.stop(); subscription?.remove?.() }
     // `timing` is rebuilt each render; its two fields are what actually matter.
-  }, [index, reduced, value, timing.duration, timing.easing])
+  }, [index, reduced, value, timing.duration, timing.easing, delayMs])
 
   return value
 }

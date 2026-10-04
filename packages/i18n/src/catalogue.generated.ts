@@ -497,7 +497,10 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "path.continueChallenge": "Continue challenge →",
       "path.showCourse": "View whole course",
       "path.showCurrent": "Back to current unit",
-      "path.guide.boop": "Atlas, your guide. Tap for a giggle."
+      "path.guide.boop": "Atlas, your guide. Tap for a giggle.",
+      "path.next": "Your next discovery",
+      "path.courseProgress": "Course progress",
+      "path.position": "Step {position} of {total}"
     },
     "league": {
       "title": "League",
@@ -686,7 +689,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "intro.count": "{count, plural, one {# question in this lesson} other {# questions in this lesson}}",
       "intro.body": "Study the associations in this quiz. Return to the first question when you are ready.",
       "intro.begin": "Back to quiz",
-      "intro.leave": "Back"
+      "intro.leave": "Back",
+      "review.purpose": "Try it once more to help it stick."
     },
     "nav": {
       "home": "Home",
@@ -756,7 +760,16 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "level.some": "I know some",
       "level.someBody": "A mix, from the famous to the tricky.",
       "level.confident": "Bring it on",
-      "level.confidentBody": "Straight to the ones people get wrong."
+      "level.confidentBody": "Straight to the ones people get wrong.",
+      "demo.open": "Try a question",
+      "demo.title": "Meet your first flag",
+      "demo.question": "Which country is this?",
+      "demo.flagLabel": "Flag of {country}",
+      "demo.teach": "Take a look, then try remembering its name.",
+      "demo.try": "Try it",
+      "demo.correct": "Yes, {country}!",
+      "demo.answer": "This is {country}.",
+      "demo.noScore": "Just practice. No hearts lost, no score."
     },
     "paywall": {
       "title.value": "{count, plural, one {You practiced # country.} other {You practiced # countries.}}",
@@ -1596,7 +1609,10 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "path.continueChallenge": "Fortsätt utmaningen →",
       "path.showCourse": "Visa hela kursen",
       "path.showCurrent": "Tillbaka till aktuell enhet",
-      "path.guide.boop": "Atlas, din guide. Tryck för ett fniss."
+      "path.guide.boop": "Atlas, din guide. Tryck för ett fniss.",
+      "path.next": "Din nästa upptäckt",
+      "path.courseProgress": "Kursframsteg",
+      "path.position": "Steg {position} av {total}"
     },
     "league": {
       "title": "Liga",
@@ -1785,7 +1801,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "intro.count": "{count, plural, one {# fråga i den här lektionen} other {# frågor i den här lektionen}}",
       "intro.body": "Läs på om sambanden i quizet. Gå tillbaka till första frågan när du är redo.",
       "intro.begin": "Tillbaka till quizet",
-      "intro.leave": "Tillbaka"
+      "intro.leave": "Tillbaka",
+      "review.purpose": "Prova igen så blir det lättare att minnas."
     },
     "nav": {
       "home": "Hem",
@@ -1855,7 +1872,16 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "level.some": "Jag kan en del",
       "level.someBody": "En blandning, från kända till kluriga.",
       "level.confident": "Kör på",
-      "level.confidentBody": "Rakt på dem folk svarar fel på."
+      "level.confidentBody": "Rakt på dem folk svarar fel på.",
+      "demo.open": "Prova en fråga",
+      "demo.title": "Upptäck din första flagga",
+      "demo.question": "Vilket land är detta?",
+      "demo.flagLabel": "Flagga: {country}",
+      "demo.teach": "Titta på flaggan och prova sedan att minnas landet.",
+      "demo.try": "Prova",
+      "demo.correct": "Ja, {country}!",
+      "demo.answer": "Det här är {country}.",
+      "demo.noScore": "Bara övning. Inga förlorade hjärtan eller poäng."
     },
     "paywall": {
       "title.value": "{count, plural, one {Du övade på # land.} other {Du övade på # länder.}}",

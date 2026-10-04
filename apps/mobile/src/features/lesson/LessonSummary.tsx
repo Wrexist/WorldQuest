@@ -36,6 +36,8 @@ import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
   Card,
+  ProgressBar,
+  motion,
   radius,
   space,
   Spacer,
@@ -187,7 +189,7 @@ export function LessonSummary({
   const outcome = outcomeOf(result, wasAbandoned)
 
   const xp = result?.xpAwarded ?? 0
-  const counted = useCountUp(xp)
+  const counted = useCountUp(xp, 'expressive', motion.quick.duration)
 
   // A completed lesson gets a bounded entrance; early exits keep the value still.
   const entrance = useScaleIn(wasAbandoned ? 1 : .88)
@@ -290,7 +292,7 @@ export function LessonSummary({
                     it at 90pt, larger than anything else on the screen at any
                     setting, and the figure is also in the card's label. */}
                 <Text style={styles.xpValue} maxFontSizeMultiplier={1.6} aria-hidden>
-                  {`+${counted}`}
+                  {`+${wasAbandoned ? xp : counted}`}
                 </Text>
                 <Text style={styles.xpUnit} aria-hidden>
                   {t('lesson:summary.xpUnit')}
@@ -359,6 +361,9 @@ export function LessonSummary({
         {!wasAbandoned && dailyGoal !== undefined && (
           <Card level={1} style={styles.dailyGoal} testID="summary-daily-goal">
             <Text style={styles.dailyTitle}>{t(dailyGoal.done >= dailyGoal.target ? 'home:daily.complete' : 'home:daily.title')}</Text>
+            <ProgressBar current={Math.min(dailyGoal.done, dailyGoal.target)} total={dailyGoal.target}
+              showCount={false} tone="progress" accessibilityLabel={t('home:daily.title')}
+              valueText={t('home:daily.count', { done: Math.min(dailyGoal.done, dailyGoal.target), target: dailyGoal.target })} />
             <Text style={styles.subtitle}>{t('home:daily.count', { done: Math.min(dailyGoal.done, dailyGoal.target), target: dailyGoal.target })}</Text>
             <Text style={styles.subtitle}>{t(dailyGoal.done >= dailyGoal.target ? 'home:daily.rest' : 'home:daily.started')}</Text>
           </Card>
@@ -427,7 +432,7 @@ function StatTile({
   testID: string
 }) {
   const { styles } = useThemeValues()
-  const entrance = useStagger(order, 'expressive')
+  const entrance = useStagger(order, 'expressive', motion.quick.duration + motion.expressive.duration)
 
   return (
     // The cell moves; the card inside it is the one spoken element, unchanged.

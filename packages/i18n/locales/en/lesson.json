@@ -294,5 +294,7 @@
   "lesson:intro.begin": "Back to quiz",
   "lesson:intro.begin__note": "Primary button closes optional study and resumes the same first question. No answer or reward is recorded by this action.",
   "lesson:intro.leave": "Back",
-  "lesson:intro.leave__note": "Pre-lesson teaching preview of new facts from the actual lesson. Count is total questions, not guaranteed XP."
+  "lesson:intro.leave__note": "Pre-lesson teaching preview of new facts from the actual lesson. Count is total questions, not guaranteed XP.",
+  "lesson:review.purpose": "Try it once more to help it stick.",
+  "lesson:review.purpose__note": "Learning loop guidance. Position and total are actual course steps; no invented rewards or mastery."
 }

@@ -63,6 +63,18 @@ const pickYear = (year: number): void => {
 }
 
 describe('OnboardingScreen', () => {
+  it('offers a first discovery before setup and returns to language afterward', () => {
+    const finish = vi.fn()
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={finish} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Try a question' }))
+    expect(screen.getByTestId('onboarding-demo')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Try it' }))
+    fireEvent.click(screen.getByRole('button', { name: 'United States' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    expect(screen.getByText('Choose your language')).toBeTruthy()
+    expect(finish).not.toHaveBeenCalled()
+  })
+
   beforeEach(() => {
     vi.useFakeTimers()
   })

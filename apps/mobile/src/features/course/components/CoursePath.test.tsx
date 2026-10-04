@@ -108,10 +108,11 @@ describe('the course path', () => {
     expect(container.textContent).toContain('Lesson 2 of 2')
   })
 
-  it('shows the base XP rule and continues the unfinished challenge', () => {
+  it('shows the next discovery and real position, then continues the unfinished challenge', () => {
     const { onStart } = renderPath({ 'node.first-week.flags': 1 })
-    expect(screen.getByText(`+${BALANCE.xp.correctAnswer} XP`)).toBeTruthy()
-    expect(screen.getByText('Base reward per new correct answer')).toBeTruthy()
+    expect(screen.getByText('Your next discovery')).toBeTruthy()
+    expect(screen.getByText(`Step 1 of ${TOTAL}`)).toBeTruthy()
+    expect(screen.queryByText(`+${BALANCE.xp.correctAnswer} XP`)).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'Continue challenge →' }))
     expect(onStart).toHaveBeenCalledWith('node.first-week.flags')
   })

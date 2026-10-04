@@ -23,6 +23,10 @@ if we're slower, we're showing a loading screen and calling it branding.
 cached Home).
 
 ### 2. Onboarding
+Welcome also offers an optional **Try a question** demonstration: learn a bundled
+flag/name pair, recall it, then receive immediate feedback. It precedes preference
+questions and has no hearts, rewards, tracking or saved mastery. Continue returns
+to language/setup; Back returns to welcome. The normal setup path remains available.
 3 value slides → age gate → daily goal picker → **taster lesson** → optional sign-up.
 `Get Started` (blue) · `I already have an account`.
 **The rule:** the user completes a real lesson *before* we ask for an account. This is
@@ -31,6 +35,9 @@ the single highest-leverage conversion decision in the app.
 to the child flow (no social, no third-party analytics, parental email for consent).
 
 ### 3. Home
+The current-step card leads with the next discovery, the actual course position and
+lesson count. Its progress bar reports completed preceding steps. XP appears when
+earned, rather than as a potentially misleading pre-lesson total.
 Avatar · coins · greeting by time of day · fact row (streak when above 0, earned title,
 quest count, league when there is one) · **the first-week course path** — a banner per
 unit (unit number, title, objective, done count; Atlas in the current unit's) and its

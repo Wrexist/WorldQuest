@@ -99,12 +99,11 @@ const enabled = (): boolean => readJson<{ sound?: boolean }>(PREFERENCES_KEY)?.s
  *  costs more than keeping them. */
 const cache = new Map<SoundName, AudioPlayer>()
 
-let configured = false
+let configuration: Promise<void> | undefined
 
 async function configure(): Promise<void> {
-  if (configured) return
-  configured = true
-  await setAudioModeAsync({
+  if (configuration !== undefined) return configuration
+  configuration = setAudioModeAsync({
     // The silent switch is the user telling us directly, and §9 says never play when
     // the device is silenced. iOS only honours that when this is false — the default
     // is to play through silent, which is what a music app wants and a game does not.
@@ -114,13 +113,19 @@ async function configure(): Promise<void> {
     // cross-platform successor to expo-av's Android-only `shouldDuckAndroid`.
     interruptionMode: 'duckOthers',
     shouldPlayInBackground: false,
+  }).catch(error => {
+    // A busy audio session is temporary. The next deliberate cue may retry.
+    configuration = undefined
+    throw error
   })
+  return configuration
 }
 
 export function play(name: SoundName): void {
   if (!enabled()) return
   void (async () => {
     await configure()
+    if (!enabled()) return
     let sound = cache.get(name)
     if (sound === undefined) {
       sound = createAudioPlayer(FILES[name])
@@ -130,7 +135,7 @@ export function play(name: SoundName): void {
     // From the start every time. A second correct answer inside 300 ms must retrigger
     // rather than be swallowed, which is what happens if you only call `play()`.
     await sound.seekTo(0)
-    sound.play()
+    if (enabled()) sound.play()
   })().catch(() => {
     // Swallowed on purpose — see the header.
   })
@@ -146,5 +151,5 @@ export const soundTap = (): void => play('tap')
 /** Test seam: drop the cache so a test can assert loading behaviour. */
 export function __resetSoundsForTests(): void {
   cache.clear()
-  configured = false
+  configuration = undefined
 }

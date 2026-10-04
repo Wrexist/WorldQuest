@@ -21,11 +21,13 @@ export function useMascotMotion(mood: AtlasClayMood, visibleSize: number, decode
     let alive = true
     let active = AppState.currentState === 'active'
     let focused = navigation?.isFocused() !== false
+    let greeted = false
     let animation: Animated.CompositeAnimation | undefined
     const stop = () => { animation?.stop(); animation = undefined; gesture.setValue(0) }
     const play = () => {
       stop()
-      if (!alive || !active || !focused || reduced || visibleSize < 48 || !decoded) return
+      if (!alive || !active || !focused || greeted || reduced || visibleSize < 48 || !decoded) return
+      greeted = true
       animation = Animated.timing(gesture, {
         toValue: 1, duration: motion.celebrate.duration,
         easing: Easing.inOut(Easing.ease), useNativeDriver: true, isInteraction: false,

@@ -1014,7 +1014,10 @@ export function LessonScreen({
         <Spacer />
         {reviewing && (
           // Duolingo's "previous mistake" tag: this one came back because it was missed.
+          <View>
           <Text style={styles.reviewTag}>{t('lesson:review.tag')}</Text>
+          <Text style={styles.feedbackBody}>{t('lesson:review.purpose')}</Text>
+          </View>
         )}
         {!reviewing && (boardMembers !== null ? boardMembers.some((member) => member.isNew) : question.isNew) && (
           // And its "new word": this is the first time, so not knowing it is expected —
