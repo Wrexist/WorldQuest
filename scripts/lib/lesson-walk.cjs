@@ -89,7 +89,6 @@ async function answerCurrent(page) {
   if (options.length === 0) return false
   await options[0].click()
   await page.waitForTimeout(200)
-  await page.getByRole('button', { name: 'Check' }).first().click()
   return true
 }
 

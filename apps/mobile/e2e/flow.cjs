@@ -730,33 +730,13 @@ const skip = (name, why) => {
       layout === null ? 'not measurable' : `${layout}px below the prompt`,
     )
 
-    // Select, then Check. A tap only SELECTS now, so the first thing to prove is that it
-    // does not grade: no feedback string may appear until Check is pressed, and Check
-    // must refuse to do anything before there is a selection to grade.
-    const check = page.getByTestId('lesson-check')
-    const checkDisabledBefore = (await check.getAttribute('aria-disabled')) === 'true'
-    step('Check waits for a selection', checkDisabledBefore)
-
+    step('answer choices need no Check button', await page.getByTestId('lesson-check').count() === 0)
     if (answered) await options[0].click()
-    await page.waitForTimeout(400)
-    const selection = await page.evaluate(() => {
-      const all = [...document.querySelectorAll('[data-testid="answer-option"]')]
-      return {
-        selected: all.filter((o) => o.getAttribute('aria-selected') === 'true').length,
-        first: all[0]?.getAttribute('aria-selected') === 'true',
-        check: document.querySelector('[data-testid="lesson-check"]')?.getAttribute('aria-disabled'),
-      }
-    })
-    const graded = /Perfect!|You picked [^\n]*|That's [^\n]*|The answer is [^\n]*/.test(await body())
-    step(
-      'a tap selects the option without grading it',
-      answered && selection.first && selection.selected === 1 && selection.check !== 'true' && !graded,
-      `${selection.selected} selected · Check ${selection.check === 'true' ? 'disabled' : 'enabled'}` +
-        (graded ? ' · but feedback already showed' : ''),
-    )
-    await page.screenshot({ path: path.join(SHOTS, 'lesson-selected.png') })
-
-    if (answered) await check.click()
+    await page.getByTestId('answer-sheet').waitFor()
+    step('one tap locks the answered choices', await page.getByTestId('answer-option').evaluateAll(
+      (nodes) => nodes.every((node) => node.getAttribute('aria-disabled') === 'true'),
+    ))
+    await page.screenshot({ path: path.join(SHOTS, 'lesson-immediate-feedback.png') })
 
     await page.waitForTimeout(1200)
     text = await body()
@@ -860,10 +840,8 @@ const skip = (name, why) => {
       }
       const next = await page.getByTestId('answer-option').all()
       if (next.length === 0) break
-      // Select, then Check — a tap alone grades nothing, and the next lap's
-      // `isDisabled` test would wait on a question that was never answered.
+      // One activation grades the answer before the next lap.
       await next[0].click()
-      await page.getByTestId('lesson-check').click()
       await page.waitForTimeout(700)
     }
 
@@ -1204,7 +1182,7 @@ const skip = (name, why) => {
     // played graded to zero and the summary it produced was the rejected-everything
     // case. The quest and achievement steps below passed anyway, so nothing said so.
     await page.waitForTimeout(600)
-    // The clock stops at Check, so the think time above is what gets recorded.
+    // The clock stops at the answer tap, so the think time above is what gets recorded.
     await answerCurrent(page)
     await page.waitForTimeout(250)
     const next = page.getByRole('button', { name: 'Continue' })
@@ -1434,7 +1412,6 @@ const skip = (name, why) => {
       // Human speed, as the achievements lesson above explains: faster is graded as a bot.
       await page.waitForTimeout(600)
       await options[0].click()
-      await page.getByTestId('lesson-check').click()
       await page.waitForTimeout(250)
       // Grading labels the right option "…, correct answer", whichever was chosen.
       subject.answer = await page.evaluate(
@@ -1675,32 +1652,10 @@ const skip = (name, why) => {
       const label = await page.evaluate(() => document.activeElement?.textContent?.trim() ?? '')
       await page.keyboard.press('Enter')
       await page.waitForTimeout(400)
-      const selectedByKey = await page.evaluate(
-        () => document.activeElement?.getAttribute('aria-selected') === 'true',
-      )
-      step('keyboard: Enter selects it', selectedByKey, label)
+      await page.getByTestId('answer-sheet').waitFor()
+      step('keyboard: Enter immediately scores the answer', await page.getByTestId('answer-sheet').isVisible(), label)
+      step('keyboard: no extra Check activation is needed', await page.getByTestId('lesson-check').count() === 0)
 
-      // Then onward to Check, by Tab alone. This is also the focus-order check the
-      // select-then-check model needs: Check comes AFTER the options, so a keyboard or
-      // switch user meets the question, then the answers, then the commit.
-      let onCheck = false
-      for (let i = 0; i < 12 && !onCheck; i++) {
-        await page.keyboard.press('Tab')
-        onCheck = await page.evaluate(
-          () => document.activeElement?.getAttribute('data-testid') === 'lesson-check',
-        )
-      }
-      step('keyboard: Tab reaches Check after the answers', onCheck)
-
-      if (onCheck) {
-        await page.keyboard.press('Enter')
-        await page.waitForTimeout(1200)
-        const text = await body()
-        // The feedback panel is the proof the answer was actually scored — focus moving
-        // is not the same as the control doing its job.
-        const scored = /Perfect!|You picked [^\n]*|That's [^\n]*|The answer is [^\n]*/.test(text)
-        step('keyboard: Enter on Check scores it, with no pointer involved', scored, label)
-      }
     }
   }
 

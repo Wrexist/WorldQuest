@@ -35,7 +35,6 @@ async function main() {
       if (!options.length) break
       await learner.waitForTimeout(600)
       await options[0].click()
-      await learner.getByTestId('lesson-check').click()
       await learner.waitForTimeout(300)
       const next = learner.getByRole('button', { name: 'Continue', exact: true })
       if (await next.count()) await next.first().click()

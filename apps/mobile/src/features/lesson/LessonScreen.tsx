@@ -195,22 +195,8 @@ const VERY_SHORT_SCREEN = 640
  */
 const SHORT_SCREEN = 900
 
-/**
- * Below this height, Check sits after the options instead of pinned under them.
- *
- * MEASURED, per question type, with the button pinned: at 375×667 every template's
- * fourth option clears it with room to spare, and 360×640 does too. At 320×568 (iPhone
- * SE 1) the pinned bar took about 90pt off a viewport that was already exactly full, and
- * the fourth option went under it by 65pt on a locator question, 101 on a map question
- * and 116 under a flag prompt — where before Check existed it fitted, overflowed by 11
- * and by 26. Shrinking the pictures to win that back would put the map and the flag
- * below the floors `atlasHeight` and `FLAG_PROMPT_WIDTH` exist to defend.
- *
- * So on the smallest phone the question keeps the whole screen, exactly as before, and
- * Check follows the options in the scroll. Selecting scrolls it into view, so it is never
- * a thing the user has to hunt for — it arrives the moment there is something to check.
- */
-const PINNED_CHECK_MIN_HEIGHT = 600
+/** Compact question layout for the shortest phones; answers still submit on tap. */
+const SHORT_QUESTION_HEIGHT = 600
 
 /*
  * The locator's size used to be four width constants (208/132/240/180) for a fixed 4:3
@@ -353,7 +339,7 @@ export function LessonScreen({
    * it changes is a target size, so the 44pt floor holds at both settings.
    */
   const compact = height < SHORT_SCREEN
-  const inlineCheck = height < PINNED_CHECK_MIN_HEIGHT
+  const shortQuestion = height < SHORT_QUESTION_HEIGHT
   // The atlas spans the content column, as the reference draws it, and stops widening
   // where the rest of the lesson does.
   const atlasWidth = Math.min(width - space[4] * 2, layout.maxContentWidth)
@@ -737,16 +723,6 @@ export function LessonScreen({
   }, [lesson.state.index])
 
   /**
-   * On the smallest phones Check is in the scroll, after the options — see
-   * `PINNED_CHECK_MIN_HEIGHT`. Selecting brings it into view so the next action is on
-   * screen the moment it becomes possible.
-   */
-  useEffect(() => {
-    if (!inlineCheck || lesson.state.selectedOptionId === null) return
-    scroller.current?.scrollToEnd({ animated: true })
-  }, [inlineCheck, lesson.state.selectedOptionId])
-
-  /**
    * Watch this number. If it is high the mechanic is too punishing — which is the
    * whole reason the balance table caps hearts per lesson rather than per day.
    *
@@ -917,15 +893,6 @@ export function LessonScreen({
   const lastAward = lastAnswer && !reviewing ? lesson.awardFor(lastAnswer) : null
 
   /**
-   * The one primary action while a question is up.
-   *
-   * Disabled rather than hidden until something is selected, so the screen does not jump
-   * when the first option is tapped and the user can see where an answer is committed.
-   * Pinned, it sits exactly where the sheet's Continue will land, so the thumb that
-   * pressed Check is already on the way onward. Where it sits on the smallest phones is
-   * `PINNED_CHECK_MIN_HEIGHT`'s business.
-   */
-  /**
    * A typed question is answered with a keyboard, which changes two things about this screen.
    * Check is enabled by having typed something rather than by having picked something, and it
    * sits INSIDE the scroll view under the field: a footer pinned to the screen's bottom edge is
@@ -945,7 +912,6 @@ export function LessonScreen({
   const showBoard = boardMembers !== null && !answered
   const boardSettled = question.group !== undefined && answered && !lesson.state.outOfHearts
   const typedValue = answered ? (lastAnswer?.typedText ?? lesson.state.typedText) : lesson.state.typedText
-  const checkInScroll = inlineCheck || typedQuestion || showBoard
   const noSelection = typedQuestion
     ? lesson.state.typedText.trim() === ''
     : lesson.state.selectedOptionId === null
@@ -1033,7 +999,7 @@ export function LessonScreen({
         // keyboard first" — and the view lifts itself clear of the keyboard on iOS.
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets={typedQuestion}
-        contentContainerStyle={[styles.body, compact && styles.bodyShort, inlineCheck && styles.bodyTiny]}
+        contentContainerStyle={[styles.body, compact && styles.bodyShort, shortQuestion && styles.bodyTiny]}
         onLayout={(event) => {
           viewport.current = event.nativeEvent.layout.height
           // The sheet arriving is what shrinks this; ask again with the new height.
@@ -1123,7 +1089,7 @@ export function LessonScreen({
               chosenOptionId={lastAnswer?.chosenOptionId ?? null}
               width={atlasWidth}
               height={atlasHeight(height, {
-                inlineCheck,
+                shortQuestion,
                 compact,
                 isPrompt: question.modality === 'map',
                 pictureOptions,
@@ -1242,16 +1208,8 @@ export function LessonScreen({
                   <Icon name="forward" size={20} color={colors.text.secondary} />
                 ) : undefined
               }
-              // A tap SELECTS; Check grades. Changing your mind is free, which is the
-              // point: a mis-tap on a phone held in one hand used to be a scored answer,
-              // and on a review item a lost heart. The selection haptic is the light
-              // platform tick, not the verdict — nothing has been decided yet, and the
-              // correct/wrong cues fire from the graded answer (`useAnswerCues`).
-              onPress={() => {
-                if (option.id === lesson.state.selectedOptionId) return
-                hapticSelect()
-                lesson.select(option.id)
-              }}
+              // Commit atomically; the reducer ignores further answers until Continue.
+              onPress={() => lesson.answer(option.id)}
               // So tests can select answers POSITIVELY. The helper used to take every
               // button that was not labelled "Continue", which silently swallowed the
               // close button the moment one existed and made two tests click pause
@@ -1263,15 +1221,13 @@ export function LessonScreen({
         </SceneEntrance>
         )}
 
-        {checkInScroll && !answered && !showBoard && checkButton}
+        {typedQuestion && !answered && !showBoard && checkButton}
 
         <Spacer />
       </ScrollView>
 
-      {boardSettled ? null : !answered ? (
-        !checkInScroll && <View style={styles.footer}>{checkButton}</View>
-      ) : (
-        <RiseIn key={answeredCount} style={styles.footer}>
+      {boardSettled || !answered ? null : (
+        <RiseIn key={answeredCount} style={[styles.footer, styles.feedbackFooter]}>
           {/* Out of hearts is a fork, not a wall. The engine has held the flag since
               the machine was written and nothing rendered it — so the lesson simply
               carried on at zero hearts, which made the whole mechanic decorative. */}
@@ -1335,6 +1291,7 @@ export function LessonScreen({
               testID="answer-sheet"
             >
               <ClaySurface transparent radius={radius.lg} />
+              <ScrollView testID="lesson-feedback-scroll" style={styles.feedbackScroll}>
               {/* The thing the question was ABOUT, now that it can be shown.
 
                   "Hur ser Japans flagga ut?" is asked in words and answered in words,
@@ -1454,6 +1411,7 @@ export function LessonScreen({
           )}
               </View>
               </View>
+              </ScrollView>
               <Button variant="discovery" label={t('common:continue')} onPress={lesson.advance} />
               {remoteLessons && (
                 <Button label={t('lesson:report.cta')} variant="ghost" size="sm" onPress={() => setReporting(true)} />
@@ -1470,21 +1428,17 @@ export function LessonScreen({
 /**
  * How tall the atlas is, from the space the question actually has.
  *
- * MEASURED against the budget the constants above defend: at 390×844 the prompt, the
- * atlas, four options and the pinned Check fit with the atlas at a quarter of the
- * height; at 320×568 Check already follows the options in the scroll, and the atlas
- * gives way first because it is context and the options are the interaction. A map
- * question's map IS the prompt, so it keeps more; a 2×2 grid of flag answers frees
- * nearly two option rows, and the atlas takes some of that back.
+ * Short screens reserve more room for the answer options. A map question keeps
+ * more space because the map is the prompt; picture options free two rows for it.
  *
  * Never so small the country is a speck — the floor is where a coastline still reads.
  */
 export function atlasHeight(
   screenHeight: number,
-  { inlineCheck, compact, isPrompt, pictureOptions }: { inlineCheck: boolean; compact: boolean; isPrompt: boolean; pictureOptions: boolean },
+  { shortQuestion, compact, isPrompt, pictureOptions }: { shortQuestion: boolean; compact: boolean; isPrompt: boolean; pictureOptions: boolean },
 ): number {
-  const share = inlineCheck ? 0.25 : compact ? 0.26 : 0.3
-  const floor = inlineCheck ? 132 : 150
+  const share = shortQuestion ? 0.25 : compact ? 0.26 : 0.3
+  const floor = shortQuestion ? 132 : 150
   const ceiling = compact ? 240 : 340
   const boost = (isPrompt ? 1.15 : 1) * (pictureOptions ? 1.15 : 1)
   return Math.round(Math.min(ceiling * boost, Math.max(floor, screenHeight * share * boost)))
@@ -1773,6 +1727,7 @@ const useThemeValues = createThemeStyles((colors) => {
   // against this rather than the screen.
   sheet: {
     position: 'relative',
+    flexShrink: 1,
     overflow: 'hidden',
     gap: space[3],
     padding: space[4],
@@ -1816,6 +1771,8 @@ const useThemeValues = createThemeStyles((colors) => {
   // share a row that is already 150 points narrower than the sheet.
   rewards: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
   footer: { paddingBottom: space[4] },
+  feedbackFooter: { maxHeight: '65%', flexShrink: 0 },
+  feedbackScroll: { flexGrow: 0 },
   retry: { marginTop: space[4] },
   offline: {
     backgroundColor: colors.bg.surfaceRaised,

@@ -73,14 +73,13 @@ offer study. The scrollable study view keeps its heading and return action withi
 the native safe area.
 **Question types (v1.0):** tap-the-country (map) · flag → country · country → capital ·
 landmark → country · speed round.
-**Interaction rules:** options are ≥ 56 pt tall; tapping an option **selects** it
-(changeable) and a single primary **Check** grades it — Check is disabled until something
-is selected, and the answer timer stops at Check, not at the tap; Check is pinned at the
-bottom, except below 600 pt of height (iPhone SE 1) where it follows the options and
-selecting scrolls it into view; no auto-advance before the user sees feedback; answering
-is impossible during the feedback animation (double-tap protection); the back gesture
-confirms before discarding. Speed round: a selection still unchecked at the buzzer is
-graded; no selection is a timeout.
+**Interaction rules:** options are at least 56 pt tall. Activating an answer option
+immediately grades it and stops the answer timer. Correct/incorrect feedback locks
+all options until **Continue**; there is no Check button for multiple-choice answers.
+Typed answers retain Check and keyboard submission. Matching boards retain their
+existing pair-by-pair behavior. Feedback remains visible until the player continues;
+repeated activation cannot record another answer. The back gesture confirms before
+discarding. A speed-round question with no answer at the buzzer times out.
 **States:** loading items · presenting · answered-correct · answered-wrong · out of
 hearts · paused · network lost mid-lesson (continue offline, queue the writes).
 

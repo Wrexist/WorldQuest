@@ -1,0 +1,38 @@
+{
+  "cases": [
+    {
+      "width": 320,
+      "scale": 1,
+      "immediateFeedback": true,
+      "choicesLocked": true,
+      "noCheck": true,
+      "continueReachable": true
+    },
+    {
+      "width": 320,
+      "scale": 2,
+      "immediateFeedback": true,
+      "choicesLocked": true,
+      "noCheck": true,
+      "continueReachable": true
+    },
+    {
+      "width": 390,
+      "scale": 1,
+      "immediateFeedback": true,
+      "choicesLocked": true,
+      "noCheck": true,
+      "continueReachable": true
+    },
+    {
+      "width": 390,
+      "scale": 2,
+      "immediateFeedback": true,
+      "choicesLocked": true,
+      "noCheck": true,
+      "continueReachable": true
+    }
+  ],
+  "errors": [],
+  "limitation": "Exported app; CSS scaling is not native Dynamic Type or VoiceOver proof."
+}

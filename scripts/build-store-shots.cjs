@@ -186,7 +186,6 @@ async function playLesson(page, route, knownAnswers, thinkMs = 0) {
     // read "0:12" for twenty questions, which no listing should claim.
     await options[index].click()
     if (thinkMs > 0) await page.waitForTimeout(thinkMs)
-    await page.getByTestId('lesson-check').click()
     await page.waitForTimeout(420)
 
     // Whatever was chosen, the app has now labelled the right one. Record it.

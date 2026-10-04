@@ -441,14 +441,12 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
          * because all of them were of the question and none of the answer.
          */
         await options[0].click()
-        await page.getByTestId('lesson-check').click()
         await page.waitForTimeout(600)
         await shot('lesson-flags-answered')
         return true
       }
 
       await options[0].click()
-      await page.getByTestId('lesson-check').click()
       await page.waitForTimeout(500)
       const next = page.getByText(/^(Continue|Finish|Got it)$/).first()
       if ((await next.count()) === 0) break
@@ -481,14 +479,12 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
       const options = await page.getByTestId('answer-option').all()
       if (!(await questionShown(page))) break
       if (options.length > 0) await options[0].click()
-      // The selected-but-unchecked state is its own screen now: one option ringed in
-      // blue and Check lit. Photographed once, on the first question.
+      // Capture immediate feedback after the first answer.
       if (q === 0) {
         await page.waitForTimeout(300)
-        await shot('lesson-selected')
+        await shot('lesson-immediate-feedback')
       }
-      if (options.length > 0) await page.getByTestId('lesson-check').click()
-      else await answerCurrent(page)
+      if (options.length === 0) await answerCurrent(page)
       await page.waitForTimeout(550)
       const next = page.getByText(/^(Continue|Finish|Got it)$/).first()
       // Matching boards advance on completion without a verdict sheet.

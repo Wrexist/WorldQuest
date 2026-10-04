@@ -32,7 +32,7 @@ appId: com.wrexist.worldquest
 - tapOn: "Continue"
 - tapOn: "Start learning"
 - assertVisible:
-    id: "lesson-check"
+    id: "answer-option"
 - assertNotVisible:
     id: "lesson-introduction"
 # Exercise the live lesson map as well as the immediate, disclosure-safe preview.
@@ -53,7 +53,16 @@ appId: com.wrexist.worldquest
 - tapOn:
     id: "lesson-begin"
 - assertVisible:
+    id: "answer-option"
+- assertNotVisible:
     id: "lesson-check"
+- tapOn:
+    id: "answer-option"
+    index: 0
+- assertVisible:
+    id: "answer-sheet"
+- takeScreenshot: native-immediate-answer
+- tapOn: "Continue"
 - tapOn: "Pause the lesson"
 - tapOn: "Finish here"
 - tapOn: "Continue"
@@ -71,7 +80,7 @@ appId: com.wrexist.worldquest
 - tapOn:
     id: "path-node-current"
 - assertVisible:
-    id: "lesson-check"
+    id: "answer-option"
 - assertVisible:
     id: "lesson-study"
 - waitForAnimationToEnd:

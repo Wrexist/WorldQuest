@@ -30,7 +30,6 @@ async function toCapitalMap(): Promise<boolean> {
     const options = screen.queryAllByTestId('answer-option')
     if (options.length === 0) return false
     fireEvent.click(options[0]!)
-    fireEvent.click(screen.getByTestId('lesson-check'))
     const next = screen.queryByRole('button', { name: 'Continue' })
     if (next === null) return false
     fireEvent.click(next)
@@ -49,7 +48,6 @@ describe('the atlas in a lesson', () => {
     const options = screen.getAllByTestId('answer-option')
     const order = options.map((o) => o.textContent)
     fireEvent.click(options[1]!)
-    fireEvent.click(screen.getByTestId('lesson-check'))
 
     // Graded as ever: the sheet is up, the options kept their order, and the capital is
     // now shown as text — the fallback draws no pin it cannot place honestly.
@@ -64,7 +62,6 @@ describe('the atlas in a lesson', () => {
     await waitFor(() => expect(screen.getByTestId('atlas-fallback')).toBeTruthy())
     const compiles = ((globalThis as { __wqFakeGl?: { calls: Record<string, number> } }).__wqFakeGl!.calls['compileShader'] ?? 0)
     fireEvent.click(screen.getAllByTestId('answer-option')[0]!)
-    fireEvent.click(screen.getByTestId('lesson-check'))
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
     expect(await toCapitalMap()).toBe(true)
     expect(screen.getByTestId('atlas-fallback')).toBeTruthy()
