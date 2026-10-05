@@ -1,6 +1,6 @@
 # WorldQuest free-launch runbook
 
-Updated 2 October 2026. Owner decision: **free first release; Premium later**.
+Updated 4 October 2026. Owner decision: **free first release; Premium later**.
 Primary acceptance device: iPhone. Follow with a shorter Android pass. This is a
 release checklist, not a statement that public launch is ready.
 
@@ -9,7 +9,10 @@ release checklist, not a statement that public launch is ready.
 - Free domain: https://worldquest.dpdns.org. GitHub Pages HTTPS is enforced.
   Privacy, terms, support and licences pages each returned HTTP 200.
 - Production Cloudflare Worker and EU D1 exist, with migrations 0001–0013.
-  `https://api.worldquest.dpdns.org/health` returns 200. Application API remains closed.
+  Guest learning is active at Worker version `1edc8e85-3f98-44cf-a0ef-6d63f096d9c3`
+  from commit `d0bf0dcc`. The hosted smoke issued five Swedish beginner questions,
+  then deleted its temporary guest. Email identity changes and social features
+  remain held. [Repair evidence](../engineering/native-loading-2026-10-03.md).
 - Resend sender is verified; both Worker secrets are installed. Gmail confirms
   SPF, DKIM and DMARC PASS. Transport is configured; inbox delivery is not accepted.
 - EAS production has all six public values: `EXPO_PUBLIC_BACKEND=d1`,
@@ -29,12 +32,17 @@ release checklist, not a statement that public launch is ready.
 The English delivery test was rejected by Gmail; the Swedish message landed in Spam.
 Do not treat Resend's Delivered status as inbox success. Authentication passed.
 See [delivery evidence](../engineering/account-email-setup.md) and the
-[prepared Resend support draft](../engineering/resend-delivery-investigation.md).
-The draft has not been sent. No repeated tests or inbox filter overrides were applied.
+[Resend support report](../engineering/resend-delivery-investigation.md).
+The report was sent and acknowledged October 2. No repeated tests or inbox filter
+overrides were applied.
 
 Resolve delivery, then run controlled actual code verification and recovery. Keep
-`API_ENABLED=false` until controlled acceptance access is ready. Before any public
-activation, check persistent send budgets, failure behavior and operational response.
+`EMAIL_AUTH_ENABLED=false` until those email identity flows are accepted. The October 3
+repair separates guest learning from this hold: the production candidate sets
+`API_ENABLED=true` while retaining the email and social holds. Existing linked
+account deletion keeps its verified-mail path; this does not waive delivery acceptance.
+Before unrestricted public activation, check guest-creation abuse limits, persistent
+send budgets, failure behavior and operational response.
 The existing temporary remote-mail test is not a public application endpoint.
 
 ## Prepare a reproducible iOS candidate
@@ -61,8 +69,10 @@ beta account. Never post verification codes or credentials in the test report.
 - Fresh install: complete onboarding, play the introduction, verify first-step credit.
 - Lesson: correct and wrong answers, map/flag/capital questions, sound and haptics.
 - Interrupt: lock/unlock and background/foreground during a lesson. Separately
-  force-close and relaunch; record whether partial progress is preserved. Durable
-  unfinished-lesson resume is still open, so do not claim it is implemented.
+  force-close and relaunch, then reopen the same course step or practice entry.
+  D1 lesson input is now saved locally and replayed against the same issued ticket;
+  native acceptance remains open. Run `apps/mobile/e2e/native-lesson-recovery.yaml`
+  from Home on a D1 candidate and compare the before/after feedback screenshots.
 - Offline: prepare a lesson online, enable airplane mode, finish it, reconnect.
   XP, coins, quest credit and course progress must settle once, without duplication.
 - Account: receive a real code; test wrong code, expiration and resend behavior.
@@ -89,8 +99,10 @@ iPad support is still configured; iPad acceptance and store screenshots remain o
   is needed for this free release.
 - Real-device acceptance, delivery reliability, quota/health monitoring, incident
   response and restore rehearsal need recorded evidence.
-- Durable unfinished-lesson resume and due-review-first Home selection remain open
-  product work. Browser tests are not evidence of native gestures or performance.
+- Durable unfinished-lesson recovery is implemented for D1 and awaits native
+  force-close acceptance. Due-review-first Home selection remains open product work.
+  See the [recovery implementation and acceptance notes](../engineering/lesson-recovery-2026-10-04.md).
+  Browser tests are not evidence of native gestures or performance.
 - Course English/Swedish copy and content review remain launch checks. Existing
   authored-difficulty warnings are not silently waived.
 

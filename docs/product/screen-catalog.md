@@ -23,6 +23,10 @@ if we're slower, we're showing a loading screen and calling it branding.
 cached Home).
 
 ### 2. Onboarding
+Welcome also offers an optional **Try a question** demonstration: learn a bundled
+flag/name pair, recall it, then receive immediate feedback. It precedes preference
+questions and has no hearts, rewards, tracking or saved mastery. Continue returns
+to language/setup; Back returns to welcome. The normal setup path remains available.
 3 value slides → age gate → daily goal picker → **taster lesson** → optional sign-up.
 `Get Started` (blue) · `I already have an account`.
 **The rule:** the user completes a real lesson *before* we ask for an account. This is
@@ -31,6 +35,9 @@ the single highest-leverage conversion decision in the app.
 to the child flow (no social, no third-party analytics, parental email for consent).
 
 ### 3. Home
+The current-step card leads with the next discovery, the actual course position and
+lesson count. Its progress bar reports completed preceding steps. XP appears when
+earned, rather than as a potentially misleading pre-lesson total.
 Avatar · coins · greeting by time of day · fact row (streak when above 0, earned title,
 quest count, league when there is one) · **the first-week course path** — a banner per
 unit (unit number, title, objective, done count; Atlas in the current unit's) and its
@@ -66,16 +73,23 @@ countdown).
 ### 5. Lesson runner ★
 The most important screen in the app. Close button · progress bar · item counter
 (`2 / 10`) · hearts · the question · answer options.
+The question opens directly. Before the first answer, **Learn first** opens optional
+study cards from this exact quiz; returning preserves the question and selection.
+Study time is paused and records no answer. Level checks and speed rounds do not
+offer study. The scrollable study view keeps its heading and return action within
+the native safe area. Study shows one unique fact at a time, with a discovery count
+and Previous/Next controls. Short, reduced-motion-aware card transitions never
+advance automatically. Back to quiz stays outside the scroll area and does not
+require reviewing every card; revisiting cards does not award progress.
 **Question types (v1.0):** tap-the-country (map) · flag → country · country → capital ·
 landmark → country · speed round.
-**Interaction rules:** options are ≥ 56 pt tall; tapping an option **selects** it
-(changeable) and a single primary **Check** grades it — Check is disabled until something
-is selected, and the answer timer stops at Check, not at the tap; Check is pinned at the
-bottom, except below 600 pt of height (iPhone SE 1) where it follows the options and
-selecting scrolls it into view; no auto-advance before the user sees feedback; answering
-is impossible during the feedback animation (double-tap protection); the back gesture
-confirms before discarding. Speed round: a selection still unchecked at the buzzer is
-graded; no selection is a timeout.
+**Interaction rules:** options are at least 56 pt tall. Activating an answer option
+immediately grades it and stops the answer timer. Correct/incorrect feedback locks
+all options until **Continue**; there is no Check button for multiple-choice answers.
+Typed answers retain Check and keyboard submission. Matching boards retain their
+existing pair-by-pair behavior. Feedback remains visible until the player continues;
+repeated activation cannot record another answer. The back gesture confirms before
+discarding. A speed-round question with no answer at the buzzer times out.
 **States:** loading items · presenting · answered-correct · answered-wrong · out of
 hearts · paused · network lost mid-lesson (continue offline, queue the writes).
 

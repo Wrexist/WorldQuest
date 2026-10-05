@@ -180,7 +180,14 @@ export function itemsForFact(
     const modality = index.templates.get(i.templateId)?.modality
     return modality !== undefined && options.modalities.includes(modality)
   })
-  const shuffled = shuffle(usable, rng)
+  // Described siblings are accessibility alternatives, not another random visual
+  // question. Keep them for readers/text-only clients; a picture-capable lesson
+  // should show the flag/map instead of asking learners to decode a paragraph.
+  const alternatives = new Set(options.screenReaderOnly ? [] : usable.flatMap(item => {
+    const sibling = index.templates.get(item.templateId)?.a11y.equivalentTemplate
+    return sibling === undefined ? [] : [sibling]
+  }))
+  const shuffled = shuffle(usable.filter(item => !alternatives.has(item.templateId)), rng)
   const cap = options.preferModifierAtMost
   if (!options.deprioritizeEntityAnswers && cap === undefined) return shuffled
 
@@ -221,9 +228,30 @@ function relatedIds(index: ContentIndex, entityId: EntityId, attribute: string):
   return ids
 }
 
-/** The quizzable facts an entity holds for an attribute. */
-const quizzableFactsOf = (index: ContentIndex, entityId: EntityId, attribute: string): Fact[] =>
-  (index.factsByEntity.get(entityId) ?? []).filter((f) => f.attribute === attribute && isQuizzable(f))
+// Content indices are immutable. Weak ownership releases this lookup with its pack;
+// arrays retain source order, so seeded distractor selection is unchanged.
+const quizzableByEntity = new WeakMap<ContentIndex, Map<EntityId, Map<string, Fact[]>>>()
+
+/** Index each entity's facts once instead of rescanning them for every distractor. */
+function quizzableFactsOf(index: ContentIndex, entityId: EntityId, attribute: string): readonly Fact[] {
+  let entities = quizzableByEntity.get(index)
+  if (!entities) {
+    entities = new Map()
+    quizzableByEntity.set(index, entities)
+  }
+  let attributes = entities.get(entityId)
+  if (!attributes) {
+    attributes = new Map()
+    for (const fact of index.factsByEntity.get(entityId) ?? []) {
+      if (!isQuizzable(fact)) continue
+      const facts = attributes.get(fact.attribute)
+      if (facts) facts.push(fact)
+      else attributes.set(fact.attribute, [fact])
+    }
+    entities.set(entityId, attributes)
+  }
+  return attributes.get(attribute) ?? []
+}
 
 /** How far apart two counts or sizes are, on the scale a person judges them by. */
 const logDistance = (a: number, b: number): number => Math.abs(Math.log((a + 1) / (b + 1)))
@@ -528,7 +556,8 @@ function resolveShallow(
     // in "the capital of the Netherlands", not in a list of four countries.
     if (param === 'entityName') {
       promptParams[param] =
-        nameOf(entity.namesInSentence) ?? nameOf(entity.names) ?? entity.id
+        entity.namesInSentence?.[locale] ?? entity.names[locale]
+        ?? entity.namesInSentence?.['en'] ?? entity.names['en'] ?? entity.id
     }
     if (param === 'valueName') promptParams[param] = displayValue(fact.value, locale) ?? ''
     if (param === 'description') promptParams[param] = displayValue(fact.value, locale) ?? ''

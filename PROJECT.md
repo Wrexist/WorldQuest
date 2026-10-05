@@ -70,7 +70,7 @@ that a subject is taught well.
 
 Wondrous · warm · confident · playful-not-childish · a little cinematic.
 Voice: an enthusiastic expedition guide who thinks you're capable.
-Mascot: **Atlas**, a small robot explorer in a safari hat.
+Mascot: **Atlas**, the liquid-clay globe explorer in a safari hat.
 
 Copy rules: second person, present tense, ≤ 8 words in a button, never shame the
 user for a wrong answer or a broken streak. Full voice guide:

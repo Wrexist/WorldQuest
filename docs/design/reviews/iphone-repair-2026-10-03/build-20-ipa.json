@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "build": "20",
+  "bundleId": "com.wrexist.worldquest",
+  "ipaSha256": "6c776fe9301af3ce6f6f0e6c0c471af4c8a973e5137ecf76a21a3fddab4e9845",
+  "chestAssets": {
+    "chest-sheet.webp": "1ede3fa82e77c7ed7a88f945a3223cf67e522a1203e022f4a14f000f976f6f41",
+    "closed.webp": "5552ad15cbe495ade669e3cb5a25a3a25a6161f0cc0a8cf761a8492135346201",
+    "opened.webp": "ea0d8e8f6d59360092e106219e956331c7273e2af91147cdea04c26f47862fba"
+  },
+  "bundledMatches": {
+    "chest-sheet.webp": "Payload/WorldQuest.app/assets/assets/art/explorer-chest/chest-sheet.webp",
+    "closed.webp": "Payload/WorldQuest.app/assets/assets/art/explorer-chest/closed.webp",
+    "opened.webp": "Payload/WorldQuest.app/assets/assets/art/explorer-chest/opened.webp"
+  },
+  "lessonSafeAreaMarker": true,
+  "workflow": 37161062811,
+  "source": "3d0aad19ee4ff0ecd7558e9244286523ea5dbe39",
+  "limitation": "Upload success and IPA contents do not establish Apple processing or tester availability.",
+  "atlasWelcomeAsset": {
+    "sha256": "0d16ddfb6074591c9d1f8e95374556d296725bd1501eb5902b01756d77c3a3aa",
+    "matches": [
+      "Payload/WorldQuest.app/assets/assets/art/atlas-clay/welcome.png"
+    ]
+  }
+}

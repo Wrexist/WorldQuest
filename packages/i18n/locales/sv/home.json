@@ -95,5 +95,11 @@
   "home:path.showCurrent": "Tillbaka till aktuell enhet",
   "home:path.showCurrent__note": "Secondary course visibility toggle; does not reset learning progress or navigate away.",
   "home:path.guide.boop": "Atlas, din guide. Tryck för ett fniss.",
-  "home:path.guide.boop__note": "Tillgängligt namn för maskoten bredvid nästa steg på Hem. Ett tryck får Atlas att skratta; inget annat händer. Max 40 tecken."
+  "home:path.guide.boop__note": "Tillgängligt namn för maskoten bredvid nästa steg på Hem. Ett tryck får Atlas att skratta; inget annat händer. Max 40 tecken.",
+  "home:path.next": "Din nästa upptäckt",
+  "home:path.next__note": "Learning loop guidance. Position and total are actual course steps; no invented rewards or mastery.",
+  "home:path.courseProgress": "Kursframsteg",
+  "home:path.courseProgress__note": "Learning loop guidance. Position and total are actual course steps; no invented rewards or mastery.",
+  "home:path.position": "Steg {position} av {total}",
+  "home:path.position__note": "Learning loop guidance. Position and total are actual course steps; no invented rewards or mastery."
 }

@@ -664,6 +664,10 @@ for (const region of [...new Set(packFeatures.map((f) => f.region))].sort()) {
 
 // ── registry module ──────────────────────────────────────────────────────────
 
+// A count-weighted centre overweights Caribbean microstates and excluded Canada/US.
+// Continental overview; this is a camera frame, not a boundary or country assignment.
+regionFrames.NA = { lat: 42, lon: -100, radius: 40 }
+
 const countryEntries = packFeatures.map((f) => ({
   id: f.countryId,
   rasterId: f.rasterId,

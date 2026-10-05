@@ -46,17 +46,16 @@ async function correctIndex(page){
   await page.goto(base+'/onboarding',{waitUntil:'networkidle'});await walkOnboarding(page);
   await page.goto(base+'/',{waitUntil:'networkidle'});await page.getByTestId('path-node-current').click();
   for(let lesson=1;lesson<=2;lesson++){
-   await page.getByTestId('lesson-check').waitFor();
+   await page.getByTestId('answer-option').first().waitFor();
    await page.screenshot({path:path.join(out,`lesson-${lesson}-start.png`)});
    for(let question=0;question<60;question++){
     if(await page.getByTestId('summary-continue').count())break;
-    await page.getByTestId('lesson-check').waitFor();
+    await page.getByTestId('answer-option').first().waitFor();
     // Read before answering: the grader rejects implausibly fast automated responses.
     await page.waitForTimeout(1500);
     const right=await correctIndex(page);
     const wrong=lesson===1&&question===0;
     await page.getByTestId('answer-option').nth(wrong?(right+1)%4:right).click();
-    await page.getByTestId('lesson-check').click();
     await page.getByTestId('answer-sheet').waitFor();
     if(question<2){await page.waitForTimeout(500);await page.screenshot({path:path.join(out,`lesson-${lesson}-${wrong?'review':'earned'}.png`)});}
     if(!wrong)assert(await page.getByTestId('earned-xp').count()===1,'correct answer shows graded XP');

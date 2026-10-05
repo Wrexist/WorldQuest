@@ -1,0 +1,107 @@
+{
+  "fixture": true,
+  "description": "Real components with labeled local props. Only hardware haptics/audio are stubbed and counted; no account state or reward storage.",
+  "layouts": [
+    {
+      "width": 320,
+      "accessible": false,
+      "overflow": [],
+      "nudgeMoved": true,
+      "progressUnchanged": true
+    },
+    {
+      "width": 320,
+      "accessible": true,
+      "overflow": [],
+      "nudgeMoved": false,
+      "progressUnchanged": true
+    },
+    {
+      "width": 390,
+      "accessible": false,
+      "overflow": [],
+      "nudgeMoved": true,
+      "progressUnchanged": true
+    },
+    {
+      "width": 390,
+      "accessible": true,
+      "overflow": [],
+      "nudgeMoved": false,
+      "progressUnchanged": true
+    },
+    {
+      "width": 768,
+      "accessible": false,
+      "overflow": [],
+      "nudgeMoved": true,
+      "progressUnchanged": true
+    },
+    {
+      "width": 768,
+      "accessible": true,
+      "overflow": [],
+      "nudgeMoved": false,
+      "progressUnchanged": true
+    }
+  ],
+  "interactions": [
+    {
+      "name": "quest completion from supplied engine props only",
+      "claims": 0,
+      "reveals": 0,
+      "continues": 0,
+      "sounds": 0,
+      "haptics": 0
+    },
+    {
+      "name": "opening plays once, Continue stays usable",
+      "claims": 1,
+      "reveals": 1,
+      "continues": 1,
+      "sounds": 1,
+      "haptics": 2
+    },
+    {
+      "name": "restored receipt has no replay",
+      "claims": 0,
+      "reveals": 1,
+      "continues": 0,
+      "sounds": 0,
+      "haptics": 0
+    },
+    {
+      "name": "reduced motion reveals immediately without film",
+      "claims": 1,
+      "reveals": 1,
+      "continues": 0,
+      "sounds": 1,
+      "haptics": 2
+    },
+    {
+      "name": "StreakExtended reveals one collectible, Continue remains available",
+      "claims": 1,
+      "reveals": 0,
+      "continues": 1,
+      "sounds": 1,
+      "haptics": 1
+    },
+    {
+      "name": "failed film request uses final still and receipt",
+      "claims": 1,
+      "reveals": 1,
+      "continues": 0,
+      "sounds": 1,
+      "haptics": 2
+    },
+    {
+      "name": "blur while decoding settles once without celebration",
+      "claims": 1,
+      "reveals": 1,
+      "continues": 0,
+      "sounds": 0,
+      "haptics": 1
+    }
+  ],
+  "errors": []
+}

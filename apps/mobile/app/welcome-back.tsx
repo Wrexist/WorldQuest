@@ -10,11 +10,11 @@ import { router } from 'expo-router'
 import { worldProgress } from '@worldquest/engines'
 import { WelcomeBackScreen } from '../src/features/welcome/WelcomeBackScreen.js'
 import { useReturnVisit } from '../src/features/welcome/useReturnVisit.js'
-import { useContent } from '../src/lib/content.js'
+import { useReferenceContent } from '../src/lib/referenceContent.js'
 
 export default function WelcomeBackRoute() {
   const { daysAway, acknowledge } = useReturnVisit()
-  const { index, memory } = useContent()
+  const { index, memory } = useReferenceContent()
 
   const world = useMemo(
     () => (index === null ? null : worldProgress(index.index, memory, Date.now())),

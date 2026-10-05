@@ -78,6 +78,23 @@ const templates = read<Template>('templates.v1.json')
 const index = buildIndex({ entities, facts, templates })
 
 describe('the platform thesis', () => {
+  it('reserves described flag siblings for readers or text-only clients', () => {
+    for (const entity of entities) {
+      const factId = `geo.${entity.id}.flag`
+      const visual = itemsForFact(index, factId, seededRng(7), { modalities: ['text', 'image', 'map'] })
+      if (visual.length === 0) continue
+      expect(visual.some(item => item.templateId === 'tpl.flag-describe.mc4'), entity.id).toBe(false)
+      for (const locale of ['en', 'sv']) {
+        for (const item of visual) {
+          const question = buildQuestion(index, item, locale, seededRng(7))
+          if (question === null) continue
+          expect(question.promptAsset !== undefined || question.options.every(option => option.asset !== undefined), `${entity.id}:${locale}:${item.templateId}`).toBe(true)
+        }
+      }
+      expect(itemsForFact(index, factId, seededRng(7), { screenReaderOnly: true }).some(item => item.templateId === 'tpl.flag-describe.mc4')).toBe(true)
+      expect(itemsForFact(index, factId, seededRng(7), { modalities: ['text'] }).some(item => item.templateId === 'tpl.flag-describe.mc4')).toBe(true)
+    }
+  })
   it('generates far more items than facts, from templates alone', () => {
     // Every authored fact × the templates that match its attribute. The ratio is the
     // architecture's whole claim, and it has held from 9 facts to 120: hand-writing
@@ -788,6 +805,16 @@ describe('question construction', () => {
     expect(buildQuestion(index, item, 'en', seededRng(2))!.promptParams['entityName']).toBe(
       'Sweden',
     )
+  })
+
+  it('prefers a Swedish country name before an English article-bearing sentence form', () => {
+    for (const code of ['GB', 'NL']) {
+      const capital = index.itemsByFact.get(`geo.${code}.capital`)!.find(item => item.templateId === 'tpl.capital.mc4')!
+      expect(buildQuestion(index, capital, 'sv', seededRng(2))!.promptParams['entityName'])
+        .toBe(index.entities.get(code)!.names.sv)
+      expect(buildQuestion(index, capital, 'en', seededRng(2))!.promptParams['entityName'])
+        .toBe(index.entities.get(code)!.namesInSentence!.en)
+    }
   })
 
   it('draws visually-similar distractors from the `like:` tag alone', () => {

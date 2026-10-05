@@ -31,10 +31,11 @@ import { createThemeStyles } from '@worldquest/design'
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { Animated, StyleSheet, Text, View } from 'react-native'
-import { Button, space, text, useAnimatedTo } from '@worldquest/design'
+import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { Button, Spacer, space, text, useAnimatedTo } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
-import { Icon } from '../../components/Icon.js'
+import { LaunchHero } from '../../components/LaunchHero.js'
 
 /** Past this, say something. Under it, say nothing — see the header. */
 export const SLOW_AFTER_MS = 1200
@@ -58,7 +59,7 @@ export type SplashScreenProps = {
 }
 
 export function SplashScreen({ phase = 'booting', onRetry }: SplashScreenProps) {
-  const { colors, styles } = useThemeValues()
+  const { styles } = useThemeValues()
   const t = useT()
 
   // `useAnimatedTo` collapses to a zero-duration timing under reduced motion, so the
@@ -70,8 +71,10 @@ export function SplashScreen({ phase = 'booting', onRetry }: SplashScreenProps) 
   const scale = useAnimatedTo(mounted ? 1 : 0.86, 'expressive')
 
   return (
-    <View
-      style={styles.root}
+    <SafeAreaView style={styles.canvas}>
+    <ScrollView contentContainerStyle={styles.root} bounces={false}>
+    <Spacer />
+    <View style={styles.identity}
       // One live region for the whole screen. Announcing the wordmark and then the
       // status line separately would interrupt a screen-reader user twice on boot.
       accessible
@@ -81,10 +84,11 @@ export function SplashScreen({ phase = 'booting', onRetry }: SplashScreenProps) 
       }
     >
       <Animated.View style={[styles.mark, { transform: [{ scale }] }]}>
-        <Icon name="globe" size={64} color={colors.action.primary} />
+        <LaunchHero size={space[9] * 4} boot />
       </Animated.View>
 
-      <Text style={styles.wordmark}>{t('splash:wordmark')}</Text>
+      <Text maxFontSizeMultiplier={1.3} dataSet={{ maxScale: '1.3' }} style={styles.wordmark}>{t('splash:wordmark')}</Text>
+    </View>
 
       {/* Reserved whether or not it is filled, so the wordmark does not jump upward
           the moment the boot crosses the budget. */}
@@ -100,7 +104,9 @@ export function SplashScreen({ phase = 'booting', onRetry }: SplashScreenProps) 
           </>
         )}
       </View>
-    </View>
+    <Spacer />
+    </ScrollView>
+    </SafeAreaView>
   )
 }
 
@@ -137,13 +143,14 @@ export function useSplashPhase(ready: boolean): 'booting' | 'slow' | 'failed' {
 
 const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
+  canvas: { flex: 1, backgroundColor: colors.bg.canvas },
   root: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
-    justifyContent: 'center',
     gap: space[4],
     padding: space[5],
   },
+  identity: { alignItems: 'center', gap: space[2] },
   mark: { alignItems: 'center', justifyContent: 'center' },
   glyph: { ...text('display'), fontSize: 72, lineHeight: 84 },
   wordmark: { ...text('display'), color: colors.text.primary, textAlign: 'center' },

@@ -195,7 +195,7 @@ export function useAnimatedTo(target: number, step: MotionStep = 'base'): Animat
  * it just does not travel. And the caller must hide the ticking text from screen
  * readers: a reader announcing "1, 2, 3, …, 40" is worse than useless.
  */
-export function useCountUp(target: number, step: MotionStep = 'celebrate'): number {
+export function useCountUp(target: number, step: MotionStep = 'celebrate', delayMs = 0): number {
   const reduced = useReducedMotion()
   const animated = useRef(new Animated.Value(target)).current
   // Seeded with the TARGET, not zero. Anything that renders without running effects
@@ -205,24 +205,37 @@ export function useCountUp(target: number, step: MotionStep = 'celebrate'): numb
   const [value, setValue] = useState(target)
 
   useIsomorphicLayoutEffect(() => {
-    if (reduced) {
+    if (reduced || AppState.currentState === 'background' || AppState.currentState === 'inactive') {
       setValue(target)
       return
     }
 
+    let alive = true
     const id = animated.addListener(({ value: frame }) => setValue(Math.round(frame)))
     animated.setValue(0)
     setValue(0)
     const token = motion[step] as { duration: number; easing: string }
-    Animated.timing(animated, {
+    const animation = Animated.timing(animated, {
       toValue: target,
+      delay: delayMs,
       duration: token.duration,
       easing: EASINGS[token.easing] ?? Easing.out(Easing.cubic),
       useNativeDriver: false,
-    }).start(() => setValue(target))
+      isInteraction: false,
+    })
+    animation.start(({ finished }) => { if (alive && finished) setValue(target) })
+    const stop = () => {
+      // stop() also delivers a completion callback. Retired totals must not win.
+      alive = false
+      animated.removeListener(id)
+      animation.stop()
+    }
+    const subscription = AppState.addEventListener('change', state => {
+      if (state !== 'active') { stop(); setValue(target) }
+    })
 
-    return () => animated.removeListener(id)
-  }, [target, reduced, step, animated])
+    return () => { stop(); subscription?.remove?.() }
+  }, [target, reduced, step, animated, delayMs])
 
   return value
 }
@@ -321,7 +334,7 @@ export function useCelebration(trigger: unknown, enabled = true): Animated.Value
  * the lesson summary's tiles would have vanished from its frames when they started to
  * arrive in turn.
  */
-export function useStagger(index: number, step: MotionStep = 'base'): Animated.Value {
+export function useStagger(index: number, step: MotionStep = 'base', delayMs = 0): Animated.Value {
   const reduced = useReducedMotion()
   const timing = useTiming(step)
   const value = useRef(new Animated.Value(1)).current
@@ -332,21 +345,25 @@ export function useStagger(index: number, step: MotionStep = 'base'): Animated.V
   }, [])
 
   useEffect(() => {
-    if (reduced) {
+    if (reduced || AppState.currentState === 'background' || AppState.currentState === 'inactive') {
       value.setValue(1)
       return
     }
     const animation = Animated.timing(value, {
       toValue: 1,
-      delay: Math.min(index, motion.stagger.maxItems) * motion.stagger.stepMs,
+      delay: delayMs + Math.min(index, motion.stagger.maxItems) * motion.stagger.stepMs,
       duration: timing.duration,
       easing: timing.easing,
       useNativeDriver: true,
+      isInteraction: false,
     })
     animation.start()
-    return () => animation.stop()
+    const subscription = AppState.addEventListener('change', state => {
+      if (state !== 'active') { animation.stop(); value.setValue(1) }
+    })
+    return () => { animation.stop(); subscription?.remove?.() }
     // `timing` is rebuilt each render; its two fields are what actually matter.
-  }, [index, reduced, value, timing.duration, timing.easing])
+  }, [index, reduced, value, timing.duration, timing.easing, delayMs])
 
   return value
 }
@@ -369,20 +386,37 @@ export function useDrift(phase = 0, active = true): Animated.Value {
     if (reduced || !active) return
     const half = motion.drift.duration / 2
     const ease = Easing.inOut(Easing.sin)
-    const loop = Animated.loop(Animated.sequence([
-      Animated.timing(value, { toValue: 1, duration: half, easing: ease, useNativeDriver: true, isInteraction: false }),
-      Animated.timing(value, { toValue: 0, duration: half, easing: ease, useNativeDriver: true, isInteraction: false }),
-    ]))
-    // Starts after the screen has settled, never on the first frame. By then the OS has
-    // answered whether motion is wanted — `useReducedMotion` is seeded optimistically and
-    // corrected asynchronously — so a user who asked for stillness never sees one bob.
-    const start = setTimeout(() => loop.start(), motion.base.duration + Math.max(0, Math.min(1, phase)) * half)
+    let loop: Animated.CompositeAnimation | undefined
+    let timer: ReturnType<typeof setTimeout> | undefined
+    let foreground = AppState.currentState !== 'background' && AppState.currentState !== 'inactive'
+    const stop = () => {
+      if (timer !== undefined) clearTimeout(timer)
+      timer = undefined
+      loop?.stop()
+      loop = undefined
+      value.setValue(0)
+    }
+    const schedule = () => {
+      stop()
+      if (!foreground) return
+      // Cancel the arrival delay as well as the loop when the scene becomes hidden.
+      timer = setTimeout(() => {
+        timer = undefined
+        loop = Animated.loop(Animated.sequence([
+          Animated.timing(value, { toValue: 1, duration: half, easing: ease, useNativeDriver: true, isInteraction: false }),
+          Animated.timing(value, { toValue: 0, duration: half, easing: ease, useNativeDriver: true, isInteraction: false }),
+        ]))
+        loop.start()
+      }, motion.base.duration + Math.max(0, Math.min(1, phase)) * half)
+    }
+    schedule()
     const subscription = AppState.addEventListener('change', state => {
-      if (state === 'active') loop.start()
-      else { loop.stop(); value.setValue(0) }
+      foreground = state === 'active'
+      if (foreground) schedule()
+      else stop()
     })
     // `?.` twice: react-native-web can hand back nothing to unsubscribe (see motion.test).
-    return () => { clearTimeout(start); loop.stop(); subscription?.remove?.() }
+    return () => { stop(); subscription?.remove?.() }
   }, [reduced, active, phase, value])
   return value
 }

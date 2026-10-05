@@ -56,7 +56,6 @@ describe('the animated branch mounts', () => {
     withFullMotion(() => {
       render(<LessonScreen onExit={() => {}} />)
       fireEvent.click(screen.getAllByTestId('answer-option')[0]!)
-      fireEvent.click(screen.getByTestId('lesson-check'))
       expect(screen.getByTestId('answer-sheet')).toBeTruthy()
       expect(screen.getByRole('button', { name: 'Continue' })).toBeTruthy()
     })

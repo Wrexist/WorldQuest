@@ -1,0 +1,38 @@
+appId: com.wrexist.worldquest
+---
+# Run on the production-connected D1 candidate, after onboarding, from Home.
+# Do not run against the legacy/offline-only preview build. No storage is seeded.
+- launchApp
+- assertVisible:
+    id: "path-node-current"
+- tapOn:
+    id: "path-node-current"
+- assertVisible:
+    id: "answer-option"
+- tapOn:
+    id: "answer-option"
+    index: 0
+- assertVisible:
+    id: "answer-sheet"
+- takeScreenshot: recovery-feedback-before
+- stopApp
+- launchApp
+- tapOn:
+    id: "path-node-current"
+- assertVisible:
+    id: "answer-sheet"
+- takeScreenshot: recovery-feedback-after
+- tapOn: "Continue"
+- assertVisible:
+    id: "answer-option"
+- tapOn: "Pause the lesson"
+- stopApp
+- launchApp
+- tapOn:
+    id: "path-node-current"
+- assertVisible: "Keep going"
+- takeScreenshot: recovery-paused
+- tapOn: "Keep going"
+- assertVisible:
+    id: "answer-option"
+- takeScreenshot: recovery-question-after

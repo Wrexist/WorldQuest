@@ -18,6 +18,10 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['**/*.test.ts'],
+    // Each file repeatedly starts workerd and migrates a fresh SQLite database.
+    // Serialize workerd startup on shared machines; races inside each test stay concurrent.
+    // Running files together can exhaust their setup deadline before assertions start.
+    maxWorkers: 1,
     testTimeout: 30_000,
     hookTimeout: 30_000,
   },

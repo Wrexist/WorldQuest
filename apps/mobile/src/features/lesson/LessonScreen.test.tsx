@@ -18,6 +18,9 @@ import { BALANCE } from '@worldquest/engines'
 import { withFullMotion } from '../../test/setup.js'
 import { SceneEntrance } from '../../components/SceneEntrance.js'
 import { LessonScreen } from './LessonScreen.js'
+import { setLocale } from '../../lib/i18n.js'
+import { track } from '../../lib/analytics.js'
+import { enqueueLesson } from '../../lib/sync.js'
 
 // The sync queue writes to MMKV and would try to reach Supabase. The queue's own
 // rules are unit-tested in the engines; here it only has to not explode.
@@ -30,19 +33,9 @@ vi.mock('../home/useOptimisticProgress.js', () => ({ useOptimisticProgress: () =
 /** Every button except the footer's Continue. */
 const answerButtons = (): HTMLElement[] => screen.getAllByTestId('answer-option')
 
-/** The footer's Check. */
-const checkButton = (): HTMLElement => screen.getByTestId('lesson-check')
-
-/**
- * Answer the way a user does now: tap an option to select it, then press Check.
- *
- * A tap alone is only a selection, so every test that used to click an option and read
- * the feedback goes through here — otherwise it would be reading a screen on which
- * nothing has been graded and asserting on the absence of feedback by accident.
- */
+/** A single activation commits the answer. */
 function choose(option: HTMLElement): void {
   fireEvent.click(option)
-  fireEvent.click(checkButton())
 }
 
 /**
@@ -109,12 +102,8 @@ describe('Lesson', () => {
 
     const options = answerButtons()
     expect(options.length).toBeGreaterThan(0)
-    // Selecting is not answering: still nothing that looks like feedback.
     fireEvent.click(options[0]!)
-    expect(container.textContent).not.toMatch(/Perfect|That's/)
-    expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull()
-
-    fireEvent.click(checkButton())
+    expect(screen.getByTestId('answer-sheet')).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Continue' })).toBeTruthy()
   })
 
@@ -300,85 +289,140 @@ describe('Lesson — correctness reaches a screen reader', () => {
   })
 })
 
-describe('Lesson — select, then check', () => {
-  const selected = (el: HTMLElement): boolean => el.getAttribute('aria-selected') === 'true'
+describe('immediate answer feedback', () => {
   const disabled = (el: HTMLElement): boolean => el.getAttribute('aria-disabled') === 'true'
 
-  it('offers Check, disabled until something is selected', () => {
-    // The "Choose an answer first" hint that goes with the disabled state is an
-    // `accessibilityHint`, which react-native-web does not render — so it is a device
-    // check (VoiceOver reads it after "Check, dimmed"), not one jsdom can make.
+  it('does not show a Check button for answer choices', () => {
     render(<LessonScreen onExit={() => {}} />)
-    const check = screen.getByRole('button', { name: 'Check' })
-    expect(check).toBe(checkButton())
-    expect(disabled(check)).toBe(true)
-  })
-
-  it('pressing Check with nothing selected does nothing', () => {
-    const { container } = render(<LessonScreen onExit={() => {}} />)
-    fireEvent.click(checkButton())
-    expect(container.textContent).not.toMatch(/Perfect|That's/)
+    expect(screen.queryByTestId('lesson-check')).toBeNull()
     expect(screen.queryByTestId('answer-sheet')).toBeNull()
   })
 
-  it('a tap selects the option, announces it as selected, and enables Check', () => {
-    render(<LessonScreen onExit={() => {}} />)
-    const [first] = answerButtons()
-    fireEvent.click(first!)
-    expect(selected(answerButtons()[0]!)).toBe(true)
-    expect(answerButtons().filter(selected)).toHaveLength(1)
-    expect(disabled(checkButton())).toBe(false)
-    // Still a live question: every option stays pressable so the choice can change.
-    expect(answerButtons().some(disabled)).toBe(false)
-  })
-
-  it('lets the user change their mind before checking', () => {
-    render(<LessonScreen onExit={() => {}} />)
-    fireEvent.click(answerButtons()[0]!)
-    fireEvent.click(answerButtons()[2]!)
-    const now = answerButtons()
-    expect(selected(now[0]!)).toBe(false)
-    expect(selected(now[2]!)).toBe(true)
-    expect(now.filter(selected)).toHaveLength(1)
-  })
-
-  it('grades the FINAL choice, not the first tap', () => {
+  it('grades a correct choice immediately and locks every option', () => {
     const right = correctIndex()
-    const wrongIndex = right === 0 ? 1 : 0
-
     const { container } = render(<LessonScreen onExit={() => {}} />)
-    fireEvent.click(answerButtons()[wrongIndex]!)
-    fireEvent.click(answerButtons()[right]!)
-    fireEvent.click(checkButton())
+    choose(answerButtons()[right]!)
     expect(container.textContent).toContain('Perfect!')
-  })
-
-  it('swaps Check for the answer sheet, and locks the options', () => {
-    render(<LessonScreen onExit={() => {}} />)
-    choose(answerButtons()[0]!)
-    expect(screen.queryByTestId('lesson-check')).toBeNull()
     expect(screen.getByTestId('answer-sheet')).toBeTruthy()
     expect(answerButtons().every(disabled)).toBe(true)
   })
 
-  it('Continue brings the next question with nothing selected', () => {
+  it('keeps the first incorrect verdict when another answer is tapped', () => {
+    const right = correctIndex()
+    render(<LessonScreen onExit={() => {}} />)
+    const choices = answerButtons()
+    choose(choices[right === 0 ? 1 : 0]!)
+    const verdict = screen.getByTestId('answer-sheet').textContent
+    choose(choices[right]!)
+    expect(screen.getByTestId('answer-sheet').textContent).toBe(verdict)
+    expect(screen.getAllByTestId('answer-sheet')).toHaveLength(1)
+  })
+
+  it('waits for Continue, then accepts a fresh answer without Check', () => {
     render(<LessonScreen onExit={() => {}} />)
     choose(answerButtons()[0]!)
+    expect(screen.getByTestId('answer-sheet')).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-    expect(answerButtons().some(selected)).toBe(false)
-    expect(disabled(checkButton())).toBe(true)
+    expect(screen.queryByTestId('answer-sheet')).toBeNull()
+    expect(screen.queryByTestId('lesson-check')).toBeNull()
+    expect(answerButtons().some(disabled)).toBe(false)
+    choose(answerButtons()[0]!)
+    expect(screen.getByTestId('answer-sheet')).toBeTruthy()
   })
 })
 
-
-describe('the unfamiliar-fact introduction', () => {
-  it('teaches the issued associations before starting the same lesson', () => {
-    render(<LessonScreen showIntroduction onExit={() => {}} />)
-    expect(screen.getByTestId('lesson-introduction')).toBeTruthy()
-    expect(screen.queryByTestId('answer-option')).toBeNull()
-    fireEvent.click(screen.getByTestId('lesson-begin'))
+describe('optional study before the quiz', () => {
+  it('opens the question directly without showing the study answers', () => {
+    render(<LessonScreen onExit={() => {}} />)
     expect(screen.queryByTestId('lesson-introduction')).toBeNull()
     expect(answerButtons()).toHaveLength(4)
+    expect(screen.getByRole('button', { name: 'Learn first' })).toBeTruthy()
+  })
+
+  it('studies only on request, then resumes the same unanswered question without restarting', () => {
+    vi.mocked(track).mockClear()
+    const exit = vi.fn()
+    const leave = vi.fn()
+    render(<LessonScreen onExit={exit} onLeave={leave} />)
+    const choices = answerButtons().map(option => option.getAttribute('aria-label'))
+    fireEvent.click(screen.getByRole('button', { name: 'Learn first' }))
+    expect(screen.getByTestId('lesson-introduction')).toBeTruthy()
+    expect(screen.queryByTestId('answer-option')).toBeNull()
+    expect(screen.queryByTestId('lesson-check')).toBeNull()
+    const firstDiscovery = screen.getByTestId('study-card').textContent
+    expect(screen.getAllByTestId('study-card')).toHaveLength(1)
+    expect(screen.getByRole('button', { name: 'Previous' }).getAttribute('aria-disabled')).toBe('true')
+    fireEvent.click(screen.getByRole('button', { name: 'Next discovery' }))
+    expect(screen.getByTestId('study-card').textContent).not.toBe(firstDiscovery)
+    fireEvent.click(screen.getByRole('button', { name: 'Previous' }))
+    expect(screen.getByTestId('study-card').textContent).toBe(firstDiscovery)
+    const nextDiscovery = screen.getByRole('button', { name: 'Next discovery' })
+    for (let step = 0; step < 30 && nextDiscovery.getAttribute('aria-disabled') !== 'true'; step++) {
+      fireEvent.click(nextDiscovery)
+    }
+    expect(nextDiscovery.getAttribute('aria-disabled')).toBe('true')
+    expect(screen.getAllByTestId('study-card')).toHaveLength(1)
+    fireEvent.click(screen.getByRole('button', { name: 'Back to quiz' }))
+    expect(screen.queryByTestId('lesson-introduction')).toBeNull()
+    expect(answerButtons().map(option => option.getAttribute('aria-label'))).toEqual(choices)
+    expect(answerButtons().some(option => option.getAttribute('aria-selected') === 'true')).toBe(false)
+    expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('0')
+    expect(vi.mocked(track).mock.calls.filter(([event]) => event === 'lesson_started')).toHaveLength(1)
+    expect(exit).not.toHaveBeenCalled()
+    expect(leave).not.toHaveBeenCalled()
+  })
+
+  it('removes the study action after the first answer', () => {
+    render(<LessonScreen onExit={() => {}} />)
+    choose(answerButtons()[0]!)
+    expect(screen.queryByTestId('lesson-study')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    expect(screen.queryByTestId('lesson-study')).toBeNull()
+  })
+
+  it('does not submit anything for studying or count study time as answering time', () => {
+    const clock = vi.spyOn(Date, 'now').mockReturnValue(1_800_000_000_000)
+    vi.mocked(enqueueLesson).mockClear()
+    try {
+      render(<LessonScreen onExit={() => {}} />)
+      fireEvent.click(screen.getByTestId('lesson-study'))
+      clock.mockReturnValue(1_800_000_600_000)
+      fireEvent.click(screen.getByTestId('lesson-begin'))
+      expect(enqueueLesson).not.toHaveBeenCalled()
+      clock.mockReturnValue(1_800_000_600_250)
+      choose(answerButtons()[0]!)
+      fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Pause the lesson' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Finish here' }))
+      expect(enqueueLesson).toHaveBeenCalledOnce()
+      expect(vi.mocked(enqueueLesson).mock.calls[0]![0].answers).toEqual([
+        expect.objectContaining({ elapsedMs: 250 }),
+      ])
+    } finally {
+      cleanup()
+      clock.mockRestore()
+    }
+  })
+
+  it.each([{ placement: true }, { mode: 'speed' as const }])('does not reveal study answers in an assessment or speed round: %j', (props) => {
+    render(<LessonScreen {...props} onExit={() => {}} />)
+    expect(screen.queryByTestId('lesson-study')).toBeNull()
+    expect(screen.queryByTestId('lesson-introduction')).toBeNull()
+    expect(answerButtons()).toHaveLength(4)
+  })
+
+  it('offers the requested Swedish study label and a way back to the quiz', async () => {
+    await act(async () => setLocale('sv'))
+    try {
+      render(<LessonScreen onExit={() => {}} />)
+      fireEvent.click(screen.getByRole('button', { name: 'Lär dig först' }))
+      expect(screen.getByRole('heading', { name: 'Lär dig först' })).toBeTruthy()
+      fireEvent.click(screen.getByRole('button', { name: 'Tillbaka till quizet' }))
+      expect(answerButtons()).toHaveLength(4)
+    } finally {
+      cleanup()
+      await act(async () => setLocale('en'))
+    }
   })
 })
 
@@ -402,12 +446,8 @@ describe('question arrivals', () => {
         const arrivals = new Set(timing.mock.calls.filter(([, config]) => config.duration === motion.quick.duration).map(([value]) => value))
         timing.mockClear()
 
-        // The animations are held at their first frame. A learner can still choose,
-        // change their mind and grade; none of those actions re-enters the question.
+        // Input remains usable during arrival, and one tap grades immediately.
         fireEvent.click(answerButtons()[0]!)
-        fireEvent.click(answerButtons()[1]!)
-        expect(answerButtons()[1]!.getAttribute('aria-selected')).toBe('true')
-        fireEvent.click(checkButton())
         expect(screen.getByTestId('answer-sheet')).toBeTruthy()
         expect(timing.mock.calls.filter(([value]) => arrivals.has(value))).toHaveLength(0)
         expect(screen.getByTestId('prompt-locator')).toBe(atlas)

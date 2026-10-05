@@ -11,13 +11,16 @@
  */
 
 import { Asset } from 'expo-asset'
-import { File } from 'expo-file-system'
+import { EncodingType, readAsStringAsync } from '../../../lib/nativeFileSystem.js'
+import { toByteArray } from 'base64-js'
 
 export async function loadBinaryAsset(module: number | string): Promise<ArrayBuffer> {
   const asset = await Asset.fromModule(module).downloadAsync()
-  if (asset.localUri === null) throw new Error('atlas: asset has no local file')
-  const bytes = await new File(asset.localUri).bytes()
-  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
+  if (!asset.localUri?.startsWith('file://')) throw new Error('atlas: asset has no local file')
+  // File.bytes() in SDK 54 requests write permission; bundled iOS files are read-only.
+  // Base64 preserves every geometry byte without relying on a native atob global.
+  const encoded = await readAsStringAsync(asset.localUri, { encoding: EncodingType.Base64 })
+  return Uint8Array.from(toByteArray(encoded.replace(/\s/g, ''))).buffer
 }
 
 /** `mime` is for the web loader; stb_image decodes by content. */

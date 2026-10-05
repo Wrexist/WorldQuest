@@ -10,11 +10,6 @@
     "newArchEnabled": true,
     "backgroundColor": "#D9EEFC",
     "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#D9EEFC"
-    },
     "ios": {
       "bundleIdentifier": "com.wrexist.worldquest",
       "supportsTablet": true,
@@ -92,6 +87,18 @@
       "./plugins/without-push-entitlement",
       "expo-router",
       "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/art/atlas-clay/welcome.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#D9EEFC",
+          "dark": {
+            "backgroundColor": "#0C1D2B"
+          }
+        }
+      ],
       [
         "expo-localization",
         {

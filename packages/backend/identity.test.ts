@@ -11,19 +11,21 @@ import { pruneSessionRotations } from './src/session-renewal'
 type Session = { userId: string; token: string; expiresAt: number }
 let script: string, mf: Miniflare, db: D1Database
 let mail: VerificationMail[] = [], failDelivery = false
+let emailAuthEnabled = true
 beforeAll(async () => {
   const result = await build({ stdin: { contents: `import { createWorker } from './src/index';
     export default {fetch(request,env) {return createWorker({send: async message => {
       const result = await env.MAILBOX.fetch('https://mailbox.invalid', {method:'POST',body:JSON.stringify(message)});
       if (!result.ok) throw new Error('Delivery unavailable');
-    }}).fetch(request,env)}};`, resolveDir: process.cwd() }, bundle: true, write: false,
+    }}).fetch(request,{...env, EMAIL_AUTH_ENABLED: request.headers.get('x-test-email-auth')})}};`, resolveDir: process.cwd() }, bundle: true, write: false,
     format: 'esm', platform: 'browser', target: 'es2022', external: ['node:*'] })
   script = result.outputFiles[0]!.text
 })
 beforeEach(async () => {
   mail = []; failDelivery = false
+  emailAuthEnabled = true
   mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script, compatibilityDate: '2026-09-13',
-    compatibilityFlags: ['nodejs_compat'], d1Databases: ['DB'], bindings: { API_ENABLED: 'true', AUTH_SECRET: 'synthetic-only-auth-secret-for-local-workerd-tests' },
+    compatibilityFlags: ['nodejs_compat'], d1Databases: ['DB'], bindings: { API_ENABLED: 'true', EMAIL_AUTH_ENABLED: 'true', AUTH_SECRET: 'synthetic-only-auth-secret-for-local-workerd-tests' },
     serviceBindings: { MAILBOX: async request => {
       if (failDelivery) return new Response(null, { status: 503 })
       mail.push(await request.json() as VerificationMail)
@@ -38,7 +40,7 @@ beforeEach(async () => {
 afterEach(async () => { await mf.dispose() })
 async function call(path: string, token?: string, body?: unknown) {
   const r = await mf.dispatchFetch(`http://localhost${path}`, { method: body === undefined ? 'GET' : 'POST',
-    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    headers: { 'Content-Type': 'application/json', 'x-test-email-auth': String(emailAuthEnabled), ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }) })
   // Consume immediately; concurrent workerd responses must not hold a body open.
   return { status: r.status, body: await r.json() as Record<string, unknown> }
@@ -73,6 +75,35 @@ async function due(s: Session) {
 const rotate = (s: Session, replacement = 'd'.repeat(64)) => call('/v1/auth/renew', s.token, { replacement })
 
 describe('D1 session renewal and revocation', () => {
+  it('holds new identities while preserving verified deletion for existing linked accounts', async () => {
+    const linked = await link(await guest()), other = await guest()
+    const pending = await request(other, 'login')
+    emailAuthEnabled = false
+    const sentBefore = mail.length
+    for (const purpose of ['link', 'login']) {
+      expect((await call('/v1/auth/email/request', other.token, { email: 'learner@example.invalid', purpose, locale: 'en' })).body)
+        .toEqual({ error: 'EMAIL_NOT_READY' })
+    }
+    expect((await call('/v1/auth/email/resend', other.token, { challengeId: pending })).body).toEqual({ error: 'EMAIL_NOT_READY' })
+    expect((await verify(other, pending)).body).toEqual({ error: 'EMAIL_NOT_READY' })
+    // A client-provided delete purpose cannot turn a guest into a linked identity.
+    expect((await call('/v1/auth/email/request', other.token, { email: 'learner@example.invalid', purpose: 'delete', locale: 'en' })).body)
+      .toEqual({ error: 'EMAIL_NOT_READY' })
+    expect(mail).toHaveLength(sentBefore)
+    await expireChallenge()
+    const id = await request(linked, 'delete')
+    // The exemption is bound to the owner's stored deletion challenge and session.
+    expect((await call('/v1/auth/email/resend', other.token, { challengeId: id })).body).toEqual({ error: 'EMAIL_NOT_READY' })
+    await db.prepare('UPDATE email_challenges SET sent_at=0 WHERE id=?').bind(id).run()
+    expect((await call('/v1/auth/email/resend', linked.token, { challengeId: id })).status).toBe(202)
+    const code = mail.at(-1)!.code
+    expect((await verify(linked, id, '00000000')).status).toBe(400)
+    expect((await call('/v1/account', linked.token)).status).toBe(200)
+    expect((await verify(linked, id, code)).body).toEqual({ deleted: true })
+    expect((await verify(linked, id, code)).body).toEqual({ deleted: true })
+    expect((await call('/v1/account', linked.token)).status).toBe(401)
+    expect((await call('/v1/account', other.token)).status).toBe(200)
+  })
   it('swaps hashes atomically, preserves owner/progress and carries a pending email verification', async () => {
     const s = await due(await guest()), id = await request(s), code = mail.at(-1)!.code
     await db.prepare('UPDATE accounts SET xp=42,coins=7 WHERE id=?').bind(s.userId).run()

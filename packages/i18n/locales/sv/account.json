@@ -86,6 +86,8 @@
   "account:d1.error.code": "Koden är ogiltig eller har gått ut. Kontrollera koden eller begär en ny när giltighetstiden har gått ut.",
   "account:d1.error.code__note": "D1 account flow. Preserve placeholders. Eight-digit codes expire after five minutes; deletion is permanent.",
   "account:d1.error.delivery": "Vi kunde inte skicka ditt e-postmeddelande. Vänta tills du kan skicka igen och försök på nytt.",
+  "account:d1.error.notReady": "Inloggning med e-post är inte tillgänglig ännu. Du kan fortsätta lära dig på den här enheten.",
+  "account:d1.error.notReady__note": "Email authentication is held while guest learning works. Do not imply progress is backed up to an email account.",
   "account:d1.error.delivery__note": "D1 account flow. Preserve placeholders. Eight-digit codes expire after five minutes; deletion is permanent.",
   "account:d1.error.rate": "Vänta innan du försöker igen. Begär en ny kod om koden har gått ut.",
   "account:d1.error.rate__note": "D1 account flow. Preserve placeholders. Eight-digit codes expire after five minutes; deletion is permanent.",

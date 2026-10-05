@@ -13,7 +13,7 @@ import { entityProgress, regionProgress } from '@worldquest/engines'
 import { REGIONS, type RegionCode } from '../../src/features/explore/ExploreScreen.js'
 import { RegionScreen, type CountryRow } from '../../src/features/explore/RegionScreen.js'
 import { ContentGate } from '../../src/components/ContentGate.js'
-import { useContent } from '../../src/lib/content.js'
+import { useReferenceContent } from '../../src/lib/referenceContent.js'
 import { currentLocale, type TranslationKey } from '../../src/lib/i18n.js'
 
 const REGION_NAME: Record<RegionCode, TranslationKey> = {
@@ -31,7 +31,7 @@ const isRegion = (value: string): value is RegionCode =>
 
 export default function RegionRoute() {
   const { code } = useLocalSearchParams<{ code: string }>()
-  const { index, memory, status, reload, isOffline } = useContent()
+  const { index, memory, status, reload, isOffline } = useReferenceContent()
 
   // A deep link can carry anything. An unknown code goes home rather than rendering
   // an empty continent that looks like a bug.

@@ -8,7 +8,8 @@
  */
 import type { ReactNode } from 'react'
 import { Animated, Image, StyleSheet, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native'
-import { createThemeStyles, driftStyle, radius, space, useDrift } from '@worldquest/design'
+import { createThemeStyles, driftStyle, radius, space } from '@worldquest/design'
+import { useSceneDrift } from '../hooks/useSceneDrift.js'
 import { ADVENTURE_ART } from '../lib/adventure.generated.js'
 import { EXPEDITION_ART } from '../lib/expedition.generated.js'
 
@@ -55,7 +56,7 @@ export function SceneryBanner({ name, height, style, rounded = 'top', children, 
 }) {
   const { styles } = useThemeValues()
   const scene = SCENES[name]
-  const drift = useDrift(0.3)
+  const drift = useSceneDrift(0.3, scene.fit === 'contain' && children === undefined)
   const frame = [styles.frame, rounded === 'all' && styles.frameAll, { height }, style]
   const sceneAccessibility = interactiveChildren ? { pointerEvents: 'box-none' as const } : { ...hidden, pointerEvents: 'none' as const }
   const foreground = children === undefined ? null : <View style={styles.foreground}>{children}</View>
@@ -83,7 +84,7 @@ export function SceneryBanner({ name, height, style, rounded = 'top', children, 
  * (Atlas, on the lesson summary) stays still in front of it, feet on the grass line.
  */
 export function IslandStage({ size, children }: { size: number; children: ReactNode }) {
-  const drift = useDrift(0.6)
+  const drift = useSceneDrift(0.6)
   const island = size * ISLAND_SHARE
   // The island sits at the bottom of the square and whoever stands on it plants their
   // feet on its lawn, half way up the art — not in front of it, which read as a face
@@ -106,7 +107,7 @@ export type PathProp = (typeof PATH_PROPS)[number]
 
 /** One prop beside the path, drifting on its own phase so neighbours never bob in step. */
 export function FloatingProp({ name, size, phase, style }: { name: PathProp; size: number; phase: number; style?: StyleProp<ViewStyle> }) {
-  const drift = useDrift(phase)
+  const drift = useSceneDrift(phase)
   return <Animated.View {...hidden} pointerEvents="none" testID={`path-prop-${name}`} style={[style, driftStyle(drift, space[2])]}>
     <Image source={toSource(EXPEDITION_ART[name].asset)} resizeMode="contain" style={{ width: size, height: size }} alt="" />
   </Animated.View>

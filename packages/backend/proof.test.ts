@@ -12,6 +12,7 @@ import type { Question } from '@worldquest/engines'
 import { createD1AuthClient, type AuthFetch } from '../api/src/d1-auth'
 import { createD1LearningClient, createD1LessonQueue } from '../api/src/d1-learning'
 import { createD1AccountRepository } from '../api/src/d1-repository'
+import { smokeHostedGuest } from '../../scripts/smoke-hosted-guest'
 
 type Guest = { userId: string; token: string; expiresAt: number }
 let script: string
@@ -23,7 +24,8 @@ beforeAll(async () => {
 })
 beforeEach(async () => {
   mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script, compatibilityDate: '2026-09-13',
-    compatibilityFlags: ['nodejs_compat'], d1Databases: ['DB'], bindings: { API_ENABLED: 'true' } }))
+    compatibilityFlags: ['nodejs_compat'], d1Databases: ['DB'], bindings: { API_ENABLED: 'true',
+      EMAIL_AUTH_ENABLED: 'false', AUTH_SECRET: 'synthetic-only-auth-secret-for-guest-beta-tests' } }))
   db = await mf.getD1Database('DB') as unknown as D1Database
   // Statements contain no triggers or semicolons within literals. Run the real migration.
   for (const file of readdirSync('migrations').sort()) {
@@ -62,6 +64,45 @@ async function state(owner: string) {
   }
 }
 describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
+  it('runs the hosted guest smoke against real content and deletes only its own temporary guest', async () => {
+    const existing = await guest()
+    const paths: string[] = []
+    const result = await smokeHostedGuest('https://guest-smoke.invalid', async (url, init) => {
+      paths.push(new URL(url).pathname)
+      expect(init.redirect).toBe('error')
+      return mf.dispatchFetch(url, { method: init.method ?? 'GET', headers: Object.fromEntries(new Headers(init.headers).entries()),
+        ...(init.body ? { body: String(init.body) } : {}) })
+    })
+    expect(result).toEqual({ questions: 5, deleted: true })
+    expect(paths).toEqual(['/health', '/v1/auth/guest', '/v1/account/audience', '/v1/lessons/prepare', '/v1/account/delete'])
+    expect((await db.prepare('SELECT id FROM accounts').all()).results).toEqual([{ id: existing.userId }])
+    for (const table of ['tickets', 'ledger', 'receipts', 'email_challenges']) {
+      expect((await db.prepare(`SELECT count(*) AS count FROM ${table}`).first())?.count).toBe(0)
+    }
+  })
+
+  it('rejects malformed issued questions in the hosted smoke and still deletes its guest', async () => {
+    await expect(smokeHostedGuest('https://guest-smoke.invalid', async (url, init) => {
+      const response = await mf.dispatchFetch(url, { method: init.method ?? 'GET', headers: Object.fromEntries(new Headers(init.headers).entries()),
+        ...(init.body ? { body: String(init.body) } : {}) })
+      if (!url.endsWith('/v1/lessons/prepare')) return response
+      const value = await response.json() as { questions: Question[] }
+      value.questions[0] = { ...value.questions[0]!, options: [] }
+      return { ok: true, status: 200, json: async () => value }
+    })).rejects.toThrow('Guest smoke failed during issued beginner lesson validation.')
+    expect((await db.prepare('SELECT count(*) AS count FROM accounts').first())?.count).toBe(0)
+    expect((await db.prepare('SELECT count(*) AS count FROM tickets').first())?.count).toBe(0)
+  })
+
+  it('reports an unconfirmed guest cleanup without exposing its credential or upstream error', async () => {
+    await expect(smokeHostedGuest('https://guest-smoke.invalid', async (url, init) => {
+      if (url.endsWith('/v1/account/delete')) throw new Error(`upstream failure ${new Headers(init.headers).get('Authorization')}`)
+      return mf.dispatchFetch(url, { method: init.method ?? 'GET', headers: Object.fromEntries(new Headers(init.headers).entries()),
+        ...(init.body ? { body: String(init.body) } : {}) })
+    })).rejects.toThrow('Temporary guest cleanup failed after issued beginner lesson validation; deletion was not confirmed.')
+    expect((await db.prepare('SELECT count(*) AS count FROM accounts').first())?.count).toBe(1)
+  })
+
   it('issues immutable content-backed lessons and refuses client answers or changed retry preferences', async () => {
     const a = await guest()
     const input = { lessonId: 'issued', locale: 'sv', count: 5, screenReader: true }
@@ -188,6 +229,49 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     expect(await (await call('/v1/learning/state', b.token)).json()).toMatchObject({ memories: [] })
     expect((await call('/v1/learning/history?through=99999', a.token)).status).toBe(400)
     expect((await call('/v1/learning/history?slot=999', a.token)).status).toBe(400)
+  })
+  it('pages more than 1000 facts coherently, scopes every page, and restarts after a concurrent revision', async () => {
+    const vault = new Map<string, string>()
+    const storage = { getItem: async (key: string) => vault.get(key) ?? null,
+      setItem: async (key: string, value: string) => { vault.set(key, value) }, removeItem: async (key: string) => { vault.delete(key) } }
+    let owner = '', changeBetweenPages = false
+    const pageSizes: number[] = []
+    const transport: AuthFetch = async (url, init) => {
+      if (changeBetweenPages && url.includes('after=')) {
+        changeBetweenPages = false
+        await db.prepare('UPDATE accounts SET revision=revision+1 WHERE id=?').bind(owner).run()
+      }
+      const response = await mf.dispatchFetch(url, { method: init.method ?? 'GET', headers: Object.fromEntries(new Headers(init.headers).entries()),
+        ...(init.body ? { body: String(init.body) } : {}) })
+      const value = await response.json() as { memories?: unknown[] }
+      if (value.memories) pageSizes.push(value.memories.length)
+      return { status: response.status, ok: response.ok, json: async () => value }
+    }
+    const auth = createD1AuthClient({ baseURL: 'http://localhost', storage, clearCredentials: async () => { vault.clear() }, fetch: transport })
+    const account = await auth.startGuest()
+    owner = account.userId
+    const ids = [...learningContent.facts.keys()].sort().slice(0, 1005)
+    const memories = ids.map(factId => ({ factId, stability: 20, difficulty: 5, reps: 3, lapses: 0,
+      lastReviewAt: 1000, dueAt: 100000, suspended: false }))
+    await db.prepare(`INSERT INTO memories(account_id,fact_id,state,revision)
+      SELECT ?,json_extract(value,'$.factId'),value,0 FROM json_each(?)`).bind(owner, JSON.stringify(memories)).run()
+    const first = await (await call('/v1/learning/state?paged=1', account.token)).json() as { memories: MemoryState[]; next: { after: string; revision: number } }
+    expect(first.memories).toHaveLength(250)
+    const cursor = `?paged=1&after=${first.next.after}&revision=${first.next.revision}`
+    const other = await guest()
+    expect(await (await call('/v1/learning/state' + cursor, other.token)).json()).toMatchObject({ memories: [], next: null })
+    expect((await call('/v1/learning/state?after=foreign', account.token)).status).toBe(400)
+    expect((await call('/v1/learning/state?paged=1&limit=999999', account.token)).status).toBe(400)
+    // The old response contract fails explicitly instead of returning a partial snapshot.
+    expect((await call('/v1/learning/state', account.token)).status).toBe(409)
+    const client = createD1LearningClient({ auth, owner, isCurrent: () => true, fetch: transport })
+    changeBetweenPages = true
+    const complete = await client.state()
+    expect(complete.revision).toBe(1)
+    expect(complete.memories).toEqual(memories)
+    expect(pageSizes).toEqual([250, 250, 250, 250, 250, 5])
+    expect((await call('/v1/learning/state' + cursor, account.token)).status).toBe(409)
+    expect(await (await call('/v1/learning/state?paged=1', other.token)).json()).toMatchObject({ memories: [], next: null })
   })
   it('fails closed when the application API is disabled', async () => {
     await mf.setOptions(convertV4MiniflareOptions({ modules: true, script, compatibilityDate: '2026-09-13', compatibilityFlags: ['nodejs_compat'], d1Databases: ['DB'], bindings: { API_ENABLED: 'false' } }))
@@ -352,6 +436,46 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     const b = await guest()
     const other = await (await call('/v1/quest/today', b.token)).json() as Today
     expect(other.quest.tasks.every(t => t.progress === 0)).toBe(true)
+  })
+  it('supports real guest learning while email identity changes stay disabled', async () => {
+    const a = await guest()
+    expect((await call('/v1/account/audience', a.token, { birthYear: new Date().getUTCFullYear() - 30 })).status).toBe(200)
+    for (const [route, input] of [
+      ['request', { email: 'beta@example.invalid', purpose: 'link', locale: 'en' }],
+      ['resend', { challengeId: 'b'.repeat(64) }],
+      ['verify', { challengeId: 'b'.repeat(64), code: '12345678' }],
+    ] as const) {
+      const response = await call(`/v1/auth/email/${route}`, a.token, input)
+      expect(response.status).toBe(503)
+      expect(await response.json()).toEqual({ error: 'EMAIL_NOT_READY' })
+    }
+    for (const table of ['email_challenges', 'auth_verification', 'auth_budgets']) {
+      expect((await db.prepare(`SELECT count(*) AS count FROM ${table}`).first())?.count).toBe(0)
+    }
+    const response = await call('/v1/lessons/prepare', a.token, { lessonId: 'guest-beta', locale: 'sv', count: 5, maxModifier: 0 })
+    expect(response.status).toBe(200)
+    const lesson = await response.json() as { questions: Question[] }
+    const answers = lesson.questions.map((q, slot) => ({ slot, chosenOptionId: q.options.find(o => o.isCorrect)!.id, elapsedMs: 9000 }))
+    const first = await call('/v1/lessons/submit', a.token, { lessonId: 'guest-beta', answers })
+    expect(first.status).toBe(200)
+    const receipt = await first.json()
+    expect(await (await call('/v1/lessons/submit', a.token, { lessonId: 'guest-beta', answers })).json()).toEqual(receipt)
+    expect((await state(a.userId)).ledger).toHaveLength(1)
+    // Holding email must not prevent a guest from deleting their data.
+    expect((await call('/v1/account/delete', a.token, {})).status).toBe(200)
+  })
+
+  it('keeps existing linked sessions renewable while new email authentication is held', async () => {
+    const a = await guest()
+    await db.prepare('INSERT INTO auth_user (id, name, email, email_verified, created_at, updated_at) VALUES (?, ?, ?, 1, 0, 0)')
+      .bind('linked-beta', 'beta', 'linked@example.invalid').run()
+    await db.prepare('INSERT INTO identities (subject_id, account_id, linked_at) VALUES (?, ?, 0)').bind('linked-beta', a.userId).run()
+    await db.prepare('UPDATE sessions SET expires_at = ? WHERE account_id = ?').bind(Date.now() + 86_400_000, a.userId).run()
+    const renewal = await call('/v1/auth/renew', a.token, { replacement: 'e'.repeat(64) })
+    expect(renewal.status).toBe(200)
+    const next = await renewal.json() as Guest
+    expect(next.userId).toBe(a.userId)
+    expect((await call('/v1/account', next.token)).status).toBe(200)
   })
   it('credits ordinary course lessons once when two submissions race on the same facts', async () => {
     const a = await guest()

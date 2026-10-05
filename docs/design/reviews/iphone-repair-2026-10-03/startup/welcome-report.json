@@ -1,0 +1,6 @@
+{
+  "fixture": false,
+  "description": "Exported application, fresh isolated browser contexts, first welcome at 320 and 390 pixels in light and dark themes. No account data or progress fixtures.",
+  "errors": [],
+  "limitations": ["Browser rendering, not native launch timing or Dynamic Type evidence."]
+}

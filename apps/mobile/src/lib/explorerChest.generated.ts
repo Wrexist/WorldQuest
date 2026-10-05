@@ -4,7 +4,7 @@ import opened from '../../assets/art/explorer-chest/opened.webp'
 import sheet from '../../assets/art/explorer-chest/chest-sheet.webp'
 
 export const EXPLORER_CHEST = { closed, opened, sheet } as const
-export const EXPLORER_CHEST_SEQUENCE = { frames: 40, columns: 8, rows: 5, fps: 20, frameSize: 240 } as const
+export const EXPLORER_CHEST_SEQUENCE = { frames: 40, columns: 8, rows: 5, fps: 20, frameSize: 480 } as const
 export const EXPLORER_CHEST_GEOMETRY = {
   "closed": {
     "x": 0.109375,

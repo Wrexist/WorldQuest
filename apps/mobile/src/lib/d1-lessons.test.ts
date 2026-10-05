@@ -28,6 +28,7 @@ vi.mock('@worldquest/api/d1-learning', async (importOriginal) => ({
 const { takeLesson, toSubmission, submitLesson, receiptSoon, prefetchFocused, refreshMemory } = await import('./d1-lessons.js')
 const { recordPredictedAward, peekAwards, resetAwardsCache } = await import('./awards.js')
 const { optimisticProgress } = await import('@worldquest/engines')
+const { openLessonRecovery, hasLessonRecovery } = await import('./lesson-recovery.js')
 
 const question = (id: string) => ({ item: { id, factId: `fact-${id}`, entityId: 'SE', templateId: 't', difficulty: 1, screenReaderSafe: true },
   promptKey: 'q', promptParams: {}, modality: 'text' as const, isNew: true, timeLimitMs: null,
@@ -70,6 +71,23 @@ describe('toSubmission', () => {
 })
 
 describe('takeLesson', () => {
+  it('prefers the interrupted matching ticket and clears recovery only after durable enqueue', async () => {
+    const request = { count: 5, locale: 'en' as const, screenReader: false }
+    await takeLesson(request)
+    const saved = issued('interrupted', { ...request, lessonId: 'interrupted' })
+    const queue = JSON.parse(store.get('d1.lessons.v1')!)
+    store.set('d1.lessons.v1', JSON.stringify({ ...queue, tickets: [...queue.tickets, saved] }))
+    openLessonRecovery({ lessonId: saved.lessonId, questions: saved.questions, heartsEnabled: true, timeLimitMs: null, now: 1000 })
+      .apply({ type: 'ANSWER', optionId: 'a', now: 2000 })
+    online = false
+    expect(await takeLesson(request)).toMatchObject({ kind: 'ready', lesson: { lessonId: 'interrupted' } })
+    await expect(submitLesson(saved, [answer('unknown')])).rejects.toThrow()
+    expect(hasLessonRecovery(saved.lessonId)).toBe(true)
+    await submitLesson(saved, [answer('i0')])
+    expect(hasLessonRecovery(saved.lessonId)).toBe(false)
+    expect(JSON.parse(store.get('d1.lessons.v1')!).entries[0].lessonId).toBe('interrupted')
+  })
+
   it('prepares a fresh lesson online and asks the server for the focus', async () => {
     const result = await takeLesson({ count: 30, locale: 'sv', screenReader: false, focus: { entities: ['SE'] } })
     expect(result.kind).toBe('ready')
@@ -93,6 +111,24 @@ describe('takeLesson', () => {
     online = false
     expect(await takeLesson({ count: 10, locale: 'en', screenReader: false })).toEqual({ kind: 'offline' })
     // It asked, and the failed request is what said offline.
+  })
+
+  it('issues a real placement check instead of reusing a saved ordinary lesson', async () => {
+    const request = { count: 10, locale: 'sv' as const, screenReader: false }
+    await takeLesson(request)
+    const check = await takeLesson({ ...request, placement: true })
+    expect(check.kind).toBe('ready')
+    if (check.kind === 'ready') expect(check.lesson.request.placement).toBe(true)
+    expect(prepare).toHaveBeenCalledTimes(2)
+    const ordinary = await takeLesson(request)
+    if (ordinary.kind === 'ready') expect(ordinary.lesson.request.placement).toBeUndefined()
+  })
+
+  it('does not substitute an ordinary saved lesson for an offline placement check', async () => {
+    const request = { count: 10, locale: 'en' as const, screenReader: false }
+    await takeLesson(request)
+    online = false
+    expect(await takeLesson({ ...request, placement: true })).toEqual({ kind: 'offline' })
   })
 })
 

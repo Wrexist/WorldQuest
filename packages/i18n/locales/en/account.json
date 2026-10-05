@@ -86,6 +86,8 @@
   "account:d1.error.code": "That code is invalid or expired. Check the code, or request a new one when its time runs out.",
   "account:d1.error.code__note": "D1 account flow. Preserve placeholders. Eight-digit codes expire after five minutes; deletion is permanent.",
   "account:d1.error.delivery": "We could not send your email. Wait for resend to become available and try again.",
+  "account:d1.error.notReady": "Email sign-in isn't available yet. You can keep learning on this device.",
+  "account:d1.error.notReady__note": "Email authentication is held while guest learning works. Do not imply progress is backed up to an email account.",
   "account:d1.error.delivery__note": "D1 account flow. Preserve placeholders. Eight-digit codes expire after five minutes; deletion is permanent.",
   "account:d1.error.rate": "Please wait before trying again. If the code has expired, request a new one.",
   "account:d1.error.rate__note": "D1 account flow. Preserve placeholders. Eight-digit codes expire after five minutes; deletion is permanent.",

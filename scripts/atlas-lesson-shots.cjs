@@ -126,7 +126,6 @@ async function measure(page) {
         const options = await page.getByTestId('answer-option').all()
         if (options.length === 0) break
         await options[0].click()
-        await page.getByTestId('lesson-check').click()
         await sleep(400)
         await page.getByRole('button', { name: /Continue|Fortsätt/ }).first().click()
         await sleep(600)
@@ -141,7 +140,6 @@ async function measure(page) {
         await options[options.length - 1].click()
         await sleep(300)
         await page.screenshot({ path: path.join(OUT, `${tag}-selected.png`) })
-        await page.getByTestId('lesson-check').click()
         await sleep(1600)
         after = await measure(page)
         after.mapAfterAnswer = (await page.locator('[data-testid="prompt-locator"], [data-testid="prompt-map"]').count()) > 0

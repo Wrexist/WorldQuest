@@ -3,6 +3,7 @@ import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import {
   colors,
+  darkColors,
   contrastFloors,
   gradient,
   layout,
@@ -86,7 +87,7 @@ describe('token integrity', () => {
       expo: {
         backgroundColor: string
         primaryColor: string
-        splash: { backgroundColor: string }
+        plugins: (string | [string, { backgroundColor?: string; dark?: { backgroundColor?: string } }])[]
         android: { adaptiveIcon: { backgroundColor: string } }
       }
     }
@@ -98,7 +99,11 @@ describe('token integrity', () => {
     // The splash's own backdrop is the third copy, and it is the one a user sees for
     // longest: it is what fills the screen either side of the splash image on any
     // aspect ratio the image does not cover.
-    expect(appJson.expo.splash.backgroundColor.toLowerCase()).toBe(colors.bg.canvas.toLowerCase())
+    const splash = appJson.expo.plugins.find(plugin => Array.isArray(plugin) && plugin[0] === 'expo-splash-screen')
+    expect(Array.isArray(splash)).toBe(true)
+    if (!Array.isArray(splash)) throw new Error('Native splash plugin is missing')
+    expect(splash[1].backgroundColor?.toLowerCase()).toBe(colors.bg.canvas.toLowerCase())
+    expect(splash[1].dark?.backgroundColor?.toLowerCase()).toBe(darkColors.bg.canvas.toLowerCase())
 
     // `primaryColor` is Android's accent — the tint on a notification, among other
     // native chrome. It read `#F5A61E`, which is in no token file: it is the "warm gold"
@@ -176,6 +181,7 @@ describe('primitives obey the token discipline', () => {
       if (!code.includes('Animated.')) continue
       const honoured =
         code.includes('isReduceMotionEnabled') ||
+        code.includes('useReducedMotion') ||
         code.includes('useTiming') ||
         code.includes('useAnimatedTo') ||
         code.includes('useCelebration') ||

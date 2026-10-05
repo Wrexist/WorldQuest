@@ -2,6 +2,8 @@ appId: com.wrexist.worldquest
 ---
 # Fresh simulator only. Covers the native dependency paths carried in E18.
 - launchApp
+- assertVisible: "Get started"
+- takeScreenshot: native-welcome
 - tapOn:
     text: "Get started"
     retryTapIfNoChange: true
@@ -18,29 +20,173 @@ appId: com.wrexist.worldquest
     timeout: 30000
 - tapOn: "2002"
 - tapOn: "Continue"
+- assertVisible: "10 min.*"
+- takeScreenshot: native-daily-goal
 - tapOn: "Continue"
 - tapOn: "Europe"
+- takeScreenshot: native-region
+- tapOn: "Continue"
+- assertVisible: "How well do you know the world?"
 - tapOn: "Continue"
 - assertVisible: "Here is your plan."
 - tapOn: "Continue"
 - tapOn: "Start learning"
+- assertVisible:
+    id: "answer-option"
+- assertNotVisible:
+    id: "lesson-introduction"
+# Exercise the live lesson map as well as the immediate, disclosure-safe preview.
+- extendedWaitUntil:
+    notVisible: "Loading the map.*"
+    timeout: 30000
+- assertNotVisible:
+    id: "atlas-fallback"
+- waitForAnimationToEnd:
+    timeout: 10000
+- takeScreenshot: native-first-lesson
+- tapOn:
+    id: "lesson-study"
+- assertVisible:
+    id: "lesson-introduction"
+- assertVisible: "Learn first"
+- takeScreenshot: native-optional-study
+- tapOn:
+    id: "lesson-begin"
+- assertVisible:
+    id: "answer-option"
+- assertNotVisible:
+    id: "lesson-check"
+- tapOn:
+    id: "answer-option"
+    index: 0
+- assertVisible:
+    id: "answer-sheet"
+- takeScreenshot: native-immediate-answer
+- tapOn: "Continue"
 - tapOn: "Pause the lesson"
 - tapOn: "Finish here"
 - tapOn: "Continue"
-- tapOn: "Not now"
-- assertVisible: "Explorer!"
+# An early finish returns to the assigned course without a profile offer.
+- assertVisible:
+    id: "path-node-current"
 - stopApp
 - launchApp
-- assertVisible: "Explorer!"
+- assertVisible:
+    id: "path-node-current"
 - takeScreenshot: native-relaunch
+# A cold lesson route and a modal pushed from Home have different native frames.
+# Exercise the actual full-screen presentation where the Dynamic Island regression
+# occurred, rather than accepting only the onboarding hand-off screenshot.
+- tapOn:
+    id: "path-node-current"
+- assertVisible:
+    id: "answer-option"
+- assertVisible:
+    id: "lesson-study"
+- waitForAnimationToEnd:
+    timeout: 10000
+- takeScreenshot: native-home-lesson-safe-area
+- tapOn:
+    id: "lesson-study"
+- takeScreenshot: native-home-study-safe-area
+- tapOn:
+    id: "lesson-begin"
+- tapOn: "Pause the lesson"
+- tapOn: "Finish here"
+- tapOn: "Continue"
+- assertVisible:
+    id: "path-node-current"
+- tapOn: "Explore"
+# Zoom controls exist only after the native renderer acknowledges its first frame.
+- extendedWaitUntil:
+    visible: "Zoom in"
+    timeout: 30000
+# The native accessibility tree includes controls under the fixed tab bar. Centre the
+# whole globe in the scroll viewport before capturing or physically tapping zoom.
+- scrollUntilVisible:
+    element:
+      id: "explore-globe"
+    direction: DOWN
+    timeout: 30000
+    visibilityPercentage: 100
+    centerElement: true
+- assertVisible:
+    id: "explore-globe"
+- assertNotVisible:
+    id: "atlas-fallback"
+- assertNotVisible:
+    id: "explore-map-fallback"
+# Let the acknowledged first frame and the viewport scroll settle before sampling.
+- waitForAnimationToEnd:
+    timeout: 10000
+- takeScreenshot: native-explore-globe
+- tapOn: "Zoom in"
+- waitForAnimationToEnd:
+    timeout: 10000
+- assertVisible: "Zoom out"
+- assertVisible:
+    id: "explore-globe"
+- assertNotVisible:
+    id: "atlas-fallback"
+- assertNotVisible:
+    id: "explore-map-fallback"
+- takeScreenshot: native-explore-zoomed
+# Drag inside the centred globe, then scroll outside it. The viewport and controls
+# must remain in place for the first gesture; the page must unlock for the second.
+- swipe:
+    start: "50%, 20%"
+    end: "66%, 26%"
+    duration: 800
+- waitForAnimationToEnd:
+    timeout: 10000
+- assertVisible: "Zoom in"
+- extendedWaitUntil:
+    notVisible:
+      id: "atlas-rendering"
+    timeout: 15000
+- takeScreenshot: native-explore-dragged
+- swipe:
+    start: "3%, 38%"
+    end: "3%, 80%"
+    duration: 800
+- takeScreenshot: native-explore-page-scroll
+# Start the first link from a stopped app, as in Maestro's deep-link recipe.
+- stopApp
 - openLink: "worldquest://country/%53%45"
+# Consent may appear asynchronously, or the OS may open the destination directly.
+- extendedWaitUntil:
+    visible: "^(Open|Sweden)$"
+    timeout: 30000
 - runFlow:
     when:
       platform: iOS
+      visible: "Open"
     commands:
       - tapOn:
           text: "Open"
-          optional: true
-- assertVisible: "Sweden"
+          retryTapIfNoChange: true
+# Accepting the system dialog is not application launch. Wait for the actual cold
+# destination on the hosted simulator, and still fail if it never arrives.
+- extendedWaitUntil:
+    visible: "Sweden"
+    timeout: 45000
 - assertVisible: "Practise this country"
-- takeScreenshot: native-country
+- takeScreenshot: native-country-se
+# Keep the process running to verify a second encoded link replaces the country.
+- openLink: "worldquest://country/%46%52"
+- extendedWaitUntil:
+    visible: "^(Open|France)$"
+    timeout: 30000
+- runFlow:
+    when:
+      platform: iOS
+      visible: "Open"
+    commands:
+      - tapOn:
+          text: "Open"
+          retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible: "France"
+    timeout: 45000
+- assertVisible: "Practise this country"
+- takeScreenshot: native-country-warm-fr

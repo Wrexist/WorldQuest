@@ -3,8 +3,28 @@ name: Native acceptance
 on:
   workflow_dispatch:
     inputs:
+      android_only:
+        description: 'Compile only Android after an Android-only repair; takes precedence over ios_only'
+        type: boolean
+        default: false
       ios_only:
         description: 'Retry iOS acceptance using an already verified Android revision'
+        type: boolean
+        default: false
+      asset_diagnostics:
+        description: 'Trace first-render image sources and native load dimensions'
+        type: boolean
+        default: false
+      link_diagnostics:
+        description: 'Trace the synthetic country deep link in the simulator build'
+        type: boolean
+        default: false
+      atlas_diagnostics:
+        description: 'Trace native globe layout, drawing buffers and framebuffer pixels'
+        type: boolean
+        default: false
+      atlas_events_only:
+        description: 'Trace globe events without blocking GPU inspection; requires atlas_diagnostics'
         type: boolean
         default: false
   push:
@@ -15,12 +35,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: native-acceptance-${{ github.ref }}
+  group: native-acceptance-${{ github.ref }}-${{ inputs.android_only && 'android' || inputs.ios_only && 'ios' || 'all' }}
   cancel-in-progress: true
 
 jobs:
   android:
-    if: ${{ !inputs.ios_only }}
+    if: ${{ inputs.android_only || !inputs.ios_only }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -43,17 +63,48 @@ jobs:
           retention-days: 7
 
   ios:
+    if: ${{ !inputs.android_only }}
     runs-on: macos-15
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+      - name: Require one diagnostic mode at a time
+        if: ${{ (inputs.asset_diagnostics && inputs.link_diagnostics) || (inputs.asset_diagnostics && inputs.atlas_diagnostics) || (inputs.link_diagnostics && inputs.atlas_diagnostics) }}
+        run: |
+          echo "::error::Choose at most one of asset_diagnostics, link_diagnostics or atlas_diagnostics"
+          exit 1
+      - name: Require atlas diagnostics for event-only tracing
+        if: ${{ inputs.atlas_events_only && !inputs.atlas_diagnostics }}
+        run: |
+          echo "::error::atlas_events_only requires atlas_diagnostics"
+          exit 1
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm }
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '17' }
       - run: pnpm install --frozen-lockfile
+      - name: Add first-render image lifecycle diagnostic
+        if: ${{ inputs.asset_diagnostics }}
+        run: node scripts/native-image-lifecycle-diagnostic.cjs
+      - name: Add deep link diagnostic to the simulator entry
+        if: ${{ inputs.link_diagnostics }}
+        run: node scripts/native-link-diagnostic.cjs entry
+      - name: Add native globe drawing diagnostic
+        if: ${{ inputs.atlas_diagnostics }}
+        env:
+          ATLAS_EVENTS_ONLY: ${{ inputs.atlas_events_only }}
+        run: |
+          set -euo pipefail
+          if [ "$ATLAS_EVENTS_ONLY" = "true" ]; then
+            node scripts/native-atlas-diagnostic.cjs --events-only
+          else
+            node scripts/native-atlas-diagnostic.cjs
+          fi
       - run: pnpm --filter @worldquest/mobile exec expo prebuild --platform ios --no-install
+      - name: Trace the generated native URL callback
+        if: ${{ inputs.link_diagnostics }}
+        run: node scripts/native-link-diagnostic.cjs native
       - run: pod install
         working-directory: apps/mobile/ios
       - name: Compile unsigned simulator application
@@ -68,6 +119,8 @@ jobs:
           path: ${{ runner.temp }}/ios-simulator-app.zip
           retention-days: 7
       - name: Launch and capture simulator
+        env:
+          IMAGE_DIAGNOSTICS: ${{ inputs.asset_diagnostics }}
         run: |
           set -euo pipefail
           DEVICE_ID=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; print(next(d["udid"] for ds in json.load(sys.stdin)["devices"].values() for d in ds if d["name"].startswith("iPhone")))')
@@ -80,7 +133,38 @@ jobs:
           xcrun simctl launch "$DEVICE_ID" com.wrexist.worldquest
           sleep 10
           xcrun simctl io "$DEVICE_ID" screenshot "$RUNNER_TEMP/ios-startup.png"
+          if [ "$IMAGE_DIAGNOSTICS" = "true" ]; then
+            APP_DATA_CONTAINER=$(xcrun simctl get_app_container "$DEVICE_ID" com.wrexist.worldquest data)
+            cp "$APP_DATA_CONTAINER/Documents/native-image-lifecycle-diagnostic.json" "$RUNNER_TEMP/native-image-first-launch.json"
+          fi
           xcrun simctl spawn "$DEVICE_ID" launchctl list | grep com.wrexist.worldquest
+          xcrun simctl terminate "$DEVICE_ID" com.wrexist.worldquest
+          # A second fresh install exercises startup without retained app storage.
+          # Maestro separately verifies a normal terminate/relaunch after onboarding.
+          xcrun simctl uninstall "$DEVICE_ID" com.wrexist.worldquest
+          xcrun simctl install "$DEVICE_ID" "$RUNNER_TEMP/wq-ios/Build/Products/Release-iphonesimulator/WorldQuest.app"
+          xcrun simctl launch "$DEVICE_ID" com.wrexist.worldquest
+          sleep 10
+          xcrun simctl io "$DEVICE_ID" screenshot "$RUNNER_TEMP/ios-second-startup.png"
+          if [ "$IMAGE_DIAGNOSTICS" = "true" ]; then
+            APP_DATA_CONTAINER=$(xcrun simctl get_app_container "$DEVICE_ID" com.wrexist.worldquest data)
+            cp "$APP_DATA_CONTAINER/Documents/native-image-lifecycle-diagnostic.json" "$RUNNER_TEMP/native-image-second-launch.json"
+          fi
+      - name: Approve the simulator bridge for the app's URL scheme
+        run: |
+          set -euo pipefail
+          # Test cold/warm app routing, not Simulator's intermittent consent dialog.
+          # This touches only this disposable simulator's scheme approval; the app
+          # still has to launch from its encoded URL and show the exact country.
+          # Upstream reproduction: mobile-dev-inc/Maestro#940, comment 3587472809.
+          APPROVAL_PLIST="$HOME/Library/Developer/CoreSimulator/Devices/$DEVICE_ID/data/Library/Preferences/com.apple.launchservices.schemeapproval.plist"
+          APPROVAL_KEY='com.apple.CoreSimulator.CoreSimulatorBridge-->worldquest'
+          if /usr/libexec/PlistBuddy -c "Print $APPROVAL_KEY" "$APPROVAL_PLIST" >/dev/null 2>&1; then
+            /usr/libexec/PlistBuddy -c "Set $APPROVAL_KEY com.wrexist.worldquest" "$APPROVAL_PLIST"
+          else
+            /usr/libexec/PlistBuddy -c "Add $APPROVAL_KEY string com.wrexist.worldquest" "$APPROVAL_PLIST"
+          fi
+          plutil -lint "$APPROVAL_PLIST"
       - name: Exercise native storage, navigation and decoding
         run: |
           set -euo pipefail
@@ -91,17 +175,85 @@ jobs:
           unzip -q maestro.zip
           export PATH="$RUNNER_TEMP/maestro/maestro/bin:$PATH"
           cd "$GITHUB_WORKSPACE"
+          xcrun simctl ui "$DEVICE_ID" appearance dark
           maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/native-flow" apps/mobile/e2e/native-smoke.yaml
+      - name: Collect native deep link diagnostic
+        if: ${{ always() && inputs.link_diagnostics }}
+        run: |
+          set -euo pipefail
+          if [ -n "${DEVICE_ID:-}" ]; then
+            if APP_DATA_CONTAINER=$(xcrun simctl get_app_container "$DEVICE_ID" com.wrexist.worldquest data); then
+              if [ -f "$APP_DATA_CONTAINER/Documents/native-link-diagnostic.json" ]; then
+                cp "$APP_DATA_CONTAINER/Documents/native-link-diagnostic.json" "$RUNNER_TEMP/native-link-diagnostic.json"
+              else
+                echo "::warning::Native deep link diagnostic report was not written"
+              fi
+            fi
+          fi
+      - name: Collect native globe drawing diagnostic
+        if: ${{ always() && inputs.atlas_diagnostics }}
+        run: |
+          set -euo pipefail
+          if [ -n "${DEVICE_ID:-}" ]; then
+            if APP_DATA_CONTAINER=$(xcrun simctl get_app_container "$DEVICE_ID" com.wrexist.worldquest data); then
+              if [ -f "$APP_DATA_CONTAINER/Documents/native-atlas-diagnostic.json" ]; then
+                cp "$APP_DATA_CONTAINER/Documents/native-atlas-diagnostic.json" "$RUNNER_TEMP/native-atlas-diagnostic.json"
+              else
+                echo "::warning::Native globe diagnostic report was not written"
+              fi
+              if [ -f "$APP_DATA_CONTAINER/Documents/native-atlas-native.jsonl" ]; then
+                cp "$APP_DATA_CONTAINER/Documents/native-atlas-native.jsonl" "$RUNNER_TEMP/native-atlas-native.jsonl"
+              else
+                echo "::warning::Native globe lifecycle trace was not written"
+              fi
+              shopt -s nullglob
+              for FRAME_PATH in "$APP_DATA_CONTAINER/Documents"/native-atlas-frame-*.png; do
+                cp "$FRAME_PATH" "$RUNNER_TEMP/"
+              done
+            fi
+          fi
+      - name: Verify rendered native globe zoom
+        if: always()
+        env:
+          REQUIRE_PRESENTATION_TRACE: ${{ inputs.atlas_diagnostics }}
+        run: |
+          set -euo pipefail
+          node --test scripts/verify-native-globe-zoom.test.cjs
+          if [ "$REQUIRE_PRESENTATION_TRACE" = "true" ]; then
+            node scripts/verify-native-globe-zoom.cjs "$RUNNER_TEMP/native-flow" "$RUNNER_TEMP/native-globe-zoom.json" --require-presentation
+          else
+            node scripts/verify-native-globe-zoom.cjs "$RUNNER_TEMP/native-flow" "$RUNNER_TEMP/native-globe-zoom.json"
+          fi
       - name: Save native evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ios-native-evidence
+          include-hidden-files: true
           path: |
             ${{ runner.temp }}/ios-build.log
             ${{ runner.temp }}/ios-startup.png
+            ${{ runner.temp }}/ios-second-startup.png
+            ${{ runner.temp }}/native-image-first-launch.json
+            ${{ runner.temp }}/native-image-second-launch.json
+            ${{ runner.temp }}/native-link-diagnostic.json
+            ${{ runner.temp }}/native-atlas-diagnostic.json
+            ${{ runner.temp }}/native-atlas-native.jsonl
+            ${{ runner.temp }}/native-atlas-frame-*.png
+            ${{ runner.temp }}/native-globe-zoom.json
             ${{ runner.temp }}/native-flow/
+            apps/mobile/ios/WorldQuest/AppDelegate.swift
+            apps/mobile/native-link-diagnostic-AppDelegate.original.swift
+            apps/mobile/native-atlas-diagnostic-GLView.original.swift
+            node_modules/expo-gl/ios/GLView.swift
             native-relaunch.png
-            native-country.png
+            native-country-se.png
+            native-country-warm-fr.png
+            native-daily-goal.png
+            native-region.png
+            native-first-lesson.png
+            native-optional-study.png
+            native-explore-globe.png
+            native-explore-zoomed.png
           if-no-files-found: ignore
           retention-days: 7

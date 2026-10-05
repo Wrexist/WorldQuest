@@ -1,4 +1,6 @@
 import { LessonIntroduction } from './LessonIntroduction.js'
+import { visualQuestion } from './visualQuestion.js'
+import { captureStorage } from '../../lib/storage.js'
 import { createThemeStyles } from '@worldquest/design'
 /**
  * The lesson screen — mockup screens 5 and 6.
@@ -50,6 +52,7 @@ import {
 import type { LessonFocus } from '@worldquest/engines'
 import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
+import { FailureState } from '../../components/FailureState.js'
 import { Flag } from '../../components/Flag.js'
 import { LessonAtlas, lessonShowsAtlas } from '../atlas/LessonAtlas.js'
 import { useLesson } from './hooks/useLesson.js'
@@ -93,7 +96,7 @@ import { EarnedReward } from './EarnedReward.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
 import { SceneEntrance } from '../../components/SceneEntrance.js'
 
-type ScreenState = 'loading' | 'error' | 'empty' | 'offline-start' | 'ready'
+type ScreenState = 'loading' | 'error' | 'unavailable' | 'empty' | 'offline-start' | 'ready'
 
 /**
  * The rail down the leading edge of the answers.
@@ -193,22 +196,8 @@ const VERY_SHORT_SCREEN = 640
  */
 const SHORT_SCREEN = 900
 
-/**
- * Below this height, Check sits after the options instead of pinned under them.
- *
- * MEASURED, per question type, with the button pinned: at 375×667 every template's
- * fourth option clears it with room to spare, and 360×640 does too. At 320×568 (iPhone
- * SE 1) the pinned bar took about 90pt off a viewport that was already exactly full, and
- * the fourth option went under it by 65pt on a locator question, 101 on a map question
- * and 116 under a flag prompt — where before Check existed it fitted, overflowed by 11
- * and by 26. Shrinking the pictures to win that back would put the map and the flag
- * below the floors `atlasHeight` and `FLAG_PROMPT_WIDTH` exist to defend.
- *
- * So on the smallest phone the question keeps the whole screen, exactly as before, and
- * Check follows the options in the scroll. Selecting scrolls it into view, so it is never
- * a thing the user has to hunt for — it arrives the moment there is something to check.
- */
-const PINNED_CHECK_MIN_HEIGHT = 600
+/** Compact question layout for the shortest phones; answers still submit on tap. */
+const SHORT_QUESTION_HEIGHT = 600
 
 /*
  * The locator's size used to be four width constants (208/132/240/180) for a fixed 4:3
@@ -251,7 +240,6 @@ export function LessonScreen({
   onExit,
   onLeave,
   mode = 'normal',
-  showIntroduction = false,
   coins = 0,
   isTaster = false,
   focus,
@@ -260,7 +248,6 @@ export function LessonScreen({
   length,
   placement,
 }: {
-  showIntroduction?: boolean
   onExit: (summary: LessonExit) => void
   /**
    * Leave a lesson that never started — offline with nothing saved, a failure, or a focus
@@ -334,7 +321,7 @@ export function LessonScreen({
   const t = useT()
   const dailyGoal = useDailyGoal()
   const { index, memory, status, reload, isOffline } = useContent()
-  const [introduced, setIntroduced] = useState(false)
+  const [studying, setStudying] = useState(false)
   const [screen, setScreen] = useState<ScreenState>('loading')
   // "Report a problem" open over the answer just given. Only where a backend takes
   // reports (the Worker): a link that could only fail is a link not to show.
@@ -353,7 +340,7 @@ export function LessonScreen({
    * it changes is a target size, so the 44pt floor holds at both settings.
    */
   const compact = height < SHORT_SCREEN
-  const inlineCheck = height < PINNED_CHECK_MIN_HEIGHT
+  const shortQuestion = height < SHORT_QUESTION_HEIGHT
   // The atlas spans the content column, as the reference draws it, and stops widening
   // where the rest of the lesson does.
   const atlasWidth = Math.min(width - space[4] * 2, layout.maxContentWidth)
@@ -384,6 +371,7 @@ export function LessonScreen({
    */
   const questCompleted = useRef(false)
   const scroller = useRef<ScrollView>(null)
+  const [globeGestureActive, setGlobeGestureActive] = useState(false)
   const optionsTop = useRef(0)
   const optionsBottom = useRef(0)
   /** The scroll view's own height: it shrinks when the feedback sheet mounts below it. */
@@ -434,11 +422,12 @@ export function LessonScreen({
   // Each of a board's questions is also a plain four-option question with the same answer key, so
   // the round simply plays them as that: nothing about grading or the ticket changes.
   const questions = useMemo<readonly Question[]>(
-    () => (mode === 'speed' ? issued.map(({ group: _group, ...q }) => q) : issued),
-    [issued, mode],
+    () => (mode === 'speed' ? issued.map(({ group: _group, ...q }) => q) : issued)
+      .map(question => visualQuestion(question, index?.index, screenReaderOn)),
+    [issued, mode, index, screenReaderOn],
   )
 
-  const handleComplete = useCallback((state: LessonState, optimistic: GradeResult) => {
+  const handleComplete = useCallback(async (state: LessonState, optimistic: GradeResult) => {
     /**
      * Today's quest, composed once and used twice.
      *
@@ -468,9 +457,10 @@ export function LessonScreen({
       // few more lessons are fetched for the next offline start. An early exit sends
       // the answered prefix; the server decides whether it was a finished lesson.
       if (remote.lesson) {
-        void submitD1Lesson(remote.lesson, state.answers).then(() =>
-          prefetchLessons({ count: remote.lesson!.request.count, locale: remote.lesson!.request.locale, screenReader: screenReaderOn, maxModifier, introduceFrom }),
-        )
+        const completionScope = captureStorage()
+        await submitD1Lesson(remote.lesson, state.answers)
+        if (!completionScope.isCurrent()) return
+        void prefetchLessons({ count: remote.lesson.request.count, locale: remote.lesson.request.locale, screenReader: screenReaderOn, maxModifier, introduceFrom })
       }
     } else {
       // Enqueue, never await. A lesson finishing must not depend on the network —
@@ -640,6 +630,7 @@ export function LessonScreen({
 
   const timeLimitMs = mode === 'speed' ? SPEED_SECONDS * 1000 : null
   const lesson = useLesson({
+    recover: remoteLessons,
     questions,
     memory,
     timeLimitMs,
@@ -648,7 +639,7 @@ export function LessonScreen({
   })
   // Haptic, sound and `question_answered`, from the GRADED answer — whether Check graded
   // it or the speed round's clock did. See the hook for why not from a tap.
-  useAnswerCues(lesson.state, itemMs)
+  useAnswerCues(lesson.state, itemMs, lesson.restoredAnswerCount)
 
   /**
    * Screen-reader focus to the verdict when the sheet arrives.
@@ -735,16 +726,6 @@ export function LessonScreen({
   }, [lesson.state.index])
 
   /**
-   * On the smallest phones Check is in the scroll, after the options — see
-   * `PINNED_CHECK_MIN_HEIGHT`. Selecting brings it into view so the next action is on
-   * screen the moment it becomes possible.
-   */
-  useEffect(() => {
-    if (!inlineCheck || lesson.state.selectedOptionId === null) return
-    scroller.current?.scrollToEnd({ animated: true })
-  }, [inlineCheck, lesson.state.selectedOptionId])
-
-  /**
    * Watch this number. If it is high the mechanic is too punishing — which is the
    * whole reason the balance table caps hearts per lesson rather than per day.
    *
@@ -764,13 +745,14 @@ export function LessonScreen({
       : status
     if (source === 'loading') return setScreen('loading')
     if (source === 'error') return setScreen('error')
+    if (source === 'unavailable') return setScreen('unavailable')
     if (source === 'offline') return setScreen('offline-start')
     if (source === 'too-narrow' || questions.length === 0) return setScreen('empty')
     setScreen('ready')
-    if (lesson.state.phase === 'idle' && (!showIntroduction || introduced || mode === 'speed' || !questions.some(question => question.isNew))) {
+    if (lesson.state.phase === 'idle') {
       // The ticket's id on D1: it is the idempotency key the server issued under.
-      lesson.start(remoteLessons && remote.lesson ? remote.lesson.lessonId : makeUuid())
-      track('lesson_started', {
+      const fresh = lesson.start(remoteLessons && remote.lesson ? remote.lesson.lessonId : makeUuid())
+      if (fresh !== false) track('lesson_started', {
         lesson_id: 'pending',
         kind: 'lesson',
         item_count: questions.length,
@@ -778,15 +760,19 @@ export function LessonScreen({
         was_offline: isOffline,
       })
     }
-  }, [status, questions, lesson, isOffline, remoteLessons, remote.status, remote.lesson, showIntroduction, introduced, mode])
+  }, [status, questions, lesson, isOffline, remoteLessons, remote.status, remote.lesson])
 
   if (screen === 'loading') return <LoadingState />
   if (screen === 'error') return <ErrorState onRetry={remoteLessons ? remote.retry : reload} onLeave={onLeave} />
+  if (screen === 'unavailable') return <ErrorState unavailable onRetry={remote.retry} onLeave={onLeave} />
   if (screen === 'offline-start') return <OfflineStartState onRetry={remote.retry} onLeave={onLeave} />
   if (screen === 'empty') return <EmptyState onLeave={onLeave} />
 
-  if (showIntroduction && !introduced && mode !== 'speed' && questions.some(question => question.isNew)) {
-    return <LessonIntroduction questions={questions} onBegin={() => setIntroduced(true)} onLeave={onLeave} />
+  if (studying) {
+    return <LessonIntroduction questions={lesson.state.questions} onBegin={() => {
+      setStudying(false)
+      lesson.resume()
+    }} />
   }
 
   if (lesson.state.phase === 'summary' || lesson.state.phase === 'abandoned') {
@@ -862,6 +848,10 @@ export function LessonScreen({
   const questionScene = `${lesson.state.lessonId}:${lesson.state.index}`
 
   const answered = lesson.state.phase === 'answered'
+  // Study is an explicit choice before the first answer, never a placement answer key.
+  // Pause/resume preserves this exact lesson and keeps study time out of grading.
+  const canStudy = mode === 'normal' && placement !== true &&
+    lesson.state.phase === 'presenting' && lesson.state.index === 0 && lesson.state.answers.length === 0
 
   /**
    * Whether the ANSWERS are pictures — which changes the layout of half this screen.
@@ -906,15 +896,6 @@ export function LessonScreen({
   const lastAward = lastAnswer && !reviewing ? lesson.awardFor(lastAnswer) : null
 
   /**
-   * The one primary action while a question is up.
-   *
-   * Disabled rather than hidden until something is selected, so the screen does not jump
-   * when the first option is tapped and the user can see where an answer is committed.
-   * Pinned, it sits exactly where the sheet's Continue will land, so the thumb that
-   * pressed Check is already on the way onward. Where it sits on the smallest phones is
-   * `PINNED_CHECK_MIN_HEIGHT`'s business.
-   */
-  /**
    * A typed question is answered with a keyboard, which changes two things about this screen.
    * Check is enabled by having typed something rather than by having picked something, and it
    * sits INSIDE the scroll view under the field: a footer pinned to the screen's bottom edge is
@@ -934,7 +915,6 @@ export function LessonScreen({
   const showBoard = boardMembers !== null && !answered
   const boardSettled = question.group !== undefined && answered && !lesson.state.outOfHearts
   const typedValue = answered ? (lastAnswer?.typedText ?? lesson.state.typedText) : lesson.state.typedText
-  const checkInScroll = inlineCheck || typedQuestion || showBoard
   const noSelection = typedQuestion
     ? lesson.state.typedText.trim() === ''
     : lesson.state.selectedOptionId === null
@@ -979,13 +959,13 @@ export function LessonScreen({
         <ProgressBar
           current={lesson.progress.current}
           total={lesson.progress.total}
-          label={t('lesson:progress.label')}
+          accessibilityLabel={t('lesson:progress.label')}
           valueText={t('lesson:progress.value', {
             current: lesson.progress.current,
             total: lesson.progress.total,
           })}
           tone={correctRun >= STREAK_PRAISE ? 'streak' : 'progress'}
-          style={styles.flex}
+          style={styles.lessonProgress}
         />
         <Stat
           kind="hearts"
@@ -999,16 +979,30 @@ export function LessonScreen({
             running={lesson.state.phase === 'presenting'}
           />
         )}
+        {canStudy && <Pressable
+          role="button"
+          aria-label={t('lesson:intro.open')}
+          onPress={() => {
+            hapticSelect()
+            lesson.pause()
+            setStudying(true)
+          }}
+          style={styles.study}
+          testID="lesson-study"
+        >
+          <Text style={styles.studyLabel}>{t('lesson:intro.open')}</Text>
+        </Pressable>}
       </View>
 
       <ScrollView
+        scrollEnabled={!globeGestureActive}
         ref={scroller}
         testID="lesson-scroll"
         // A tap on Check (or anywhere else) while the keyboard is up is a tap, not "dismiss the
         // keyboard first" — and the view lifts itself clear of the keyboard on iOS.
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets={typedQuestion}
-        contentContainerStyle={[styles.body, compact && styles.bodyShort, inlineCheck && styles.bodyTiny]}
+        contentContainerStyle={[styles.body, compact && styles.bodyShort, shortQuestion && styles.bodyTiny]}
         onLayout={(event) => {
           viewport.current = event.nativeEvent.layout.height
           // The sheet arriving is what shrinks this; ask again with the new height.
@@ -1023,7 +1017,10 @@ export function LessonScreen({
         <Spacer />
         {reviewing && (
           // Duolingo's "previous mistake" tag: this one came back because it was missed.
+          <View>
           <Text style={styles.reviewTag}>{t('lesson:review.tag')}</Text>
+          <Text style={styles.feedbackBody}>{t('lesson:review.purpose')}</Text>
+          </View>
         )}
         {!reviewing && (boardMembers !== null ? boardMembers.some((member) => member.isNew) : question.isNew) && (
           // And its "new word": this is the first time, so not knowing it is expected —
@@ -1089,6 +1086,7 @@ export function LessonScreen({
                 (continent, coast, neighbours) gets no map until graded. Answers are
                 still given with the options below — the map selects nothing. */}
             <LessonAtlas
+              onGestureActiveChange={setGlobeGestureActive}
               question={question}
               sceneKey={questionScene}
               index={index?.index}
@@ -1097,7 +1095,7 @@ export function LessonScreen({
               chosenOptionId={lastAnswer?.chosenOptionId ?? null}
               width={atlasWidth}
               height={atlasHeight(height, {
-                inlineCheck,
+                shortQuestion,
                 compact,
                 isPrompt: question.modality === 'map',
                 pictureOptions,
@@ -1216,16 +1214,8 @@ export function LessonScreen({
                   <Icon name="forward" size={20} color={colors.text.secondary} />
                 ) : undefined
               }
-              // A tap SELECTS; Check grades. Changing your mind is free, which is the
-              // point: a mis-tap on a phone held in one hand used to be a scored answer,
-              // and on a review item a lost heart. The selection haptic is the light
-              // platform tick, not the verdict — nothing has been decided yet, and the
-              // correct/wrong cues fire from the graded answer (`useAnswerCues`).
-              onPress={() => {
-                if (option.id === lesson.state.selectedOptionId) return
-                hapticSelect()
-                lesson.select(option.id)
-              }}
+              // Commit atomically; the reducer ignores further answers until Continue.
+              onPress={() => lesson.answer(option.id)}
               // So tests can select answers POSITIVELY. The helper used to take every
               // button that was not labelled "Continue", which silently swallowed the
               // close button the moment one existed and made two tests click pause
@@ -1237,15 +1227,13 @@ export function LessonScreen({
         </SceneEntrance>
         )}
 
-        {checkInScroll && !answered && !showBoard && checkButton}
+        {typedQuestion && !answered && !showBoard && checkButton}
 
         <Spacer />
       </ScrollView>
 
-      {boardSettled ? null : !answered ? (
-        !checkInScroll && <View style={styles.footer}>{checkButton}</View>
-      ) : (
-        <RiseIn key={answeredCount} style={styles.footer}>
+      {boardSettled || !answered ? null : (
+        <RiseIn key={answeredCount} style={[styles.footer, styles.feedbackFooter]}>
           {/* Out of hearts is a fork, not a wall. The engine has held the flag since
               the machine was written and nothing rendered it — so the lesson simply
               carried on at zero hearts, which made the whole mechanic decorative. */}
@@ -1309,6 +1297,7 @@ export function LessonScreen({
               testID="answer-sheet"
             >
               <ClaySurface transparent radius={radius.lg} />
+              <ScrollView testID="lesson-feedback-scroll" style={styles.feedbackScroll}>
               {/* The thing the question was ABOUT, now that it can be shown.
 
                   "Hur ser Japans flagga ut?" is asked in words and answered in words,
@@ -1428,6 +1417,7 @@ export function LessonScreen({
           )}
               </View>
               </View>
+              </ScrollView>
               <Button variant="discovery" label={t('common:continue')} onPress={lesson.advance} />
               {remoteLessons && (
                 <Button label={t('lesson:report.cta')} variant="ghost" size="sm" onPress={() => setReporting(true)} />
@@ -1444,21 +1434,17 @@ export function LessonScreen({
 /**
  * How tall the atlas is, from the space the question actually has.
  *
- * MEASURED against the budget the constants above defend: at 390×844 the prompt, the
- * atlas, four options and the pinned Check fit with the atlas at a quarter of the
- * height; at 320×568 Check already follows the options in the scroll, and the atlas
- * gives way first because it is context and the options are the interaction. A map
- * question's map IS the prompt, so it keeps more; a 2×2 grid of flag answers frees
- * nearly two option rows, and the atlas takes some of that back.
+ * Short screens reserve more room for the answer options. A map question keeps
+ * more space because the map is the prompt; picture options free two rows for it.
  *
  * Never so small the country is a speck — the floor is where a coastline still reads.
  */
 export function atlasHeight(
   screenHeight: number,
-  { inlineCheck, compact, isPrompt, pictureOptions }: { inlineCheck: boolean; compact: boolean; isPrompt: boolean; pictureOptions: boolean },
+  { shortQuestion, compact, isPrompt, pictureOptions }: { shortQuestion: boolean; compact: boolean; isPrompt: boolean; pictureOptions: boolean },
 ): number {
-  const share = inlineCheck ? 0.25 : compact ? 0.26 : 0.3
-  const floor = inlineCheck ? 132 : 150
+  const share = shortQuestion ? 0.25 : compact ? 0.26 : 0.3
+  const floor = shortQuestion ? 132 : 150
   const ceiling = compact ? 240 : 340
   const boost = (isPrompt ? 1.15 : 1) * (pictureOptions ? 1.15 : 1)
   return Math.round(Math.min(ceiling * boost, Math.max(floor, screenHeight * share * boost)))
@@ -1606,17 +1592,13 @@ function practisedCountries(
   return out
 }
 
-function ErrorState({ onRetry, onLeave }: { onRetry: () => void; onLeave: (() => void) | undefined }) {
-  const { styles } = useThemeValues()
-  const t = useT()
-
+function ErrorState({ onRetry, onLeave, unavailable = false }: { onRetry: () => void; onLeave: (() => void) | undefined; unavailable?: boolean }) {
+  if (unavailable) return <FailureState titleKey="common:error.service.title" bodyKey="common:error.service.body"
+    ctaKey={onLeave ? 'common:back' : 'common:retry'} onPress={onLeave ?? onRetry} />
   return (
-    <View style={[styles.screen, styles.centered]}>
-      <Text style={styles.prompt}>{t('common:error.generic.title')}</Text>
-      <Text style={styles.feedbackBody}>{t('common:error.generic.body')}</Text>
-      <Button label={t('common:retry')} onPress={onRetry} style={styles.retry} />
+    <FailureState titleKey="common:error.generic.title" bodyKey="common:error.generic.body" ctaKey="common:retry" onPress={onRetry}>
       <LeaveButton onLeave={onLeave} />
-    </View>
+    </FailureState>
   )
 }
 
@@ -1697,7 +1679,16 @@ const useThemeValues = createThemeStyles((colors) => {
   screen: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[3] },
   centered: { alignItems: 'center', justifyContent: 'center' },
   flex: { flex: 1 },
-  header: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  lessonProgress: { flex: 1, minWidth: space[8] + space[4] },
+  header: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space[3] },
+  study: {
+    minHeight: 44, minWidth: 44, marginStart: 'auto',
+    paddingHorizontal: space[2], paddingVertical: space[2],
+    justifyContent: 'center', alignItems: 'center',
+    borderRadius: radius.full, borderWidth: 1, borderColor: colors.border.subtle,
+    backgroundColor: colors.bg.surface,
+  },
+  studyLabel: { ...text('caption'), color: colors.text.primary },
   // `flexGrow` + `center` so a question shorter than the screen sits in the middle of
   // it rather than jammed under the progress bar with half the display empty beneath.
   // On a tablet that empty half was 45 % of the screen; on a phone the content is
@@ -1742,6 +1733,7 @@ const useThemeValues = createThemeStyles((colors) => {
   // against this rather than the screen.
   sheet: {
     position: 'relative',
+    flexShrink: 1,
     overflow: 'hidden',
     gap: space[3],
     padding: space[4],
@@ -1785,6 +1777,8 @@ const useThemeValues = createThemeStyles((colors) => {
   // share a row that is already 150 points narrower than the sheet.
   rewards: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
   footer: { paddingBottom: space[4] },
+  feedbackFooter: { maxHeight: '65%', flexShrink: 0 },
+  feedbackScroll: { flexGrow: 0 },
   retry: { marginTop: space[4] },
   offline: {
     backgroundColor: colors.bg.surfaceRaised,

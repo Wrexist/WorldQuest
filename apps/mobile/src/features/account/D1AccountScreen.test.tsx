@@ -55,6 +55,16 @@ const click = (label: string) => fireEvent.click(screen.getByRole('button', { na
 const code = (value: string) => fireEvent.change(screen.getByLabelText('Eight-digit code'), { target: { value } })
 
 describe('D1 account screens with the protected auth transport', () => {
+  it('explains held email sign-in without claiming a message was sent', async () => {
+    const h = harness({ audience: 'eligible' })
+    render(<App client={h.create()} host={h.host} entry="link" />)
+    const email = await screen.findByLabelText('Email')
+    fireEvent.change(email, { target: { value: 'beta@example.invalid' } })
+    h.fetch.mockResolvedValueOnce({ ok: false, status: 503, json: async () => ({ error: 'EMAIL_NOT_READY' }) })
+    click('Send me a code')
+    expect(await screen.findByText("Email sign-in isn't available yet. You can keep learning on this device.")).toBeTruthy()
+    expect(screen.queryByLabelText('Eight-digit code')).toBeNull()
+  })
   it('opens on signing in for "I already have an account", on a phone with no session', async () => {
     // It offered "Start your account / Start as guest" to someone who had just said they
     // have one. The device session a sign-in code needs is made without asking.

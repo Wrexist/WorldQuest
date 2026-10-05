@@ -80,7 +80,6 @@ async function lessonArrival(page, reduced, width, shoot = true, capital = false
   const beforeCanvas = hasGlobe ? await page.locator('[data-testid="lesson-scroll"] canvas').first().elementHandle() : null
   await page.getByTestId('answer-option').first().click()
   await pause(page, 1100)
-  await page.getByTestId('lesson-check').click()
   await pause(page, 550)
   const globeRetainedThroughFeedback = beforeCanvas ? await beforeCanvas.evaluate(el => el === document.querySelector('[data-testid="lesson-scroll"] canvas')) : null
   if (globeRetainedThroughFeedback !== null) assert.equal(globeRetainedThroughFeedback, true)
