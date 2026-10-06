@@ -273,3 +273,39 @@ test('xcode resolves patched CommonJS uuid and still generates valid project ide
   assert.equal(new Set(identifiers).size, identifiers.length)
   identifiers.forEach(id => assert.match(id, /^[A-F0-9]{24}$/))
 })
+
+test('sprintf numeric precision stays bounded without aborting formatting', () => {
+  const { sprintf, vsprintf } = require('sprintf-js')
+  const value = 1.25
+  for (const [specifier, format] of [['f', n => value.toFixed(n)], ['e', n => value.toExponential(n)], ['g', n => value.toPrecision(n)]]) {
+    for (const precision of ['101', '999999', '9'.repeat(400)]) {
+      assert.equal(sprintf('%.' + precision + specifier, value), format(100))
+    }
+    for (const precision of [1, 2, 20, 100]) {
+      assert.equal(sprintf('%.' + precision + specifier, value), format(precision))
+    }
+  }
+  assert.equal(sprintf('%.0f', value), '1')
+  assert.equal(sprintf('%.0e', value), '1e+0')
+  assert.equal(sprintf('%.0g', value), '1')
+  assert.equal(sprintf('%(value).2f', { value }), '1.25')
+  assert.equal(vsprintf('%s: %04d / %.2f', ['item', 7, value]), 'item: 0007 / 1.25')
+  assert.equal(sprintf('%.999s', 'ordinary text'), 'ordinary text')
+})
+
+test('indexed source-map offsets beyond the code do not block the event loop', () => {
+  const script = `
+    const assert = require('node:assert/strict');
+    const { SourceMapConsumer, SourceNode } = require('source-map-js');
+    const map = line => ({ version: 3, sections: [{
+      offset: { line, column: 0 },
+      map: { version: 3, sources: ['original.js'], sourcesContent: ['hello'], names: [], mappings: 'AAAA' }
+    }] });
+    assert.throws(() => new SourceMapConsumer(map(1e9)), /Section offset line/);
+    const consumer = new SourceMapConsumer(map(1e7));
+    assert.equal(SourceNode.fromStringWithSourceMap('hello', consumer).toString(), 'hello');
+  `
+  const result = spawnSync(process.execPath, ['-e', script], { timeout: 3000, encoding: 'utf8' })
+  assert.ifError(result.error)
+  assert.equal(result.status, 0, result.stderr)
+})
