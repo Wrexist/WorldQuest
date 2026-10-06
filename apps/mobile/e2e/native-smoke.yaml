@@ -7,29 +7,15 @@ appId: com.wrexist.worldquest
 - tapOn:
     text: "Get started"
     retryTapIfNoChange: true
-- tapOn: "English"
-- assertVisible: "Explore countries"
-- tapOn: "Next"
-- assertVisible: "Practice daily"
-- tapOn: "Next"
-- assertVisible: "Your world"
-- tapOn: "Continue"
+- assertVisible: "When were you born?"
 - scrollUntilVisible:
     element: "2002"
     direction: DOWN
     timeout: 30000
 - tapOn: "2002"
 - tapOn: "Continue"
-- assertVisible: "10 min.*"
-- takeScreenshot: native-daily-goal
-- tapOn: "Continue"
-- tapOn: "Europe"
-- takeScreenshot: native-region
-- tapOn: "Continue"
-- assertVisible: "How well do you know the world?"
-- tapOn: "Continue"
-- assertVisible: "Here is your plan."
-- tapOn: "Continue"
+- assertVisible: "One short lesson. No account needed."
+- takeScreenshot: native-ready-to-learn
 - tapOn: "Start learning"
 - assertVisible:
     id: "answer-option"

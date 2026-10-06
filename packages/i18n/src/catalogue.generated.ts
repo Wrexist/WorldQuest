@@ -720,7 +720,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "slide.3.title": "Your world",
       "slide.3.body": "{count, plural, one {# country. Flags and capitals.} other {# countries. Flags and capitals.}}",
       "cta.next": "Next",
-      "welcome.body": "I'm Atlas. Discover countries, learn flags, and explore a little more every day.",
+      "welcome.body": "Discover the world with Atlas, one short lesson at a time.",
       "cta.start": "Get started",
       "cta.haveAccount": "I already have an account",
       "cta.skip": "Skip",
@@ -772,7 +772,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "demo.try": "Try it",
       "demo.correct": "Yes, {country}!",
       "demo.answer": "This is {country}.",
-      "demo.noScore": "Just practice. No hearts lost, no score."
+      "demo.noScore": "Just practice. No hearts lost, no score.",
+      "language.change": "Language",
+      "taster.preferences": "Start exploring now. Change your pace and level any time in Settings."
     },
     "paywall": {
       "title.value": "{count, plural, one {You practiced # country.} other {You practiced # countries.}}",
@@ -1835,7 +1837,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "slide.3.title": "Din värld",
       "slide.3.body": "{count, plural, one {# land. Flaggor och huvudstäder.} other {# länder. Flaggor och huvudstäder.}}",
       "cta.next": "Nästa",
-      "welcome.body": "Jag heter Atlas. Upptäck länder, lär dig flaggor och utforska lite mer varje dag.",
+      "welcome.body": "Upptäck världen med Atlas, en kort lektion i taget.",
       "cta.start": "Kom igång",
       "cta.haveAccount": "Jag har redan ett konto",
       "cta.skip": "Hoppa över",
@@ -1887,7 +1889,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "demo.try": "Prova",
       "demo.correct": "Ja, {country}!",
       "demo.answer": "Det här är {country}.",
-      "demo.noScore": "Bara övning. Inga förlorade hjärtan eller poäng."
+      "demo.noScore": "Bara övning. Inga förlorade hjärtan eller poäng.",
+      "language.change": "Språk",
+      "taster.preferences": "Börja utforska nu. Du kan ändra tempo och nivå i Inställningar när du vill."
     },
     "paywall": {
       "title.value": "{count, plural, one {Du övade på # land.} other {Du övade på # länder.}}",

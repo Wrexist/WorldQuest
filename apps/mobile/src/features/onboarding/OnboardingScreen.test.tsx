@@ -1,484 +1,99 @@
-import { beforeAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { CHILD_AGE, OnboardingScreen } from './OnboardingScreen.js'
 import { clearAll, writeJson } from '../../lib/storage.js'
 import { readOnboarding } from './useOnboarding.js'
 
-/** 2026 keeps the arithmetic obvious; the component never reads a clock itself. */
 const YEAR = 2026
+const click = (name: string) => fireEvent.click(screen.getByRole('button', { name }))
+const pickYear = (year: number) => fireEvent.click(screen.getByRole('radio', { name: String(year) }))
+const mount = (onFinish = vi.fn(), onSignIn = vi.fn(), onLanguage = vi.fn()) =>
+  render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={onLanguage} onFinish={onFinish} onSignIn={onSignIn} />)
 
-/** Allow the language's answer beat and shared selection animation to settle. */
-const answer = (name: string | RegExp): void => {
-  fireEvent.click(screen.getByRole('radio', { name }))
-  act(() => {
-    vi.advanceTimersByTime(400)
-  })
-}
+describe('short onboarding', () => {
+  beforeEach(() => vi.useFakeTimers())
+  afterEach(() => vi.useRealTimers())
 
-/**
- * Through the welcome frame.
- *
- * One tap, and it is the tap the whole frame exists for — every other test in this file
- * starts behind it, so it is worth naming rather than inlining.
- */
-const getStarted = (): void => {
-  fireEvent.click(screen.getByRole('button', { name: 'Get started' }))
-}
-
-/**
- * Past the welcome frame, the language picker and the carousel, to the first question
- * with a wrong answer.
- *
- * Most of this file is about the age gate, so getting there is one helper rather than
- * three lines in twelve tests.
- */
-const advanceToAgeStep = (): void => {
-  getStarted() // welcome → language
-  answer('English') // language → slides
-  fireEvent.click(screen.getByRole('button', { name: 'Skip' })) // slides → age
-}
-
-/** Accept default pace and level, choose a region, then confirm the plan. */
-const advanceToTaster = (): void => {
-  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
-  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // goal → region
-  answer('Europe') // select a region
-  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // confirm region
-  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → plan
-  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → taster
-}
-
-/**
- * One tap, on the year itself.
- *
- * This used to be two — a decade chip, then a year chip — because a grid cannot show a
- * hundred options and the step was built out of chips. It is a wheel now (see
- * `WheelPicker`), and every row of a wheel is a real radio precisely so that this stays
- * a click rather than a simulated fling: jsdom has no momentum, so
- * `onMomentumScrollEnd` never fires here and a test that drove the gesture would be
- * testing nothing at all.
- */
-const pickYear = (year: number): void => {
-  fireEvent.click(screen.getByRole('radio', { name: String(year) }))
-}
-
-describe('OnboardingScreen', () => {
-  it('offers a first discovery before setup and returns to language afterward', () => {
+  it('requires only age before the lesson invitation, without a signup wall', () => {
     const finish = vi.fn()
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={finish} />)
-    fireEvent.click(screen.getByRole('button', { name: 'Try a question' }))
-    expect(screen.getByTestId('onboarding-demo')).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: 'Try it' }))
-    fireEvent.click(screen.getByRole('button', { name: 'United States' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    mount(finish)
+    click('Get started')
+    expect(screen.getByText('When were you born?')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Continue' }).getAttribute('aria-disabled')).toBe('true')
+    pickYear(1996)
+    click('Continue')
+    expect(screen.getByText('One short lesson. No account needed.')).toBeTruthy()
+    expect(screen.queryByText('I already have an account')).toBeNull()
+    const start = screen.getByRole('button', { name: 'Start learning' })
+    fireEvent.click(start)
+    fireEvent.click(start)
+    expect(finish).toHaveBeenCalledTimes(1)
+    expect(finish).toHaveBeenCalledWith({ birthYear: 1996, isChild: false, language: 'en', dailyGoalMinutes: 10, startRegion: null, level: 'some' })
+  })
+
+  it('keeps returning sign-in at welcome', () => {
+    const signIn = vi.fn()
+    mount(vi.fn(), signIn)
+    click('I already have an account')
+    expect(signIn).toHaveBeenCalledOnce()
+  })
+
+  it('makes language optional and does not silently advance after changing it', () => {
+    const language = vi.fn()
+    mount(vi.fn(), vi.fn(), language)
+    click('Language')
+    fireEvent.click(screen.getByRole('radio', { name: 'Svenska' }))
+    expect(language).toHaveBeenCalledWith('sv')
     expect(screen.getByText('Choose your language')).toBeTruthy()
+    click('Continue')
+    expect(screen.getByRole('button', { name: 'Get started' })).toBeTruthy()
+  })
+
+  it('offers an optional practice question and then the same age safeguard', () => {
+    const finish = vi.fn()
+    mount(finish)
+    click('Try a question')
+    click('Try it')
+    click('United States')
+    click('Continue')
+    expect(screen.getByText('When were you born?')).toBeTruthy()
     expect(finish).not.toHaveBeenCalled()
   })
 
-  beforeEach(() => {
-    vi.useFakeTimers()
-  })
-  afterEach(() => {
-    vi.useRealTimers()
-  })
-
-  it('opens on the value slides, not on a sign-up wall', () => {
-    // The conversion decision the whole flow is built around: teach first, ask later.
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    // A greeting first, then the language step, and neither is a wall: two taps, one of
-    // them already answered, and nothing asking anybody to make an account.
-    expect(screen.getByText(/Atlas/i)).toBeTruthy()
-    getStarted()
-    expect(screen.getByText(/Choose your language/i)).toBeTruthy()
-    answer('English')
-    expect(screen.getByText(/Explore countries/i)).toBeTruthy()
-    expect(screen.queryByText(/sign up|create account/i)).toBeNull()
+  it.each([YEAR, YEAR - CHILD_AGE + 1, YEAR - CHILD_AGE, YEAR - 100])('classifies birth year %i at the privacy boundary', birthYear => {
+    const finish = vi.fn()
+    mount(finish)
+    click('Get started')
+    pickYear(birthYear)
+    click('Continue')
+    expect(screen.queryByText('I already have an account')).toBeNull()
+    click('Start learning')
+    expect(finish).toHaveBeenCalledWith(expect.objectContaining({ birthYear, isChild: YEAR - birthYear < CHILD_AGE }))
   })
 
-  it('puts sign-in on the first frame, not behind the whole flow', () => {
-    // The defect the welcome frame was built for. This button existed and was wired,
-    // at the END of the taster — so a user reinstalling the app and wanting their
-    // streak back answered seven questions about a profile they already had before
-    // finding the door. Reachability at step eight is not reachability.
-    const onSignIn = vi.fn()
-    render(
-      <OnboardingScreen
-        currentYear={YEAR}
-        language="en"
-        onLanguage={vi.fn()}
-        onFinish={vi.fn()}
-        onSignIn={onSignIn}
-      />,
-    )
-    fireEvent.click(screen.getByRole('button', { name: /already have an account/i }))
-    expect(onSignIn).toHaveBeenCalledTimes(1)
+  it('does not preselect a year or offer future years, and includes every age', () => {
+    mount()
+    click('Get started')
+    const rows = screen.getAllByRole('radio')
+    expect(rows.map(row => row.getAttribute('aria-label'))).toEqual(['Choose a year', ...Array.from({ length: 101 }, (_, offset) => String(YEAR - offset))])
+    expect(rows.slice(1).every(row => row.getAttribute('aria-checked') === 'false')).toBe(true)
   })
 
-  it('does not count the greeting as a step of the setup', () => {
-    // A welcome frame under a progress bar has already told you it is a form. The bar
-    // is absent here and opens at 1 on the first question rather than at 2.
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    expect(screen.queryByRole('progressbar')).toBeNull()
-    getStarted()
-    expect(screen.getByRole('progressbar').getAttribute('aria-valuetext')).toMatch(
-      /Step 1 of 8/i,
-    )
-  })
-
-  it('steps back from the first question to the greeting', () => {
-    // Auto-advance without a back is a trap, and the trap has to hold at the seam the
-    // new frame introduced: `canGoBack` is an index comparison, so an off-by-one here
-    // would strand the user on the language step with a live-looking chevron.
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    getStarted()
-    fireEvent.click(screen.getByRole('button', { name: 'Back' }))
-    expect(screen.getByRole('button', { name: 'Get started' })).toBeTruthy()
-  })
-
-  it('applies a language on tap, not on Continue', () => {
-    // The step's whole claim is that the app changes language while you are looking at
-    // it — `onLanguage` is wired to `set('language', …)`, which calls `setLocale`. Every
-    // other test in this file passed `onLanguage={vi.fn()}` and none of them ever tapped
-    // a row, so the one behaviour the step exists for was the one thing unasserted.
-    const onLanguage = vi.fn()
-    render(
-      <OnboardingScreen currentYear={YEAR} language="en" onLanguage={onLanguage} onFinish={vi.fn()} />,
-    )
-    getStarted()
-    fireEvent.click(screen.getByRole('radio', { name: 'Svenska' }))
-    expect(onLanguage).toHaveBeenCalledWith('sv')
-  })
-
-  it('lets a user skip the carousel rather than trapping them in it', () => {
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    advanceToAgeStep()
-    expect(screen.getByText(/When were you born/i)).toBeTruthy()
-  })
-
-  it('asks for a birth year and never asks whether the user is over 13', () => {
-    // A yes/no gate teaches a ten-year-old that lying gets them in. It is useless as
-    // compliance and a bad first thing to teach a child.
-    const { container } = render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    advanceToAgeStep()
-    expect(container.textContent).not.toMatch(/over 13|13\+|are you over/i)
-  })
-
-  it('cannot continue past the age gate without an answer', () => {
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    advanceToAgeStep()
-    const next = screen.getByRole('button', { name: 'Continue' })
-    expect(next.getAttribute('aria-disabled')).toBe('true')
-  })
-
-  it('explains the child experience as something we do for them', () => {
-    const { container } = render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    advanceToAgeStep()
-    pickYear(YEAR - (CHILD_AGE - 3)) // comfortably a child
-    expect(screen.getByText(/keep things simple/i)).toBeTruthy()
-    // No shame words, no "not allowed", no "restricted".
-    expect(container.textContent).not.toMatch(/not allowed|restricted|too young/i)
-  })
-
-  it('does not offer sign-in to a child', () => {
-    // There is no account for them to already have, and offering one offers a flow
-    // we would have to refuse.
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} onSignIn={vi.fn()} />)
-    advanceToAgeStep()
-    pickYear(YEAR - (CHILD_AGE - 3))
-    advanceToTaster()
-    expect(screen.queryByRole('button', { name: /already have an account/i })).toBeNull()
-  })
-
-  it('offers sign-in to an adult', () => {
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} onSignIn={vi.fn()} />)
-    advanceToAgeStep()
-    pickYear(YEAR - 30)
-    advanceToTaster()
-    expect(screen.getByRole('button', { name: /already have an account/i })).toBeTruthy()
-  })
-
-  it('reports the birth year, the child flag and the goal exactly once', () => {
-    const onFinish = vi.fn()
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={onFinish} />)
-    advanceToAgeStep()
-    pickYear(YEAR - 30)
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
-    // Goal cards expose their selected state to assistive technology.
-    expect(screen.getByRole('radio', { name: /10 min/ }).getAttribute('aria-checked')).toBe('true')
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // goal → region
-    answer('Europe') // select a region
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // confirm region
-    // Left on the slider's default. Moving it means a drag across a track whose width
-    // jsdom reports as zero, so the honest place to exercise the gesture is the e2e run,
-    // which drives a real pointer across a real layout and asserts the value changed.
-    // `Slider`'s own test covers the index arithmetic.
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → plan
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → taster
-    fireEvent.click(screen.getByRole('button', { name: /Start learning/i }))
-
-    expect(onFinish).toHaveBeenCalledTimes(1)
-    expect(onFinish).toHaveBeenCalledWith({
-      birthYear: YEAR - 30,
-      isChild: false,
-      // Keep the documented defaults for daily pace and starting level.
-      dailyGoalMinutes: 10,
-      language: 'en',
-      startRegion: 'EU',
-      level: 'some',
-    })
-  })
-
-  it('offers the default already chosen, so agreeing costs one tap and no thought', () => {
-    // Continue accepts the documented default without requiring a selection change.
-    const onFinish = vi.fn()
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={onFinish} />)
-    advanceToAgeStep()
-    pickYear(YEAR - 30)
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
-
-    // Ten minutes is selected before any preference is expressed.
-    expect(screen.getByRole('radio', { name: /10 min/ }).getAttribute('aria-checked')).toBe('true')
-
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // the no-opinion path
-    answer('Europe')
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // confirm region
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → plan
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → taster
-    fireEvent.click(screen.getByRole('button', { name: /Start learning/i }))
-    expect(onFinish.mock.calls[0]![0].dailyGoalMinutes).toBe(10)
-  })
-
-  it('keeps goal and region choices visible until Continue, and remembers edits', () => {
-    const onFinish = vi.fn()
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={onFinish} />)
-    advanceToAgeStep()
-    pickYear(YEAR - 30)
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-    answer(/20 min/)
-    expect(screen.getByRole('radio', { name: /20 min/ }).getAttribute('aria-checked')).toBe('true')
-    expect(screen.getByRole('radio', { name: /10 min/ }).getAttribute('aria-checked')).toBe('false')
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-    answer('Europe')
-    expect(screen.getByRole('radio', { name: 'Europe' }).getAttribute('aria-checked')).toBe('true')
-    answer('Asia')
-    expect(screen.getByRole('radio', { name: 'Europe' }).getAttribute('aria-checked')).toBe('false')
-    expect(screen.getByRole('radio', { name: 'Asia' }).getAttribute('aria-checked')).toBe('true')
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Back' }))
-    expect(screen.getByRole('radio', { name: 'Asia' }).getAttribute('aria-checked')).toBe('true')
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-    fireEvent.click(screen.getByRole('button', { name: /Start learning/i }))
-    expect(onFinish).toHaveBeenCalledWith(expect.objectContaining({ dailyGoalMinutes: 20, startRegion: 'AS' }))
-  })
-
-  it('reaches every year in one gesture, with no second step in the way', () => {
-    // The chip grid needed a decade before it would show a year, because twenty-one
-    // buttons was already more than a 320 pt screen could hold — and at 320 the oldest
-    // two decades rendered behind the Continue button anyway. A wheel has no such
-    // ceiling: every row exists from the moment the step opens.
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    advanceToAgeStep()
-    for (const year of [YEAR, 1996, 1985, YEAR - 100]) {
-      expect(screen.getByRole('radio', { name: String(year) })).toBeTruthy()
-    }
-  })
-
-  it('pre-selects no year, because that would nudge the one answer that must not be', () => {
-    // The birth year decides whether a child gets the child experience. A wheel always
-    // shows SOMETHING, so the row it opens on is an explicit empty one rather than a
-    // plausible year the user never chose.
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    advanceToAgeStep()
-    expect(screen.getByRole('radio', { name: 'Choose a year' }).getAttribute('aria-checked')).toBe(
-      'true',
-    )
-    for (const year of [YEAR, 1996, 1985]) {
-      expect(screen.getByRole('radio', { name: String(year) }).getAttribute('aria-checked')).toBe(
-        'false',
-      )
-    }
-  })
-
-  it('never offers a year in the future', () => {
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    advanceToAgeStep()
-    expect(screen.getByRole('radio', { name: String(YEAR) })).toBeTruthy()
-    expect(screen.queryByRole('radio', { name: String(YEAR + 1) })).toBeNull()
-  })
-
-  it('reaches back far enough for a real person to answer honestly', () => {
-    // A picker that cannot express a user's age is a picker that makes them lie. The
-    // oldest verified people alive are past 115.
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    advanceToAgeStep()
-    expect(screen.getByRole('radio', { name: String(YEAR - 100) })).toBeTruthy()
-    expect(screen.queryByRole('radio', { name: String(YEAR - 101) })).toBeNull()
-  })
-
-  it('lets the answer be taken back without stranding Continue on a stale year', () => {
-    // The chip version had to drop a chosen year when the decade changed underneath it,
-    // or Continue stayed enabled carrying a year the user could no longer see. The
-    // wheel cannot get into that state — but returning to the empty row must still
-    // disable Continue, which is the same invariant from the other side.
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    advanceToAgeStep()
+  it('keeps the selected year when going back, but clearing it disables Continue', () => {
+    mount()
+    click('Get started')
     pickYear(1996)
-    // Absent, not "false" — an enabled control simply carries no aria-disabled.
-    expect(screen.getByRole('button', { name: 'Continue' }).getAttribute('aria-disabled')).toBeNull()
-
+    click('Continue')
+    click('Back')
+    expect(screen.getByRole('radio', { name: '1996' }).getAttribute('aria-checked')).toBe('true')
     fireEvent.click(screen.getByRole('radio', { name: 'Choose a year' }))
-    expect(screen.getByRole('button', { name: 'Continue' }).getAttribute('aria-disabled')).toBe(
-      'true',
-    )
-  })
-
-  it('names the wheel, so it does not announce as "radiogroup"', () => {
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    advanceToAgeStep()
-    expect(screen.getByRole('radiogroup', { name: 'Year' })).toBeTruthy()
-  })
-
-  it('keeps every slide reachable by swipe as well as by tap', () => {
-    // The carousel used to advance only on a tap: three slides, page dots underneath,
-    // and no gesture at all. All three pages are mounted in the pager, which is what
-    // makes a swipe possible — and is why this asserts on presence rather than on
-    // visibility, since jsdom has no viewport to be outside of.
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    // Past the greeting and the language step, which are what the flow opens on.
-    getStarted()
-    answer('English')
-    expect(screen.getByText(/Explore countries/i)).toBeTruthy()
-    expect(screen.getByText(/Practice daily/i)).toBeTruthy()
-    expect(screen.getByText(/Your world/i)).toBeTruthy()
-    expect(screen.getAllByRole('tab')).toHaveLength(3)
-  })
-
-  it('can take back an answer that navigated away on its own', () => {
-    // The pair that makes auto-advance safe. An answer now commits on the tap that
-    // leaves the step, so without a way back the flow is seven irreversible decisions —
-    // and the one thing a user does after a mis-tap is look for the way back.
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    advanceToAgeStep()
-    pickYear(YEAR - 30)
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
-    expect(screen.getByRole('radiogroup', { name: 'How much a day?' })).toBeTruthy()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Back' })) // goal → age
-    expect(screen.getByRole('radiogroup', { name: 'Year' })).toBeTruthy()
-    // And the year is still the one they picked, not reset by the round trip.
-    expect(screen.getByRole('radio', { name: String(YEAR - 30) }).getAttribute('aria-checked')).toBe(
-      'true',
-    )
-  })
-
-  it('never shows a back control that cannot go back', () => {
-    // This used to assert the opposite — a chevron dimmed on step one, "disabled, not
-    // absent", so nobody learns it as a control that might vanish. The welcome frame
-    // removed the case rather than the principle: the one step with nothing behind it
-    // draws no chrome bar at all, so every chevron the user ever sees is live.
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    expect(screen.queryByRole('button', { name: 'Back' })).toBeNull()
-
-    getStarted() // → language
-    expect(screen.getByRole('button', { name: 'Back' }).getAttribute('aria-disabled')).toBeNull()
-    answer('English') // → slides
-    expect(screen.getByRole('button', { name: 'Back' }).getAttribute('aria-disabled')).toBeNull()
-  })
-
-  it('walks all the way back to the first question', () => {
-    // One step per press, never out of the flow — the semantics this file's header
-    // argued for and never built.
-    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    advanceToAgeStep()
-    expect(screen.getByText(/When were you born/i)).toBeTruthy()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Back' })) // age → slides
-    expect(screen.getByText(/Explore countries/i)).toBeTruthy()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Back' })) // slides → language
-    expect(screen.getByText(/Choose your language/i)).toBeTruthy()
-
-    // And one more, out of the questions and back to the greeting — where the chrome
-    // stops rather than the chevron dimming. See the test above.
-    fireEvent.click(screen.getByRole('button', { name: 'Back' })) // language → welcome
+    expect(screen.getByRole('button', { name: 'Continue' }).getAttribute('aria-disabled')).toBe('true')
+    click('Back')
     expect(screen.getByRole('button', { name: 'Get started' })).toBeTruthy()
-    expect(screen.queryByRole('button', { name: 'Back' })).toBeNull()
-  })
-
-  it('leaves no raw key or unformatted placeholder on screen', () => {
-    const { container } = render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    expect(container.textContent).not.toMatch(/\bonboarding:[a-z]/)
-    expect(container.textContent).not.toMatch(/\{[a-zA-Z_]+[,}]/)
   })
 })
 
-/**
- * The promise on the third slide.
- *
- * This is the assertion that stops a number in the copy outrunning the content again.
- * The slide read "195 flags. 195 capitals." — the count of UN member states, and the
- * right number for the app this becomes — while the packs held 65 and Explore said so
- * two screens later. Nothing failed, because a translated string is not typechecked
- * against a JSON file.
- *
- * It asserts against `COUNTRY_COUNT` rather than against 65, so adding the 66th country
- * moves the slide and this test together and neither has to be remembered.
- */
-describe('the third slide promises what the app actually ships', () => {
-  // The content graph is the heaviest import in the app; loading it cold inside a test
-  // below spent that test's whole 5-second budget on a loaded machine (25 Sep 2026).
-  beforeAll(async () => {
-    await import('../../lib/content.js')
-  }, 60_000)
-
-  // The carousel is two steps in and the answer beat is a real `setTimeout`, so these
-  // need the same fake clock every other navigating test in this file uses.
-  beforeEach(() => {
-    vi.useFakeTimers()
-  })
-  afterEach(() => {
-    vi.useRealTimers()
-  })
-
-  it('states the build\'s own country count', async () => {
-    const { COUNTRY_COUNT } = await import('../../lib/content.js')
-    render(
-      <OnboardingScreen
-        currentYear={2026}
-        language="en"
-        onLanguage={() => {}}
-        onFinish={() => {}}
-        countryCount={COUNTRY_COUNT}
-      />,
-    )
-    // The flow OPENS on a greeting and then the language picker, not on the carousel —
-    // the slides are the one place prose is doing the work, so they come after the step
-    // that chooses the language they are in. Reached the way a user reaches them.
-    getStarted()
-    answer('English')
-    expect(screen.getByText(new RegExp(`${COUNTRY_COUNT} countries`))).toBeTruthy()
-  })
-
-  it('names no country count the packs cannot back', () => {
-    // The specific defect, guarded directly: 195 must not appear unless 195 ship.
-    const { container } = render(
-      <OnboardingScreen
-        currentYear={2026}
-        language="en"
-        onLanguage={() => {}}
-        onFinish={() => {}}
-        countryCount={65}
-      />,
-    )
-    getStarted()
-    answer('English')
-    expect(container.textContent).not.toMatch(/195/)
-  })
-})
-
-describe('readOnboarding — the flag that decides a privacy question', () => {
+describe('readOnboarding â€” the flag that decides a privacy question', () => {
   const KEY = 'onboarding.v1'
 
   beforeEach(() => clearAll())
@@ -496,7 +111,7 @@ describe('readOnboarding — the flag that decides a privacy question', () => {
   ])('runs the age gate again rather than guessing, for %s', (_label, stored) => {
     // `_layout` does `if (completed && isChild !== undefined) setChildAccount(isChild)`,
     // and a cast let a non-boolean through that gate. The failure direction happened to
-    // be safe — `track()` tests `!== false` — but "happens to fail safe" is not the same
+    // be safe â€” `track()` tests `!== false` â€” but "happens to fail safe" is not the same
     // claim as "cannot be wrong", and this decides whether a ten-year-old's device talks
     // to a third party. Asking once more is the correct cost.
     writeJson(KEY, stored)

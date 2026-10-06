@@ -6,7 +6,7 @@
   "onboarding:slide.3.title": "Din värld",
   "onboarding:slide.3.body": "{count, plural, one {# land. Flaggor och huvudstäder.} other {# länder. Flaggor och huvudstäder.}}",
   "onboarding:cta.next": "Nästa",
-  "onboarding:welcome.body": "Jag heter Atlas. Upptäck länder, lär dig flaggor och utforska lite mer varje dag.",
+  "onboarding:welcome.body": "Upptäck världen med Atlas, en kort lektion i taget.",
   "onboarding:cta.start": "Kom igång",
   "onboarding:cta.haveAccount": "Jag har redan ett konto",
   "onboarding:cta.skip": "Hoppa över",
@@ -77,5 +77,9 @@
   "onboarding:demo.answer": "Det här är {country}.",
   "onboarding:demo.answer__note": "Optional first flag demonstration before preferences. Country is a localized bundled country name. No progress or rewards are saved.",
   "onboarding:demo.noScore": "Bara övning. Inga förlorade hjärtan eller poäng.",
-  "onboarding:demo.noScore__note": "Optional first flag demonstration before preferences. Country is a localized bundled country name. No progress or rewards are saved."
+  "onboarding:demo.noScore__note": "Optional first flag demonstration before preferences. Country is a localized bundled country name. No progress or rewards are saved.",
+  "onboarding:language.change": "Språk",
+  "onboarding:language.change__note": "Optional language picker on the welcome screen. Button label.",
+  "onboarding:taster.preferences": "Börja utforska nu. Du kan ändra tempo och nivå i Inställningar när du vill.",
+  "onboarding:taster.preferences__note": "Before the first lesson. Preferences are optional and can be changed later."
 }
