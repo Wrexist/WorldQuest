@@ -196,6 +196,7 @@ export default function LessonRoute() {
         // "there's nothing to buy here yet" is a dead end App Review rejects (2.1) and
         // a learner reads as a bait-and-switch. Never to a subscriber, never to a child.
         const steps = planAfterLesson({
+          firstSession: taster === '1',
           revealJourney: credited,
           completed,
           countedTodayBefore: receipt?.streak ? !receipt.streak.extended : countedTodayBefore,

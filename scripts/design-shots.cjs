@@ -456,8 +456,8 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     return false
   }
 
-  const shootLessonPhases = async (page, shot) => {
-    await page.goto(`http://localhost:${PORT}/lesson`, { waitUntil: 'networkidle' })
+  const shootLessonPhases = async (page, shot, current = false) => {
+    if (!current) await page.goto(`http://localhost:${PORT}/lesson`, { waitUntil: 'networkidle' })
     await page.waitForTimeout(1600)
     await beginLesson(page, shot)
 
@@ -525,7 +525,34 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     await page.waitForTimeout(1600)
     await beginLesson(page, shot)
     for (let beat = 0; beat < 6; beat++) {
-      if ((await page.getByTestId('streak-extended').count()) > 0) {
+      if ((await page.getByTestId('journey-ready').count()) > 0) {
+        await shot('first-session-next-challenge')
+        if (process.env.WQ_FIRST_SESSION_ONLY === '1') {
+          const assertActions = async () => {
+            for (const action of [page.getByTestId('journey-start'), page.getByRole('button', { name: 'Back to my journey', exact: true })]) {
+              const box = await action.boundingBox()
+              if (!box || box.y < 0 || box.y + box.height > page.viewportSize().height + 1) throw new Error('Next-lesson action is below the viewport')
+            }
+          }
+          await assertActions()
+          if (page.viewportSize().width === 320) {
+            await page.evaluate(() => {
+              const sizes = [...document.querySelectorAll('*')].map(node => [node, parseFloat(getComputedStyle(node).fontSize), parseFloat(getComputedStyle(node).lineHeight)])
+              for (const [node, font, line] of sizes) {
+                if (Number.isFinite(font)) node.style.setProperty('font-size', `${font * 2}px`, 'important')
+                if (Number.isFinite(line)) node.style.setProperty('line-height', `${line * 2}px`, 'important')
+              }
+            })
+            await assertActions()
+            await shot('first-session-next-challenge-large-text')
+          }
+        }
+        await page.getByTestId('journey-start').click()
+        await page.waitForTimeout(1200)
+        if (!(await questionShown(page))) throw new Error('The next challenge did not open a second lesson')
+        await shot('first-session-second-lesson')
+        break
+      } else if ((await page.getByTestId('streak-extended').count()) > 0) {
         await shot('streak-extended')
         await page.getByTestId('streak-extended').getByText('Continue', { exact: true }).click()
       } else if ((await page.getByTestId('achievement-unlocked').count()) > 0) {
@@ -605,6 +632,14 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     }
 
     await completeOnboarding(page, SHOOT_FLOWS ? shot : async () => {})
+    if (process.env.WQ_FIRST_SESSION_ONLY === '1') {
+      await shootLessonPhases(page, shot, true)
+      if (!report.states['first-session-second-lesson']?.[viewport.name]) throw new Error('First session did not reach lesson two')
+      report.flowShots ??= {}
+      report.flowShots[viewport.name] = taken
+      await page.close()
+      continue
+    }
     if (process.env.WQ_LOCALE === 'sv') {
       await page.goto(`http://localhost:${PORT}/settings`, { waitUntil: 'networkidle' })
       await page.getByRole('radio', { name: 'Svenska', exact: true }).click()

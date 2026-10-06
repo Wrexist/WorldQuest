@@ -13,7 +13,7 @@
   "onboarding:slide.3.body__note": "Short onboarding slide copy. Must fit the 320-point carousel at 200% text. No guaranteed learning speed, retention or full-world coverage; count comes from this build.",
   "onboarding:cta.next": "Next",
   "onboarding:cta.next__note": "Advances to the next onboarding slide.",
-  "onboarding:welcome.body": "I'm Atlas. Discover countries, learn flags, and explore a little more every day.",
+  "onboarding:welcome.body": "Discover the world with Atlas, one short lesson at a time.",
   "onboarding:welcome.body__note": "First welcome screen, below WorldQuest and the clay Atlas hero. Introduces the guide and gives a short, concrete learning promise. Keep it welcoming and concise; no artificial urgency.",
   "onboarding:cta.start": "Get started",
   "onboarding:cta.start__note": "Primary button on the welcome frame — the first thing anybody ever taps. Moved here from the last value slide, which now says Continue like every other forward step: two buttons reading \"Get started\" in one flow is one of them lying about being the start.",
@@ -118,5 +118,9 @@
   "onboarding:demo.answer": "This is {country}.",
   "onboarding:demo.answer__note": "Optional first flag demonstration before preferences. Country is a localized bundled country name. No progress or rewards are saved.",
   "onboarding:demo.noScore": "Just practice. No hearts lost, no score.",
-  "onboarding:demo.noScore__note": "Optional first flag demonstration before preferences. Country is a localized bundled country name. No progress or rewards are saved."
+  "onboarding:demo.noScore__note": "Optional first flag demonstration before preferences. Country is a localized bundled country name. No progress or rewards are saved.",
+  "onboarding:language.change": "Language",
+  "onboarding:language.change__note": "Optional language picker on the welcome screen. Button label.",
+  "onboarding:taster.preferences": "Start exploring now. Change your pace and level any time in Settings.",
+  "onboarding:taster.preferences__note": "Before the first lesson. Preferences are optional and can be changed later."
 }

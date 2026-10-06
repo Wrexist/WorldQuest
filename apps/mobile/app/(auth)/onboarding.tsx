@@ -11,7 +11,6 @@ import { router } from 'expo-router'
 import { OnboardingScreen, type OnboardingResult } from '../../src/features/onboarding/OnboardingScreen.js'
 import { useOnboarding } from '../../src/features/onboarding/useOnboarding.js'
 import { usePreferences } from '../../src/features/settings/usePreferences.js'
-import { COUNTRY_COUNT } from '../../src/lib/content.js'
 
 export default function OnboardingRoute() {
   const { complete } = useOnboarding()
@@ -20,27 +19,9 @@ export default function OnboardingRoute() {
   const finish = (result: OnboardingResult): void => {
     complete(result)
 
-    /**
-     * The two content answers, stored where the lesson composer can read them.
-     *
-     * `startRegion` and `level` are the whole reason those two steps exist — an
-     * onboarding question whose answer goes nowhere is a form, not an onboarding, and
-     * this repo has spent a month finding capabilities that shipped unwired. Home reads
-     * both when it composes the first lessons; both stop mattering once the scheduler
-     * has real answers to work from.
-     */
-    set('startRegion', result.startRegion)
-    set('startLevel', result.level)
-    // The goal was chosen here; Settings and the reminder scheduler read it from
-    // preferences. Writing it in two places would let them disagree.
-    set('dailyGoalMinutes', result.dailyGoalMinutes)
-
-    // Straight into the taster lesson — not to Home. The promise on the previous
-    // screen was "one short lesson, no account needed", and landing on Home instead
-    // would break it at the exact moment trust is being established.
-    // `?taster=1` so the lesson knows it is THE activation moment. Same runner, same
-    // course step, same scoring — the flag only changes what is recorded, which is why it is
-    // a query param like `mode` rather than a second route.
+    // Fresh installs use defaults; replaying the intro preserves saved preferences.
+    // The same course lesson and scoring run here. The taster flag keeps its first
+    // completion focused on the next challenge instead of additional offers.
     router.replace('/lesson?taster=1')
   }
 
@@ -52,16 +33,7 @@ export default function OnboardingRoute() {
       // redraws this screen in the chosen language before the finger lifts.
       onLanguage={(choice) => set('language', choice)}
       onFinish={finish}
-      // The build's own count, so the third slide's promise cannot outrun the packs.
-      countryCount={COUNTRY_COUNT}
-      /**
-       * "I already have an account" — a button that has been in this screen, correctly
-       * hidden for children, and wired to nothing since it was written.
-       *
-       * `push`, not `replace`: someone who taps this by mistake, or who turns out not to
-       * have an account after all, has to be able to come back to the taster lesson. The
-       * account screen's own back control is what returns them.
-       */
+      // Returning sign-in has its own age safeguard. Push allows returning to welcome.
       onSignIn={() => router.push('/account?mode=signIn')}
     />
   )

@@ -232,25 +232,8 @@ async function waitFor(check, ms) {
       await on.waitForTimeout(1500)
       await on.getByRole('button', { name: 'Get started' }).first().click()
       await on.waitForTimeout(400)
-      const language = on.getByRole('radio', { name: 'English' }).first()
-      if ((await language.count()) > 0) { await language.click(); await on.waitForTimeout(700) }
-      for (let i = 0; i < 2; i++) { await on.getByText('Next', { exact: true }).first().click(); await on.waitForTimeout(400) }
-      await on.getByText('Continue', { exact: true }).first().click()
-      await on.waitForTimeout(600)
       await on.getByRole('radio', { name: String(new Date().getFullYear() - age) }).click()
       await on.waitForTimeout(300)
-      await on.getByText('Continue', { exact: true }).first().click()
-      await on.waitForTimeout(600)
-      // Ten minutes is the selected clay card; accepting it still uses Continue.
-      await on.getByRole('radio', { name: /^10 min,/ }).waitFor()
-      await on.getByText('Continue', { exact: true }).first().click()
-      await on.waitForTimeout(600)
-      await on.getByRole('radio', { name: 'Europe' }).first().click()
-      // Region choices remain on screen until explicitly confirmed.
-      await on.getByText('Continue', { exact: true }).first().click()
-      await on.waitForTimeout(700)
-      await on.getByText('Continue', { exact: true }).first().click()
-      await on.waitForTimeout(600)
       await on.getByText('Continue', { exact: true }).first().click()
       await on.waitForTimeout(600)
       await on.getByText('Start learning', { exact: true }).first().click()
@@ -328,10 +311,9 @@ async function waitFor(check, ms) {
       `xp ${account.xp}, streak ${account.streak}`)
 
     await page.getByTestId('summary-continue').click()
-    const beat = await waitFor(async () => (await page.getByTestId('streak-extended').count()) > 0, 5000)
-    step('the streak beat follows the day\'s first lesson', beat)
-    await shot('streak-extended')
-    if (beat) await page.getByTestId('streak-extended').getByText('Continue', { exact: true }).click()
+    const beat = await waitFor(async () => (await page.getByTestId('journey-ready').count()) > 0, 5000)
+    step('the first lesson leads directly to its next challenge', beat)
+    await shot('first-lesson-next-challenge')
     await page.waitForTimeout(1500)
     // The rest of the after-lesson chain, whichever beats this lesson earned: badge
     // cards and, for a guest adult, the create-profile ask. Walked until the tab bar.
