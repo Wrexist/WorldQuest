@@ -14,6 +14,14 @@ const BADGE = { achievementId: 'ach.flags.collector', tier: 'bronze' as const }
 const OTHER = { achievementId: 'ach.lessons.done', tier: 'silver' as const }
 
 describe('planAfterLesson', () => {
+  it('takes the first completed lesson straight to its real next challenge, without offers', () => {
+    expect(planAfterLesson({ ...base, firstSession: true, revealJourney: true,
+      questCompleted: true, unlocked: 2, offerProfile: true, offerPaywall: true })).toEqual(['journey'])
+    expect(planAfterLesson({ ...base, firstSession: true, revealJourney: false })).toEqual([])
+  })
+  it('does not reveal the next challenge after an unfinished taster', () => {
+    expect(planAfterLesson({ ...base, firstSession: true, completed: false, revealJourney: true })).toEqual([])
+  })
   it('reveals the next course lesson after the rewards and offers', () => {
     expect(planAfterLesson({ ...base, questCompleted: true, unlocked: 1, offerProfile: true, offerPaywall: true, revealJourney: true }))
       .toEqual(['streak', 'quest', 'achievements', 'profile', 'paywall', 'journey'])

@@ -23,16 +23,17 @@ if we're slower, we're showing a loading screen and calling it branding.
 cached Home).
 
 ### 2. Onboarding
-Welcome also offers an optional **Try a question** demonstration: learn a bundled
-flag/name pair, recall it, then receive immediate feedback. It precedes preference
-questions and has no hearts, rewards, tracking or saved mastery. Continue returns
-to language/setup; Back returns to welcome. The normal setup path remains available.
-3 value slides → age gate → daily goal picker → **taster lesson** → optional sign-up.
-`Get Started` (blue) · `I already have an account`.
-**The rule:** the user completes a real lesson *before* we ask for an account. This is
-the single highest-leverage conversion decision in the app.
-**Age gate:** neutral date-of-birth entry, no "are you over 13?" — under-13 branches
-to the child flow (no social, no third-party analytics, parental email for consent).
+Welcome shows the clay Atlas and one primary Get started action. Language and a
+practice question are optional. The required path is welcome -> birth-year entry ->
+first-lesson invitation -> real lesson. Pace and level remain editable in Settings;
+replaying onboarding preserves existing preferences. Returning sign-in is on welcome.
+The demo teaches one flag/name pair without saving mastery or rewards, then continues
+to the same age safeguard. The first completed lesson goes from its summary directly
+to the next actual course challenge, with a choice to return Home. Earned streaks,
+quest rewards and badges remain saved; additional celebration screens and profile
+requests are deferred. A later lesson may show pending badges.
+**Age gate:** neutral birth-year entry, no preselected age; child privacy safeguards
+are unchanged. Neither account creation nor payment is required to begin learning.
 
 ### 3. Home
 The current-step card leads with the next discovery, the actual course position and

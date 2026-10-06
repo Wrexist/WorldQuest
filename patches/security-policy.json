@@ -55,6 +55,18 @@
         "lib/parse.js": "ef9b3851f848460daaf91ff248222a43e266f97c4f2df7010cb7858e1e39a107",
         "lib/stringify.js": "c20d246d814b1c8e0db98111d9c7480c8e9efc3f1cd702ba2cec7b19f4db20c0"
       }
+    },
+    {
+      "package": "sprintf-js@1.0.3",
+      "module": "sprintf-js",
+      "file": "patches/sprintf-js@1.0.3.patch",
+      "sha256": "e95b5bc5a724d821e68bb06254eb84b83fc0d915dfea9a23ac98a25ef8947c4a",
+      "advisories": [
+        "GHSA-hp3w-g68c-fv3c"
+      ],
+      "installedFiles": {
+        "src/sprintf.js": "59b11c3d5daaa120e28d92f6b4eadaf81e5db559e660df3e06692e772bd2df79"
+      }
     }
   ]
 }

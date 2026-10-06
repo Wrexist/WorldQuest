@@ -16,7 +16,9 @@
       "js-yaml@4": "4.3.2",
       "xcode>uuid": "11.1.1",
       "undici@6": "6.28.1",
-      "undici@7": "7.29.1"
+      "undici@7": "7.29.1",
+      "source-map-js@1": "1.2.2",
+      "compression@1": "1.8.2"
     },
     "patchedDependencies": {
       "expo-gl@16.0.10": "patches/expo-gl@16.0.10.patch",
@@ -24,7 +26,8 @@
       "decode-uri-component@0.2.2": "patches/decode-uri-component@0.2.2.patch",
       "expo-secure-store@15.0.8": "patches/expo-secure-store@15.0.8.patch",
       "node-forge@1.4.0": "patches/node-forge@1.4.0.patch",
-      "braces@3.0.3": "patches/braces@3.0.3.patch"
+      "braces@3.0.3": "patches/braces@3.0.3.patch",
+      "sprintf-js@1.0.3": "patches/sprintf-js@1.0.3.patch"
     }
   },
   "engines": {

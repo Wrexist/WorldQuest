@@ -1,13 +1,10 @@
 /**
  * What follows a finished lesson, in order.
  *
- * Duolingo's end-of-lesson rhythm is a short run of full screens, each about one
- * thing: the lesson (the summary), the day (the streak), the daily quest, a badge when
- * one landed, and only then anything we want from the learner — a profile, and a
- * paywall when there is something to sell. WorldQuest keeps that order because each
- * beat means something different — collapsed into one screen, a quest bonus reads as
- * lesson XP and a streak reads as a score. And the asks come last because a
- * celebration you have to get past an offer to reach is not a celebration.
+ * The first completed lesson leads directly from its summary to the real next
+ * challenge. Rewards are persisted before this presentation decision; pending
+ * badges stay queued until their cards are shown after a later lesson.
+ * Later lessons retain separate streak, quest and achievement celebrations.
  *
  * Pure, so the order is testable without a router. The route asks for a plan and
  * walks it; each step forwards the rest with `nextAfterLesson`.
@@ -37,6 +34,8 @@ const PATHS: Record<AfterLessonStep, string> = {
 }
 
 export type AfterLessonInput = {
+  /** The first lesson goes from its summary to the next challenge. Rewards stay saved. */
+  readonly firstSession?: boolean
   /** Show the real next course challenge after a credited course lesson. */
   readonly revealJourney?: boolean
   /** Finished rather than ended early. An abandoned lesson is not a day's activity. */
@@ -59,6 +58,7 @@ export type AfterLessonInput = {
 }
 
 export function planAfterLesson(input: AfterLessonInput): readonly AfterLessonStep[] {
+  if (input.firstSession && input.completed) return input.revealJourney ? ['journey'] : []
   const steps: AfterLessonStep[] = []
   // Once a day, the first finished lesson — the moment the streak actually moves.
   if (input.completed && !input.countedTodayBefore) steps.push('streak')

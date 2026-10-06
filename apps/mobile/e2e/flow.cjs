@@ -474,22 +474,7 @@ const skip = (name, why) => {
     // than a way to survive its absence. `count()` does not wait, either; `click()` does.
     await page.getByRole('button', { name: 'Get started' }).first().click()
     await page.waitForTimeout(400)
-    // The language step has no button any more: answering IS the navigation, so the
-    // row is what moves the flow on. This drives it the way a user does rather than
-    // through the shared walker, because the checks below rewind to this point and
-    // assert between steps — see the note on `scripts/lib/onboarding-walk.cjs`.
-    const language = page.getByRole('radio', { name: 'English' }).first()
-    if ((await language.count()) > 0) {
-      await language.click()
-      await page.waitForTimeout(700)
-    }
-    for (let i = 0; i < 2; i++) {
-      await page.getByText('Next', { exact: true }).first().click()
-      await page.waitForTimeout(400)
-    }
-    // `Continue` on the last slide. `Get started` belongs to the welcome frame now.
-    await page.getByText('Continue', { exact: true }).first().click()
-    await page.waitForTimeout(600)
+
   }
 
   await toAgeStep()
@@ -542,66 +527,11 @@ const skip = (name, why) => {
   await page.waitForTimeout(300)
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(600)
-  step('daily goal picker appears', /How much a day|min/i.test(await body()))
-  await page.screenshot({ path: path.join(SHOTS, 'onboarding-goal.png') })
-
-  // Back works, and it works on a step whose answer commits on tap — which is the pair
-  // that makes auto-advance safe rather than a trap. Asserted here rather than in a unit
-  // test as well, because this is the only place the real transition runs.
-  await page.getByRole('button', { name: 'Back' }).first().click()
-  await page.waitForTimeout(700)
-  step('back returns to the previous question', /When were you born/i.test(await body()))
-  await page.getByText('Continue', { exact: true }).first().click()
-  await page.waitForTimeout(600)
-
-  // A card selects a pace without navigating; the chosen state stays inspectable.
-  const seriousGoal = page.getByRole('radio', { name: /20 min/ })
-  await seriousGoal.click()
-  step('the daily goal stays selected until Continue', await seriousGoal.getAttribute('aria-checked') === 'true')
-  await page.getByText('Continue', { exact: true }).first().click()
-  await page.waitForTimeout(600)
-
-  // The two content questions — which continent, and how well do you know the world.
-  // Both are checked rather than clicked through blind: they are the steps whose answers
-  // reach `app/lesson.tsx`, and a step that silently stopped rendering would otherwise
-  // show up here only as a timeout four lines later.
-  step('continent picker appears', (await page.getByRole('radio', { name: 'Europe', exact: true }).count()) > 0)
-  await page.screenshot({ path: path.join(SHOTS, 'onboarding-region.png') })
-  await page.getByRole('radio', { name: 'Europe' }).first().click()
-  step('the region stays selected until Continue', await page.getByRole('radio', { name: 'Europe' }).first().getAttribute('aria-checked') === 'true')
-  await page.getByText('Continue', { exact: true }).first().click()
-  await page.waitForTimeout(700)
-
-  step('starting level appears', /How well do you know the world/i.test(await body()))
-  // The difficulty answer is a real slider. Driven by an actual drag rather than by
-  // tapping its legend, because the drag is the interaction that was added and a test
-  // that only clicked a label would leave the gesture — and the PanResponder wiring
-  // behind it — completely unexercised.
-  const track = await page.getByRole('slider').first().boundingBox()
-  if (track !== null) {
-    await page.mouse.move(track.x + track.width / 2, track.y + track.height / 2)
-    await page.mouse.down()
-    await page.mouse.move(track.x + track.width - 4, track.y + track.height / 2, { steps: 8 })
-    await page.mouse.up()
-    await page.waitForTimeout(300)
-  }
-  step('the difficulty slider answers to a drag', /Bring it on/i.test(await body()))
-  await page.screenshot({ path: path.join(SHOTS, 'onboarding-level.png') })
-  await page.getByText('Continue', { exact: true }).first().click()
-  await page.waitForTimeout(600)
-
-  // The closing step: the answers read back, then straight to the taster.
-  //
-  // There is no premium step here. One was built and removed: `/paywall` already makes
-  // that case AFTER the taster lesson, personalised with the countries the user just
-  // learned, and a flat perk list before the first lesson was a worse version of it in
-  // a worse place.
-  step('the plan reads the answers back', /Here is your plan/i.test(await body()))
-  step('onboarding asks for no money before the first lesson',
-       !/Premium|per month|billed yearly|Try it free/i.test(await body()))
-  await page.screenshot({ path: path.join(SHOTS, 'onboarding-plan.png') })
-  await page.getByText('Continue', { exact: true }).first().click()
-  await page.waitForTimeout(600)
+  step('age setup leads straight to the first lesson invitation', /One short lesson/i.test(await body()))
+  await page.getByRole('button', { name: 'Back', exact: true }).click()
+  step('back keeps the chosen birth year', await page.getByRole('radio', { name: String(adultYear), exact: true }).getAttribute('aria-checked') === 'true')
+  await page.getByRole('button', { name: 'Continue', exact: true }).click()
+  step('onboarding asks for no account or payment', !/create account|per month|billed yearly/i.test(await body()))
 
   step('taster promises a lesson with no account', /no account needed/i.test(await body()))
 
