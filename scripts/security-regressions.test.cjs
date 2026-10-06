@@ -274,6 +274,16 @@ test('xcode resolves patched CommonJS uuid and still generates valid project ide
   identifiers.forEach(id => assert.match(id, /^[A-F0-9]{24}$/))
 })
 
+test('shell quoting rejects line terminators after comment tokens', () => {
+  const { quote, parse } = require('shell-quote')
+  for (const separator of ['\n', '\r', '\u2028', '\u2029']) {
+    assert.throws(() => quote(['echo', 'ok', { comment: 'note' }, 'a' + separator + 'echo unsafe;#']), TypeError)
+  }
+  const tokens = ['echo', 'hello world', "it's safe", 'plain']
+  assert.deepEqual(parse(quote(tokens)), tokens)
+  assert.equal(typeof quote(['echo', 'ok', { comment: 'ordinary comment' }]), 'string')
+})
+
 test('sprintf numeric precision stays bounded without aborting formatting', () => {
   const { sprintf, vsprintf } = require('sprintf-js')
   const value = 1.25
