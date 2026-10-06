@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReportSheet } from './ReportSheet.js'
 
 describe('ReportSheet', () => {
@@ -22,20 +22,31 @@ describe('ReportSheet', () => {
     expect(container.querySelector('input, textarea')).toBeNull()
   })
 
-  // The test's own limit has to cover the two 5 s waits inside it. With vitest's default
-  // 5 s, a slow CI runner killed the test at 5.01 s before its first wait could finish —
-  // the waits were widened for exactly that runner and the test around them never was.
-  it('says plainly when sending failed and keeps the choice for a retry', { timeout: 15_000 }, async () => {
-    const onSend = vi.fn().mockRejectedValueOnce(new Error('offline')).mockResolvedValueOnce(undefined)
+  it('says plainly when sending failed and keeps the choice for a retry', async () => {
+    let rejectFirst!: (error: Error) => void
+    let resolveRetry!: () => void
+    const firstRequest = new Promise<void>((_resolve, reject) => { rejectFirst = reject })
+    const retryRequest = new Promise<void>((resolve) => { resolveRetry = resolve })
+    const onSend = vi.fn().mockReturnValueOnce(firstRequest).mockReturnValueOnce(retryRequest)
     render(<ReportSheet onSend={onSend} onClose={() => {}} />)
     fireEvent.click(screen.getByLabelText('It\'s out of date'))
     fireEvent.click(screen.getByText('Send report'))
-    // Longer than the one-second default: two rejected-then-resolved round trips, and on
-    // a machine running e2e alongside, the first re-render alone has taken over a second.
-    await waitFor(() => expect(screen.getByRole('alert')).toBeTruthy(), { timeout: 5_000 })
-    fireEvent.click(screen.getByText('Send report'))
-    await waitFor(() => expect(screen.getByText('Thank you')).toBeTruthy(), { timeout: 5_000 })
+    const sendButton = screen.getByRole('button', { name: 'Send report' })
+    expect(sendButton.getAttribute('aria-disabled')).toBe('true')
+    fireEvent.click(sendButton)
+    expect(onSend).toHaveBeenCalledTimes(1)
+    // Flush the failed request and Pressable's passive configuration effect together.
+    // Seeing the alert alone does not mean its disabled event handler has updated yet.
+    await act(async () => { rejectFirst(new Error('offline')) })
+    expect(screen.getByRole('alert')).toBeTruthy()
+    expect(screen.getByLabelText("It's out of date").getAttribute('aria-checked')).toBe('true')
+    expect(sendButton.getAttribute('aria-disabled')).not.toBe('true')
+    fireEvent.click(sendButton)
+    expect(onSend).toHaveBeenCalledTimes(2)
     expect(onSend).toHaveBeenLastCalledWith('outdated')
+    expect(sendButton.getAttribute('aria-disabled')).toBe('true')
+    await act(async () => { resolveRetry() })
+    expect(screen.getByText('Thank you')).toBeTruthy()
   })
 
   it('can be left without sending anything', () => {

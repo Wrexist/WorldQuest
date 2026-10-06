@@ -250,6 +250,13 @@ any content fact dropping below 40 % accuracy.
 
 ## 11. Rules
 
+For async retry component tests, settle controlled request promises inside awaited
+`act` calls before pressing again. React Native Web updates Pressable's event
+configuration in a passive effect: an error message can be visible before the
+handler has picked up the enabled state. `ReportSheet.test.tsx` covers pending,
+failure, retained selection, retry, and success this way. Increasing `waitFor`
+timeouts did not fix the intermittent TestFlight verification failure on 2026-10-06.
+
 1. **A bug fix ships with a failing-test-first.** No test, no fix.
 2. **Never skip a test to go green.** Fix it or delete it with a written reason.
 3. **Flaky tests are P1.** A flaky suite is a suite nobody reads.
