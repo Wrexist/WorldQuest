@@ -8,4 +8,6 @@ Both verify jobs on PR #32 stopped at `pnpm security:check` with three new regis
 
 The sprintf patch changes only the package's `src/sprintf.js` runtime entry. The security policy accepts only this exact package/advisory with SHA-256 checks on both the patch and installed source, plus passing behavioral regressions. It does not suppress unrelated findings. Review before **13 October 2026**, replacing the patch when a compatible upstream fix is available.
 
-`pnpm security:check` passes with 13 security regression tests and zero unexpected findings. Registry entries for the existing hash-verified local patches remain visible in the report.
+Later the same day, PR #33 was blocked by newly reviewed [shell-quote command injection](https://github.com/advisories/GHSA-pqg4-j6r4-53mv). The build-tool dependency is pinned to upstream **1.12.0**, which includes the fix introduced in 1.11.0. A regression rejects all four line terminators after comment tokens while preserving ordinary quote/parse round trips. It failed against the former 1.10.0 dependency before the upgrade.
+
+The security suite now contains 14 regression tests. Registry entries for the existing hash-verified local patches remain visible in the report; no advisory exceptions or gate changes were added for shell-quote.
