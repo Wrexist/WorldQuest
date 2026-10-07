@@ -224,7 +224,15 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     }
     const snapshot = await (await call('/v1/learning/state', a.token)).json() as { revision: number; memories: MemoryState[] }
     expect(snapshot.revision).toBe(6)
-    expect(snapshot.memories).toEqual([...rebuilt.values()].sort((a, b) => a.factId.localeCompare(b.factId)))
+    // Identity, counts and timestamps exactly; FSRS's floating-point outputs to 9 digits.
+    // The server's copy of each state is stored between lessons and the replay's is not, so
+    // six reviews in, the two agree to ~1e-14 and not always to the last bit — which failed
+    // the TestFlight gate on a run where CI on the same commit passed (2026-10-07). A
+    // difference that size is no difference in a schedule measured in days.
+    const expected = [...rebuilt.values()].sort((a, b) => a.factId.localeCompare(b.factId))
+    expect(snapshot.memories).toEqual(expected.map(memory => ({ ...memory,
+      stability: expect.closeTo(memory.stability, 9), difficulty: expect.closeTo(memory.difficulty, 9),
+      dueAt: expect.closeTo(memory.dueAt, 3) })))
     expect(await (await call('/v1/learning/history', b.token)).json()).toMatchObject({ events: [], throughRevision: 0 })
     expect(await (await call('/v1/learning/state', b.token)).json()).toMatchObject({ memories: [] })
     expect((await call('/v1/learning/history?through=99999', a.token)).status).toBe(400)
