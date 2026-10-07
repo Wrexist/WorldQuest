@@ -117,6 +117,7 @@
     "apps/mobile/src/components/AnswerOption.test.tsx",
     "apps/mobile/src/components/Art.test.tsx",
     "apps/mobile/src/components/AtlasCharacter.test.tsx",
+    "apps/mobile/src/components/ConfettiBurst.test.tsx",
     "apps/mobile/src/components/ContentGate.test.tsx",
     "apps/mobile/src/components/CountryMap.test.tsx",
     "apps/mobile/src/components/EmptyState.test.tsx",

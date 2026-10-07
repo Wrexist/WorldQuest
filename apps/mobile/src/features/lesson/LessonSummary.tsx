@@ -55,6 +55,7 @@ import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
 import { IslandStage } from '../../components/Scenery.js'
+import { ConfettiBurst } from '../../components/ConfettiBurst.js'
 import { currentLocale, formatNumber, useT } from '../../lib/i18n.js'
 
 /**
@@ -252,6 +253,9 @@ export function LessonSummary({
                 whole headline (owner review, 25 Sep 2026). */}
             <View style={styles.celebration} pointerEvents="none">
               <Art name="celebration/burst" size={CELEBRATION_SIZE} />
+              {/* The still above is the settled frame; this throws real pieces out of
+                  Atlas on top of it, once. Nothing under Reduce Motion. */}
+              <ConfettiBurst size={CELEBRATION_SIZE} />
             </View>
             {/* A perfect lesson gets the laugh: tears of joy, a belly shake. */}
             <IslandStage size={ISLAND_STAGE}><AdventureArt name="explorer" mood="laughing" style={{ width: 96, height: 110 }} /></IslandStage>
