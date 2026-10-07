@@ -17,7 +17,7 @@ import { motion, setAppReducedMotion } from '@worldquest/design'
 import { BALANCE } from '@worldquest/engines'
 import { withFullMotion } from '../../test/setup.js'
 import { SceneEntrance } from '../../components/SceneEntrance.js'
-import { LessonScreen } from './LessonScreen.js'
+import { LessonScreen, WrongFeedback } from './LessonScreen.js'
 import { setLocale } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
 import { enqueueLesson } from '../../lib/sync.js'
@@ -158,6 +158,24 @@ describe('Lesson', () => {
     choose(answerButtons()[wrong]!)
     expect(container.textContent).toMatch(/You picked/)
     expect(container.textContent).not.toMatch(/wrong!|incorrect|oops|failed/i)
+  })
+
+  it('says one short line after a wrong picture answer, and the whole of it to a reader', () => {
+    // Flag answers are labelled with full descriptions, so "You picked …" and "The answer
+    // is …" ran to five lines and pushed the question off a small phone. The pictures are
+    // marked; the sheet points at the tick. A screen reader still hears both sentences.
+    const { container } = render(
+      <WrongFeedback titleRef={null} title="You picked three stripes." body="The answer is a red disc." short="The right one has the tick." />,
+    )
+    expect(container.textContent).toBe('The right one has the tick.')
+    expect(container.querySelector('[aria-label="You picked three stripes. The answer is a red disc."]')).not.toBeNull()
+  })
+
+  it('names both answers in words when there is no picture to point at', () => {
+    const { container } = render(
+      <WrongFeedback titleRef={null} title="You picked Oslo." body="The answer is Stockholm." short={undefined} />,
+    )
+    expect(container.textContent).toBe('You picked Oslo.The answer is Stockholm.')
   })
 
   it('claims no run after one right answer', () => {

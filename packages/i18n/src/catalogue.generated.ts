@@ -698,7 +698,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "intro.position": "Discovery {current} of {total}",
       "intro.previous": "Previous",
       "intro.next": "Next discovery",
-      "combo": "{count, plural, other {# in a row!}}"
+      "combo": "{count, plural, other {# in a row!}}",
+      "feedback.wrong.picture": "The right one has the tick."
     },
     "nav": {
       "home": "Home",
@@ -1820,7 +1821,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "intro.position": "Upptäckt {current} av {total}",
       "intro.previous": "Föregående",
       "intro.next": "Nästa upptäckt",
-      "combo": "{count, plural, other {# i rad!}}"
+      "combo": "{count, plural, other {# i rad!}}",
+      "feedback.wrong.picture": "Rätt svar har bocken."
     },
     "nav": {
       "home": "Hem",

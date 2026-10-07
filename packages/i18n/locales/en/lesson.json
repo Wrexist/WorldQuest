@@ -304,5 +304,7 @@
   "lesson:intro.next": "Next discovery",
   "lesson:intro.next__note": "Optional study deck navigation. Counts unique facts, not answers or earned progress.",
   "lesson:combo": "{count, plural, other {# in a row!}}",
-  "lesson:combo__note": "Small badge under the progress bar after a correct answer, once the learner has three or more right in a row. Celebrates the run; never shown after a miss. Max 14 characters."
+  "lesson:combo__note": "Small badge under the progress bar after a correct answer, once the learner has three or more right in a row. Celebrates the run; never shown after a miss. Max 14 characters.",
+  "lesson:feedback.wrong.picture": "The right one has the tick.",
+  "lesson:feedback.wrong.picture__note": "The whole wrong-answer message when the answers are pictures (today flags; any picture pack later, so do not say 'flag'). The chosen and the right picture are already marked on screen, so this points at the tick instead of describing two pictures in words. Screen readers hear feedback.wrong.title and the body instead. Never 'Wrong!'. Max 32 characters."
 }

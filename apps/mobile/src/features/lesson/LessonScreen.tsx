@@ -1402,30 +1402,42 @@ export function LessonScreen({
             </>
           ) : (
             // Never "Wrong!". State the truth, name the right answer, move on.
-            <>
-              <Text ref={verdict} style={styles.feedbackTitle}>
-                {/* A timeout has no chosen option. "That's undefined." is what the
-                    normal branch would render, and the clock running out is not the
-                    user choosing wrongly — it deserves its own neutral sentence. */}
-                {lastAnswer?.chosenOptionId == null
+            <WrongFeedback
+              titleRef={verdict}
+              title={
+                // A timeout has no chosen option. "That's undefined." is what the
+                // normal branch would render, and the clock running out is not the
+                // user choosing wrongly — it deserves its own neutral sentence.
+                lastAnswer?.chosenOptionId == null
                   ? t('lesson:speed.timeUp')
                   : lastAnswer.typedText !== undefined
                     ? t('lesson:typed.wrong.title', { typed: lastAnswer.typedText })
                     : t('lesson:feedback.wrong.title', {
                         chosen: chosenLabel(question, lastAnswer.chosenOptionId),
-                      })}
-              </Text>
-              <Text style={styles.feedbackBody}>
-                {question.hint
+                      })
+              }
+              body={
+                question.hint
                   ? t('lesson:feedback.wrong.body', {
                       correct: question.options.find((o) => o.isCorrect)?.label ?? '',
                       hint: question.hint,
                     })
                   : t('lesson:feedback.wrong.bodyPlain', {
                       correct: question.options.find((o) => o.isCorrect)?.label ?? '',
-                    })}
-              </Text>
-            </>
+                    })
+              }
+              // Picture answers are labelled with whole flag descriptions, so naming the
+              // chosen one and then the right one ran to five lines of bold text — and
+              // on a small phone pushed the question off screen while the learner read
+              // it (feel audit 2026-10-06). Both flags are already marked on screen, so
+              // the sheet says one short line and lets the pictures do the telling. A
+              // screen reader still hears both full sentences.
+              short={
+                pictureOptions && lastAnswer?.chosenOptionId != null && lastAnswer.typedText === undefined
+                  ? t('lesson:feedback.wrong.picture')
+                  : undefined
+              }
+            />
           )}
               </View>
               </View>
@@ -1677,6 +1689,34 @@ function OfflineBanner() {
 }
 
 
+
+/** The wrong-answer words: a headline and the right answer, or one short line. */
+export function WrongFeedback({
+  titleRef,
+  title,
+  body,
+  short,
+}: {
+  titleRef: React.Ref<Text>
+  title: string
+  body: string
+  short: string | undefined
+}) {
+  const { styles } = useThemeValues()
+  if (short !== undefined) {
+    return (
+      <Text ref={titleRef} style={styles.feedbackTitle} accessibilityLabel={`${title} ${body}`}>
+        {short}
+      </Text>
+    )
+  }
+  return (
+    <>
+      <Text ref={titleRef} style={styles.feedbackTitle}>{title}</Text>
+      <Text style={styles.feedbackBody}>{body}</Text>
+    </>
+  )
+}
 
 /**
  * "3 in a row!" — the run, made visible at the moment it grows (feel audit 2026-10-06,
