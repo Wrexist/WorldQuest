@@ -162,9 +162,14 @@ which made every idle answer option look selected, because blue is the selection
 Luminance is the requirement; hue is free, and the free choice has to be the one that
 means nothing.
 
-**Continent identity** — used only in Explore and on continent chips:
-Europe `#4C7BF3` · Asia `#F59E3C` · Africa `#F2C230` · North America `#3FBF8F` ·
-South America `#E0663D` · Oceania `#39C0D6` · Antarctica `#A7C7E7`
+**Continent identity** — `palette.continent.{EU,AS,AF,NA,SA,OC,AN}` (values in
+`tokens.json`; the hexes once listed here had drifted from it). Used in Explore, on
+continent chips and swatches, and — since October 2026 — as the colour of a course
+unit about that continent. A unit header lays the identity colour over the sky clay at
+`illustration.unitTint` (25% day, 50% night), and the unit's border takes it in full.
+The first week's island units are about no one continent and keep the plain sky.
+`pnpm design:contrast` tests the title and caption on every continent's blend, so a
+stronger tint fails the gate rather than a reader.
 
 ### 1.2 Semantic tokens (what components use)
 

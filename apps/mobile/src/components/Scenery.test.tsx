@@ -10,7 +10,7 @@ import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { Text } from 'react-native'
 import pack from '../../../../packages/content/packs/courses/first-week.v1.json'
-import { FloatingProp, IslandStage, SceneryBanner, isSceneryName } from './Scenery.js'
+import { FloatingProp, IslandStage, SceneryBanner, isSceneryName, sceneryRegion } from './Scenery.js'
 
 describe('Scenery', () => {
   it('knows every scenery the shipped course names', () => {
@@ -38,5 +38,18 @@ describe('Scenery', () => {
     render(<IslandStage size={200}><Text>Atlas</Text></IslandStage>)
     expect(screen.getByText('Atlas')).toBeTruthy()
     expect(screen.getByTestId('island-stage').getAttribute('aria-hidden')).toBe('true')
+  })
+})
+
+describe('the colour a course unit wears', () => {
+  it('is the continent its scenery stands for', () => {
+    expect(sceneryRegion('europe')).toBe('EU')
+    expect(sceneryRegion('north-america')).toBe('NA')
+    expect(sceneryRegion('africa')).toBe('AF')
+  })
+
+  it('is nothing for the first week’s islands, which are about no one continent', () => {
+    expect(sceneryRegion('island')).toBeUndefined()
+    expect(sceneryRegion('discovery-island')).toBeUndefined()
   })
 })

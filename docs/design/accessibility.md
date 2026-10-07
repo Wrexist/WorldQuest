@@ -94,7 +94,8 @@ it reads better than a hyphenated key. They map it to `aria-label` internally.
 
 - **No information conveyed by sound alone.** Every audio cue has a visual and haptic
   twin.
-- Sound is off by default; a one-time prompt offers it.
+- Sound is off by default; a one-time prompt offers it (Home, after the first finished
+  lesson — `useSoundAsk`).
 - Any spoken/narrated content (v3.0 Atlas explanations) ships with captions and a
   transcript.
 

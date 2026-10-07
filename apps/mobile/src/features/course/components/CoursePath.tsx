@@ -57,7 +57,9 @@ export type CoursePathProps = {
    * sits inside the path, once laid out. Home owns the scroll view and brings it into
    * view; this component cannot, and should not know it is in one.
    */
-  readonly onCurrentLayout?: ((y: number, height: number) => void) | undefined
+  // `unitY` is the top of the step's unit banner, so a scroller can land on the banner
+  // edge rather than on a sliver of whatever sits above it.
+  readonly onCurrentLayout?: ((y: number, height: number, unitY?: number) => void) | undefined
 }
 
 export function CoursePath({
@@ -88,7 +90,7 @@ export function CoursePath({
     const at = current.current
     if (at === null || onCurrentLayout === undefined) return
     const top = unitTop.current.get(at.unitId)
-    if (top !== undefined) onCurrentLayout(top + at.y, at.height)
+    if (top !== undefined) onCurrentLayout(top + at.y, at.height, top)
   }, [onCurrentLayout])
 
   if (path.status === 'error') {

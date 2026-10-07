@@ -45,6 +45,7 @@ import {
   staggerStyle,
   text,
   useScaleIn,
+  useCelebration,
   useCountUp,
   useStagger,
 } from '@worldquest/design'
@@ -54,6 +55,7 @@ import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
 import { IslandStage } from '../../components/Scenery.js'
+import { ConfettiBurst } from '../../components/ConfettiBurst.js'
 import { currentLocale, formatNumber, useT } from '../../lib/i18n.js'
 
 /**
@@ -251,6 +253,9 @@ export function LessonSummary({
                 whole headline (owner review, 25 Sep 2026). */}
             <View style={styles.celebration} pointerEvents="none">
               <Art name="celebration/burst" size={CELEBRATION_SIZE} />
+              {/* The still above is the settled frame; this throws real pieces out of
+                  Atlas on top of it, once. Nothing under Reduce Motion. */}
+              <ConfettiBurst size={CELEBRATION_SIZE} />
             </View>
             {/* A perfect lesson gets the laugh: tears of joy, a belly shake. */}
             <IslandStage size={ISLAND_STAGE}><AdventureArt name="explorer" mood="laughing" style={{ width: 96, height: 110 }} /></IslandStage>
@@ -336,6 +341,7 @@ export function LessonSummary({
               <StatTile
                 order={3}
                 value={`+${result.coinsAwarded}`}
+                countTo={wasAbandoned ? undefined : result.coinsAwarded}
                 label={t('lesson:summary.stat.coins')}
                 tint={colors.reward.coin}
                 accessibilityLabel={t('lesson:reward.coins', { amount: result.coinsAwarded })}
@@ -418,6 +424,7 @@ export function LessonSummary({
 function StatTile({
   order,
   value,
+  countTo,
   label,
   tint,
   accessibilityLabel,
@@ -426,13 +433,24 @@ function StatTile({
   /** Its place in the reveal: 1 arrives first, just after the XP card. */
   order: number
   value: string
+  /**
+   * Count up to this from zero once the tile has arrived, then pop — the reward is
+   * earned in front of you rather than printed (feel audit 2026-10-06, gap 2). Shown as
+   * `+n`. The spoken label never counts; it states the final figure.
+   */
+  countTo?: number | undefined
   label: string
   tint: string
   accessibilityLabel: string
   testID: string
 }) {
   const { styles } = useThemeValues()
-  const entrance = useStagger(order, 'expressive', motion.quick.duration + motion.expressive.duration)
+  const delay = motion.quick.duration + motion.expressive.duration
+  const entrance = useStagger(order, 'expressive', delay)
+  // Starts when the tile has finished arriving: its own stagger slot plus its entrance.
+  const arrived = delay + Math.min(order, motion.stagger.maxItems) * motion.stagger.stepMs + motion.expressive.duration
+  const counted = useCountUp(countTo ?? 0, 'expressive', arrived)
+  const landed = useCelebration(countTo !== undefined && countTo > 0 && counted === countTo)
 
   return (
     // The cell moves; the card inside it is the one spoken element, unchanged.
@@ -443,9 +461,9 @@ function StatTile({
         style={styles.tileFace}
         testID={testID}
       >
-        <Text style={[styles.tileValue, { color: tint }]} aria-hidden>
-          {value}
-        </Text>
+        <Animated.Text style={[styles.tileValue, { color: tint, transform: [{ scale: landed }] }]} aria-hidden>
+          {countTo === undefined ? value : `+${counted}`}
+        </Animated.Text>
         <Text style={styles.tileLabel} aria-hidden>
           {label}
         </Text>

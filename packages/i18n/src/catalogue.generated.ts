@@ -500,7 +500,11 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "path.guide.boop": "Atlas, your guide. Tap for a giggle.",
       "path.next": "Your next discovery",
       "path.courseProgress": "Course progress",
-      "path.position": "Step {position} of {total}"
+      "path.position": "Step {position} of {total}",
+      "sound.title": "Lessons with sound?",
+      "sound.body": "A chime for right answers, a soft note for wrong ones. Your silent switch always wins.",
+      "sound.yes": "Turn on sound",
+      "sound.later": "Not now"
     },
     "league": {
       "title": "League",
@@ -693,7 +697,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "review.purpose": "Try it once more to help it stick.",
       "intro.position": "Discovery {current} of {total}",
       "intro.previous": "Previous",
-      "intro.next": "Next discovery"
+      "intro.next": "Next discovery",
+      "combo": "{count, plural, other {# in a row!}}",
+      "feedback.wrong.picture": "The right one has the tick."
     },
     "nav": {
       "home": "Home",
@@ -1617,7 +1623,11 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "path.guide.boop": "Atlas, din guide. Tryck för ett fniss.",
       "path.next": "Din nästa upptäckt",
       "path.courseProgress": "Kursframsteg",
-      "path.position": "Steg {position} av {total}"
+      "path.position": "Steg {position} av {total}",
+      "sound.title": "Lektioner med ljud?",
+      "sound.body": "Ett pling för rätt svar, en mjuk ton för fel. Ljudlöst läge på telefonen gäller alltid.",
+      "sound.yes": "Slå på ljud",
+      "sound.later": "Inte nu"
     },
     "league": {
       "title": "Liga",
@@ -1810,7 +1820,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "review.purpose": "Prova igen så blir det lättare att minnas.",
       "intro.position": "Upptäckt {current} av {total}",
       "intro.previous": "Föregående",
-      "intro.next": "Nästa upptäckt"
+      "intro.next": "Nästa upptäckt",
+      "combo": "{count, plural, other {# i rad!}}",
+      "feedback.wrong.picture": "Rätt svar har bocken."
     },
     "nav": {
       "home": "Hem",

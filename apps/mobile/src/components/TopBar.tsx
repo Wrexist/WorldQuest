@@ -29,8 +29,9 @@ import { createThemeStyles } from '@worldquest/design'
  * learner had picked in Settings. With no `avatar` given it now reads the preference.
  */
 
-import { StyleSheet, View, Pressable, Text, useWindowDimensions } from 'react-native'
-import { Avatar, ClaySurface, clayShadow, depth, layout, radius, space, text } from '@worldquest/design'
+import { useRef } from 'react'
+import { Animated, StyleSheet, View, Pressable, Text, useWindowDimensions } from 'react-native'
+import { Avatar, ClaySurface, clayShadow, depth, layout, radius, space, text, useCelebration } from '@worldquest/design'
 import { Art } from './Art.js'
 import { HeaderJewel } from './HeaderJewel.js'
 
@@ -58,6 +59,19 @@ export type TopBarProps = {
 
 /** Settings glyph inside its full touch target. */
 const GLYPH = 20
+
+/**
+ * How many times `value` has gone UP while mounted — a trigger for `useCelebration`,
+ * which fires on any change. Refs written during render, but idempotent: a repeated
+ * render sees the value it already recorded and counts nothing.
+ */
+function useRises(value: number | undefined): number {
+  const previous = useRef(value)
+  const rises = useRef(0)
+  if (value !== undefined && previous.current !== undefined && value > previous.current) rises.current += 1
+  previous.current = value
+  return rises.current
+}
 
 export function TopBar({
   initials,
@@ -88,6 +102,12 @@ export function TopBar({
   const countedToday = streak !== undefined && lessonsToday() > 0
   const { preferences } = usePreferences()
   const portrait = avatar === undefined ? avatarArt(preferences.avatar) : null
+  // The counter a reward lands in pulses when its number goes up, so the eye follows
+  // what changed — Duolingo's "counter pulses" (feel audit 2026-10-06, gap 2). Only a
+  // rise: spending coins or a reset streak is not a celebration. The tabs stay mounted,
+  // so returning from a lesson to any tab is the change that triggers it.
+  const coinPop = useCelebration(useRises(coins))
+  const streakPop = useCelebration(useRises(streak))
   const image = avatar ?? (portrait !== null ? <Art name={portrait} size={40} /> : undefined)
   // Spread rather than passed: `exactOptionalPropertyTypes` is on, so an explicit
   // `image={undefined}` is a different thing from an absent `image`, and `Avatar`'s
@@ -137,21 +157,21 @@ export function TopBar({
         >
           {/* Named by the Pressable, so the chip inside it is silent, like the avatar.
               The muted number indicates a pending day; the label explains it in words. */}
-          <View style={styles.counterContent} aria-hidden>
+          <Animated.View style={[styles.counterContent, { transform: [{ scale: streakPop }] }]} aria-hidden>
             <ClaySurface tone="ice" radius={radius.full} />
             <HeaderJewel name="flame" size={space[6]} />
             <Text style={[styles.value, styles.streakValue, !countedToday && styles.pending]}>{streakValue}</Text>
-          </View>
+          </Animated.View>
         </Pressable>
       )}
 
       {coins !== undefined && (
         <View accessible aria-label={t('home:stats.coins', { amount: formatNumber(coins, locale) })} style={[styles.counter, styles.coins]} testID="header-coins">
-          <View style={styles.counterContent} aria-hidden>
+          <Animated.View style={[styles.counterContent, { transform: [{ scale: coinPop }] }]} aria-hidden>
             <ClaySurface tone="gold" radius={radius.full} />
             <HeaderJewel name="coins" size={space[6]} />
             <Text style={[styles.value, styles.coinValue]}>{coinValue}</Text>
-          </View>
+          </Animated.View>
         </View>
       )}
       </View>}

@@ -291,3 +291,18 @@ describe('Booping Atlas', () => {
     expect(view.getByTestId('mascot-pose-laughing')).toBeTruthy()
   })
 })
+
+describe('Atlas moves like his face', () => {
+  it('hops for a cheer, tilts his head for a thought, and greets otherwise', async () => {
+    const { WorldMascot } = await import('./WorldMascot.js')
+    const gesture = (mood: 'celebrate' | 'thinking' | 'welcome') => {
+      const { getByTestId, unmount } = render(<WorldMascot mood={mood} style={{ width: 96, height: 96 }} />)
+      const value = getByTestId('mascot-motion').getAttribute('data-gesture')
+      unmount()
+      return value
+    }
+    expect(gesture('celebrate')).toBe('hop')
+    expect(gesture('thinking')).toBe('ponder')
+    expect(gesture('welcome')).toBe('greet')
+  })
+})

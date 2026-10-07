@@ -101,5 +101,9 @@
   "home:path.courseProgress": "Kursframsteg",
   "home:path.courseProgress__note": "Learning loop guidance. Position and total are actual course steps; no invented rewards or mastery.",
   "home:path.position": "Steg {position} av {total}",
-  "home:path.position__note": "Learning loop guidance. Position and total are actual course steps; no invented rewards or mastery."
+  "home:path.position__note": "Learning loop guidance. Position and total are actual course steps; no invented rewards or mastery.",
+  "home:sound.title": "Lektioner med ljud?",
+  "home:sound.body": "Ett pling för rätt svar, en mjuk ton för fel. Ljudlöst läge på telefonen gäller alltid.",
+  "home:sound.yes": "Slå på ljud",
+  "home:sound.later": "Inte nu"
 }

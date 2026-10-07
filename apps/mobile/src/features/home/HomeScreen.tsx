@@ -176,6 +176,13 @@ export type HomeScreenProps = {
     | { readonly onAccept: () => void; readonly onDismiss: () => void }
     | undefined
   /**
+   * "Lessons with sound?" — once, after the first finished lesson (`useSoundAsk`). Absent
+   * the rest of the time, and never alongside the reminder ask.
+   */
+  readonly soundAsk?:
+    | { readonly onAccept: () => void; readonly onDismiss: () => void }
+    | undefined
+  /**
    * The streak card — a freeze that kept the streak, or a repair still open — or nothing.
    */
   readonly streakNotice?: StreakNoticeCardProps | undefined
@@ -212,6 +219,7 @@ export function HomeScreen({
   onOpenQuests,
   league,
   reminderAsk,
+  soundAsk,
   streakNotice,
   dailyAdventure,
 }: HomeScreenProps) {
@@ -446,6 +454,26 @@ export function HomeScreen({
           </Card>
         )}
 
+        {/* Sound is off by default (`lib/sound.ts`); this is the one offer to turn it on.
+            Same card as the reminder ask, and never shown with it. */}
+        {soundAsk !== undefined && reminderAsk === undefined && (
+          <Card level={2} style={styles.reminderCard} testID="home-sound-ask">
+            <Text style={styles.reminderTitle} role="heading">
+              {t('home:sound.title')}
+            </Text>
+            <Text style={styles.reminderBody}>{t('home:sound.body')}</Text>
+            <View style={styles.reminderActions}>
+              <Button label={t('home:sound.yes')} onPress={soundAsk.onAccept} fullWidth={false} />
+              <Button
+                label={t('home:sound.later')}
+                variant="secondary"
+                onPress={soundAsk.onDismiss}
+                fullWidth={false}
+              />
+            </View>
+          </Card>
+        )}
+
         {/* Your world — real, local, and works offline, because mastery lives on the
             device. */}
         {world !== undefined && world.factsTotal > 0 && (
@@ -530,7 +558,7 @@ function useScrollIntoView() {
   const viewport = useRef(0)
   const offset = useRef(0)
   const pathTop = useRef<number | null>(null)
-  const target = useRef<{ y: number; height: number } | null>(null)
+  const target = useRef<{ y: number; height: number; unitY?: number } | null>(null)
   const shown = useRef<string | null>(null)
 
   const settle = useCallback(() => {
@@ -552,7 +580,12 @@ function useScrollIntoView() {
     // the step's own top leaves. On a 320 × 568 phone that is the banner and the step
     // together; jumping the step to the top edge had scrolled the banner away.
     const reveal = bottom + space[5] - viewport.current
-    scroller.current?.scrollTo({ y: Math.max(0, Math.min(reveal, y - space[3])), animated: !reduced })
+    // When the whole banner fits with the step, land on the banner's edge. The least
+    // movement alone stopped mid-card and left a gold strip of the daily goal under the
+    // top bar (audit 2026-10-06) — a screen that looks mis-scrolled, not arrived.
+    const banner = at.unitY === undefined ? undefined : top + at.unitY - space[3]
+    const stop = banner !== undefined && reveal <= banner && banner <= y ? banner : Math.min(reveal, y - space[3])
+    scroller.current?.scrollTo({ y: Math.max(0, stop), animated: !reduced })
   }, [reduced])
 
   return {
@@ -575,8 +608,8 @@ function useScrollIntoView() {
       [settle],
     ),
     onCurrentLayout: useCallback(
-      (y: number, height: number) => {
-        target.current = { y, height }
+      (y: number, height: number, unitY?: number) => {
+        target.current = unitY === undefined ? { y, height } : { y, height, unitY }
         settle()
       },
       [settle],

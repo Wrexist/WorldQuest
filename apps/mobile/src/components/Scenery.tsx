@@ -13,19 +13,24 @@ import { useSceneDrift } from '../hooks/useSceneDrift.js'
 import { ADVENTURE_ART } from '../lib/adventure.generated.js'
 import { EXPEDITION_ART } from '../lib/expedition.generated.js'
 
-type Scene = { readonly source: unknown; readonly fit: 'cover' | 'contain' }
+type Scene = {
+  readonly source: unknown
+  readonly fit: 'cover' | 'contain'
+  /** The continent a scene stands for. Its identity colour tints the unit (`unitTint`). */
+  readonly region?: 'EU' | 'AS' | 'AF' | 'NA' | 'SA' | 'OC' | 'AN'
+}
 
 /** Names a course pack may use (`scenery` in pack.schema.json lists the same ones). */
 const SCENES = {
   'island': { source: ADVENTURE_ART['island'], fit: 'cover' },
   'discovery-island': { source: EXPEDITION_ART['discovery-island'].asset, fit: 'contain' },
-  'europe': { source: ADVENTURE_ART['europe'], fit: 'cover' },
-  'asia': { source: ADVENTURE_ART['asia'], fit: 'cover' },
-  'africa': { source: ADVENTURE_ART['africa'], fit: 'cover' },
-  'north-america': { source: ADVENTURE_ART['north-america'], fit: 'cover' },
-  'south-america': { source: ADVENTURE_ART['south-america'], fit: 'cover' },
-  'oceania': { source: ADVENTURE_ART['oceania'], fit: 'cover' },
-  'antarctica': { source: ADVENTURE_ART['antarctica'], fit: 'cover' },
+  'europe': { source: ADVENTURE_ART['europe'], fit: 'cover', region: 'EU' },
+  'asia': { source: ADVENTURE_ART['asia'], fit: 'cover', region: 'AS' },
+  'africa': { source: ADVENTURE_ART['africa'], fit: 'cover', region: 'AF' },
+  'north-america': { source: ADVENTURE_ART['north-america'], fit: 'cover', region: 'NA' },
+  'south-america': { source: ADVENTURE_ART['south-america'], fit: 'cover', region: 'SA' },
+  'oceania': { source: ADVENTURE_ART['oceania'], fit: 'cover', region: 'OC' },
+  'antarctica': { source: ADVENTURE_ART['antarctica'], fit: 'cover', region: 'AN' },
 } as const satisfies Record<string, Scene>
 
 export type SceneryName = keyof typeof SCENES
@@ -33,6 +38,15 @@ export type SceneryName = keyof typeof SCENES
 /** Own keys only: a pack naming `constructor` draws nothing rather than a prototype. */
 export function isSceneryName(name: string | undefined): name is SceneryName {
   return name !== undefined && Object.prototype.hasOwnProperty.call(SCENES, name)
+}
+
+/**
+ * The continent a scene stands for, or nothing. The islands of the first week are not
+ * about one continent, so their units keep the plain sky.
+ */
+export function sceneryRegion(name: SceneryName): Scene['region'] {
+  const scene: Scene = SCENES[name]
+  return scene.region
 }
 
 const toSource = (source: unknown): ImageSourcePropType =>

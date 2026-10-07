@@ -33,5 +33,7 @@ export function CountryMap({ path, width, label }: CountryMapProps) {
 }
 
 const useThemeValues = createThemeStyles((colors) => ({ colors, styles: StyleSheet.create({
-  frame: { overflow: 'hidden', borderRadius: radius.lg, ...squircle, backgroundColor: colors.map.water },
+  // The edge makes the light sea read as a framed picture on the dark canvas, not a hole in it.
+  frame: { overflow: 'hidden', borderRadius: radius.lg, ...squircle, backgroundColor: colors.map.water,
+    borderWidth: 1, borderColor: colors.border.subtle },
 }) }))

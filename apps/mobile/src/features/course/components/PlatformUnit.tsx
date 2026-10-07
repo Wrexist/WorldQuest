@@ -1,10 +1,10 @@
 import { createThemeStyles } from '@worldquest/design'
 import { useEffect, useState } from 'react'
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native'
-import { Button, Card, ClaySurface, ProgressBar, radius, space, text } from '@worldquest/design'
+import { Button, Card, ClaySurface, ProgressBar, illustration, palette, radius, space, text, useTheme } from '@worldquest/design'
 import { AdventureArt } from '../../../components/AdventureArt.js'
 import { CloudBackdrop } from '../../../components/CloudBackdrop.js'
-import { FloatingProp, PATH_PROPS, SceneryBanner, isSceneryName } from '../../../components/Scenery.js'
+import { FloatingProp, PATH_PROPS, SceneryBanner, isSceneryName, sceneryRegion } from '../../../components/Scenery.js'
 import { HeaderJewel } from '../../../components/HeaderJewel.js'
 import { SceneEntrance } from '../../../components/SceneEntrance.js'
 import { tContent, useT } from '../../../lib/i18n.js'
@@ -29,11 +29,20 @@ export function PlatformUnit({ unit, width, total, open, onPress, onPractise, on
   const title = tContent(unit.titleKey)
   const [pathTop, setPathTop] = useState(0)
   const scenery = isSceneryName(unit.scenery) ? unit.scenery : null
+  const { mode } = useTheme()
+  // Each continent's unit wears that continent's identity colour, as each Duolingo unit
+  // has its own (feel audit 2026-10-06, gap 6). A tint over the sky clay, not a new
+  // surface, so the type on it keeps its contrast — `illustration.unitTint` says how much.
+  const region = scenery === null ? undefined : sceneryRegion(scenery)
+  const identity = region === undefined ? undefined : palette.continent[region]
   // Tall enough to be a place, short enough that the first step still shows on an SE.
   const sceneHeight = fontScale > 1.3 ? space[9] + space[5] : Math.round(Math.min(Math.max(width * .4, 120), 176))
   return <View style={styles.unit} testID="path-unit">
-    <View style={[styles.header, scenery !== null && styles.headerScenic]}>
+    <View style={[styles.header, scenery !== null && styles.headerScenic, identity !== undefined && { borderColor: identity }]}
+      testID="path-unit-header" dataSet={{ region: region ?? 'none' }}>
       <ClaySurface tone="sky" radius={radius.xl} />
+      {identity !== undefined && <View pointerEvents="none" aria-hidden
+        style={[StyleSheet.absoluteFill, { backgroundColor: identity, opacity: illustration.unitTint[mode] }]} />}
       {scenery !== null && <SceneryBanner name={scenery} height={sceneHeight} />}
       <View style={[styles.headerBody, scenery === null && styles.headerBodyPlain]}>
       <View style={styles.headerTop}>

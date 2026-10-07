@@ -66,8 +66,25 @@ const clayPairs: Pair[] = [tokens.color, tokens.darkColor].flatMap((theme, index
   }),
 )
 
+/**
+ * A continent's unit header: the sky clay with that continent's identity colour laid over
+ * it at `illustration.unitTint`. The unit title and caption are written on the blend, so
+ * the blend is what is tested — for every continent, both stops, both themes.
+ */
+const unitTintPairs: Pair[] = [tokens.color, tokens.darkColor].flatMap((theme, index) => {
+  const sky = theme.clay.sky
+  const tint = tokens.illustration.unitTint[index ? 'dark' : 'light']
+  return Object.entries(p.continent as Record<string, string>).flatMap(([region, identity]) =>
+    [sky.top, sky.bottom].flatMap((stop: string, stopIndex: number) => {
+      const bg = withReflection(stop, identity + Math.round(tint * 255).toString(16).padStart(2, '0'))
+      return [sky.ink, sky.muted].map((fg, ink) => ({ name: `${index ? 'night' : 'day'} unit ${region}/${stopIndex}/${ink}`, fg, bg, min: 4.5 }))
+    }),
+  )
+})
+
 const PAIRS: Pair[] = [
   ...clayPairs,
+  ...unitTintPairs,
   ...Object.entries(tokens.color.league as typeof import('../src/tokens.js').colors.league).flatMap(([tier, theme]) => [
     { name: `${tier} banner light`, fg: theme.ink, bg: theme.start, min: 4.5 },
     { name: `${tier} banner dark`, fg: theme.ink, bg: theme.end, min: 4.5 },
