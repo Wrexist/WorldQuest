@@ -1346,7 +1346,7 @@ export function LessonScreen({
                   reward, and a screen reader announcing the mascot after every answer is
                   the definition of noise.
 
-                  He appears on BOTH verdicts. `encouraging` and not `celebrate` on a
+                  He appears on BOTH verdicts. `thinking` and not `celebrate` on a
                   miss: the register changes, the presence does not.
 
                   Start side on a correct answer, end side on a miss — that copy is a full
@@ -1357,7 +1357,10 @@ export function LessonScreen({
               <View style={{ width: mascot }} pointerEvents="none">
                 <AdventureArt
                   name="explorer"
-                  mood={lastAnswer?.wasCorrect === true ? 'celebrate' : 'encouraging'}
+                  // A miss gets him thinking, not the same wave as a hit: "encouraging"
+                  // drew the welcome pose, so right and wrong looked alike (feel audit
+                  // 2026-10-06). Thinking is curious, never sad — we do not punish.
+                  mood={lastAnswer?.wasCorrect === true ? 'celebrate' : 'thinking'}
                   style={{ width: mascot, height: mascot }}
                 />
               </View>

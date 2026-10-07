@@ -38,6 +38,17 @@ the hand.
   animated:** the motion rules give a wrong answer a gentle settle and nothing that
   punishes, and a breaking heart is exactly that.
 
+- **Gap 8, wrong-answer copy:** a wrong picture answer gets one line ("The right one has
+  the tick.") instead of two flag descriptions; a screen reader still hears both.
+- **Gap 5, confetti:** `ConfettiBurst` throws 28 pieces out of Atlas on a perfect lesson,
+  over the still burst, which stays as the Reduce Motion frame.
+- **Gap 6, unit colour:** a continent's unit tints its header with that continent's
+  identity colour (`illustration.unitTint`), checked by `design:contrast`.
+- **Gap 3, Atlas reacts:** each pose has its own one-off movement — a hop for a cheer, a
+  head tilt for a thought — and a wrong answer shows the thinking pose. **No idle loop:**
+  it was removed in #31 for a reported iPhone stutter, and a constant animation would
+  risk bringing it back. New poses (a real "oops") need new art.
+
 ## A. Bugs (rendered evidence)
 
 | # | Sev | Where | What | Fix |
