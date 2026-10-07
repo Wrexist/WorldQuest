@@ -160,6 +160,13 @@ describe('Lesson', () => {
     expect(container.textContent).not.toMatch(/wrong!|incorrect|oops|failed/i)
   })
 
+  it('claims no run after one right answer', () => {
+    // The "3 in a row!" badge states a fact. After a single correct answer that fact is
+    // not true yet, so the badge is not there — the same rule as the "on a roll" line.
+    answerCorrectly()
+    expect(screen.queryByTestId('lesson-combo')).toBeNull()
+  })
+
   it('labels every answer with the country it names, and never with its badge letter', () => {
     // The prompt supplies the context, so the button announces "Finland, button" —
     // not "Answer: Finland", which a reader would repeat four times in a row.

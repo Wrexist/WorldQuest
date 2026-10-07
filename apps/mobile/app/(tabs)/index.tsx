@@ -24,6 +24,7 @@ import { useDayCountdown } from '../../src/features/quests/useDayCountdown.js'
 import { useQuestCover } from '../../src/features/quests/ceremony.js'
 import { useT, type TranslationKey } from '../../src/lib/i18n.js'
 import { useReminderAsk } from '../../src/features/home/useReminderAsk.js'
+import { useSoundAsk } from '../../src/features/home/useSoundAsk.js'
 import { useLeague } from '../../src/features/league/useLeague.js'
 import { useLeagueEnabled } from '../../src/features/league/flag.js'
 import { useStreakNotice } from '../../src/features/streak/useStreakNotice.js'
@@ -127,6 +128,7 @@ export default function HomeRoute() {
     : COLD_START
 
   const reminderAsk = useReminderAsk()
+  const soundAsk = useSoundAsk()
 
   /**
    * The first-week course, as the path — Home's one primary action.
@@ -225,6 +227,8 @@ export default function HomeRoute() {
       // screen a lesson ends on. `useReminderAsk` returns undefined the rest of the time
       // and the card is simply absent — see `notifications.md` §1.
       {...(reminderAsk !== undefined ? { reminderAsk } : {})}
+      // Once, after the first finished lesson: sound is off by default (`lib/sound.ts`).
+      {...(soundAsk !== undefined ? { soundAsk } : {})}
       {...(streakNotice.notice !== null
         ? {
             streakNotice: {

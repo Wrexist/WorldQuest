@@ -37,6 +37,7 @@ import {
   Spacer,
   squircle,
   text,
+  useCelebration,
   useRiseIn,
 } from '@worldquest/design'
 import {
@@ -705,7 +706,14 @@ export function LessonScreen({
     // Every option is already above the sheet: nothing moves and the prompt stays whole,
     // which is most questions on most phones (round-3 design review).
     if (view > 0 && optionsBottom.current + gap <= view) return
-    scroller.current?.scrollTo({ y: Math.max(0, optionsTop.current - gap), animated: true })
+    // Scroll only as far as it takes to lift the last option above the sheet, never
+    // further than putting the first option at the top. It used to always go to the
+    // top, which scrolled the prompt away (half a "NEW" tag at 390, the whole flag and
+    // question at 320) at the moment the learner reads the correction against it
+    // (audit 2026-10-06). The least movement keeps the most of the question.
+    const enough = view > 0 ? optionsBottom.current + gap - view : Number.POSITIVE_INFINITY
+    const y = Math.min(enough, optionsTop.current - gap)
+    scroller.current?.scrollTo({ y: Math.max(0, y), animated: true })
   }, [compact])
 
   useEffect(() => {
@@ -956,17 +964,21 @@ export function LessonScreen({
             colour, the moment the feedback starts saying "on a roll". A miss returns it
             to the ordinary green, never to a red one. Colour only, so nothing moves under
             Reduce Motion and nothing new is announced; the sheet says it in words. */}
-        <ProgressBar
-          current={lesson.progress.current}
-          total={lesson.progress.total}
-          accessibilityLabel={t('lesson:progress.label')}
-          valueText={t('lesson:progress.value', {
-            current: lesson.progress.current,
-            total: lesson.progress.total,
-          })}
-          tone={correctRun >= STREAK_PRAISE ? 'streak' : 'progress'}
-          style={styles.lessonProgress}
-        />
+        <View style={styles.lessonProgress}>
+          <ProgressBar
+            current={lesson.progress.current}
+            total={lesson.progress.total}
+            accessibilityLabel={t('lesson:progress.label')}
+            valueText={t('lesson:progress.value', {
+              current: lesson.progress.current,
+              total: lesson.progress.total,
+            })}
+            tone={correctRun >= STREAK_PRAISE ? 'streak' : 'progress'}
+          />
+          {answered && !reviewing && lastAnswer?.wasCorrect === true && correctRun >= STREAK_PRAISE && (
+            <ComboBadge run={correctRun} />
+          )}
+        </View>
         <Stat
           kind="hearts"
           value={lesson.state.hearts}
@@ -1666,6 +1678,29 @@ function OfflineBanner() {
 
 
 
+/**
+ * "3 in a row!" — the run, made visible at the moment it grows (feel audit 2026-10-06,
+ * gap 4). Before, a run only recoloured the progress bar, which nobody reads as a reward.
+ *
+ * Shown on a correct answer once the run reaches the point where the sheet says "on a
+ * roll", and pops each time the run grows. A miss simply ends it — the badge goes, it is
+ * never replaced by anything that counts the loss. Hidden from screen readers: the sheet
+ * already says the run in words, and saying it twice is noise.
+ */
+function ComboBadge({ run }: { run: number }) {
+  const { colors, styles } = useThemeValues()
+  const t = useT()
+  const pop = useCelebration(run)
+  return (
+    <View style={styles.combo} pointerEvents="none" aria-hidden importantForAccessibility="no-hide-descendants">
+      <Animated.View style={[styles.comboPill, { transform: [{ scale: pop }] }]} testID="lesson-combo">
+        <Icon name="streak" size={14} color={colors.status.streak} />
+        <Text style={styles.comboText}>{t('lesson:combo', { count: run })}</Text>
+      </Animated.View>
+    </View>
+  )
+}
+
 const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
   clockTrack: {
@@ -1680,7 +1715,16 @@ const useThemeValues = createThemeStyles((colors) => {
   centered: { alignItems: 'center', justifyContent: 'center' },
   flex: { flex: 1 },
   lessonProgress: { flex: 1, minWidth: space[8] + space[4] },
-  header: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space[3] },
+  // Hung under the bar, so it costs the header no height and moves nothing.
+  combo: { position: 'absolute', top: '100%', start: 0, end: 0, alignItems: 'center', marginTop: space[1] },
+  comboPill: {
+    flexDirection: 'row', alignItems: 'center', gap: space[1],
+    paddingHorizontal: space[3], paddingVertical: space[1], borderRadius: radius.full,
+    backgroundColor: colors.bg.surfaceRaised, borderWidth: 1, borderColor: colors.status.streak,
+  },
+  comboText: { ...text('caption', { weight: '800' }), color: colors.text.primary },
+  // Above the scroll view, which is a later sibling: the combo badge hangs below the bar.
+  header: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space[3], zIndex: 1 },
   study: {
     minHeight: 44, minWidth: 44, marginStart: 'auto',
     paddingHorizontal: space[2], paddingVertical: space[2],

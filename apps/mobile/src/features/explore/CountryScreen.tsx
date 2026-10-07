@@ -7,6 +7,7 @@ import { createThemeStyles } from '@worldquest/design'
  * Flags and map geometry come from the validated content pack, never generated art.
  */
 
+import { useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { StickyFooter } from '../../components/StickyFooter.js'
@@ -136,7 +137,9 @@ export type CountryScreenProps = {
 
 }
 
-/** The page's one picture. Wide enough to find Belgium in Europe at 320pt. */
+/** The page's one picture, before the column is measured. Wide enough to find Belgium
+ * in Europe at 320pt. After layout it takes the full column: a 240pt map centred on a
+ * 390pt phone floated on navy like a pasted photo (owner report, 2026-10-06). */
 const MAP_WIDTH = 240
 
 export function CountryScreen({
@@ -154,6 +157,7 @@ export function CountryScreen({
 }: CountryScreenProps) {
   const { colors, styles } = useThemeValues()
   const t = useT()
+  const [mapWidth, setMapWidth] = useState(MAP_WIDTH)
 
   // A deep link can name a country the shipped packs do not have. Saying so beats an
   // empty page that reads as a crash.
@@ -225,7 +229,7 @@ export function CountryScreen({
           `assets.map`, tinted from tokens rather than baked. Decorative to a screen
           reader on purpose, because the heading above already names the country and
           the region is a fact in the list below. */}
-      <View style={styles.map}>
+      <View style={styles.map} onLayout={(e) => setMapWidth(Math.round(e.nativeEvent.layout.width))}>
         {/* Green highlight, continent-tinted context — not the other way round.
             Tinting the highlight with the continent identity colour put Sweden in
             blue on a blue-grey Europe, and the one thing this picture has to do is
@@ -234,7 +238,7 @@ export function CountryScreen({
         <CountryMap
           path={mapPath}
           contextPath={mapContextPath}
-          width={MAP_WIDTH}
+          width={mapWidth}
         />
       </View>
 
@@ -322,7 +326,7 @@ const useThemeValues = createThemeStyles((colors) => {
 
   // Centred and generous: this is the page's one picture, and a locator map squeezed
   // into a corner is a decoration rather than an answer to "where is this?".
-  map: { alignItems: 'center' },
+  map: { alignSelf: 'stretch' },
   header: { gap: space[3] },
   identityControls: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   // The name gets the full width; large text never competes with the flag or favourite.

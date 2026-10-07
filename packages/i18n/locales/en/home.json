@@ -170,5 +170,13 @@
   "home:path.courseProgress": "Course progress",
   "home:path.courseProgress__note": "Learning loop guidance. Position and total are actual course steps; no invented rewards or mastery.",
   "home:path.position": "Step {position} of {total}",
-  "home:path.position__note": "Learning loop guidance. Position and total are actual course steps; no invented rewards or mastery."
+  "home:path.position__note": "Learning loop guidance. Position and total are actual course steps; no invented rewards or mastery.",
+  "home:sound.title": "Lessons with sound?",
+  "home:sound.title__note": "Heading on the one-time card offering to turn sound effects on, shown on Home after the first finished lesson. An offer, never a push. Max 24 characters.",
+  "home:sound.body": "A chime for right answers, a soft note for wrong ones. Your silent switch always wins.",
+  "home:sound.body__note": "Under the heading. Says what the sounds are and that the phone's mute switch is respected, so a parent can say yes without worrying. Max 90 characters.",
+  "home:sound.yes": "Turn on sound",
+  "home:sound.yes__note": "Accepts. Turns sound effects on and plays the correct-answer chime once. Max 16 characters.",
+  "home:sound.later": "Not now",
+  "home:sound.later__note": "Dismisses the card for good; sound stays off and can be turned on in Settings. NOT 'No thanks'. Max 12 characters."
 }

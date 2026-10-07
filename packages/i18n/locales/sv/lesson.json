@@ -169,5 +169,6 @@
   "lesson:intro.previous": "Föregående",
   "lesson:intro.previous__note": "Optional study deck navigation. Counts unique facts, not answers or earned progress.",
   "lesson:intro.next": "Nästa upptäckt",
-  "lesson:intro.next__note": "Optional study deck navigation. Counts unique facts, not answers or earned progress."
+  "lesson:intro.next__note": "Optional study deck navigation. Counts unique facts, not answers or earned progress.",
+  "lesson:combo": "{count, plural, other {# i rad!}}"
 }

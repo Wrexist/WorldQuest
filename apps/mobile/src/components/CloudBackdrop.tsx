@@ -1,12 +1,16 @@
 import { Animated, Image, StyleSheet, type StyleProp, type ViewStyle } from 'react-native'
 import { illustration, space, useTheme } from '@worldquest/design'
 import { useSceneDrift } from '../hooks/useSceneDrift.js'
-import clouds from '../../assets/art/clay-clouds/backdrop.webp'
+import dayClouds from '../../assets/art/clay-clouds/backdrop.webp'
+// Night-blue copy baked by scripts/build-clay-clouds.cjs. White clouds faded onto navy
+// read as grey smoke under Atlas, so dark mode gets its own art, not a lower opacity.
+import nightClouds from '../../assets/art/clay-clouds/backdrop-dark.webp'
 
 /** A quiet sky behind the character, never a hit target or an accessibility stop. */
 export function CloudBackdrop({ style, animated = true }: { style?: StyleProp<ViewStyle>; animated?: boolean }) {
   const { mode } = useTheme()
   const drift = useSceneDrift(0.6, animated)
+  const clouds = mode === 'dark' ? nightClouds : dayClouds
   return <Animated.View testID="cloud-backdrop" pointerEvents="none" aria-hidden
     accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
     style={[styles.clouds, { opacity: illustration.cloudOpacity[mode], transform: [

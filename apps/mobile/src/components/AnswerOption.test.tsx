@@ -26,13 +26,17 @@ describe('AnswerOption with a picture for an answer', () => {
     // sideways at the moment the user was looking at it, and the answered cell sat
     // visibly off-axis from the three that were not.
     //
-    // Asserted as "the row has the same number of children before and after", which is
-    // the layout property that caused it — jsdom computes no geometry, so a test that
-    // read positions here would be reading zeroes and passing on anything.
+    // Asserted as "the row has the same number of IN-FLOW children before and after",
+    // which is the layout property that caused it — jsdom computes no geometry, so a
+    // test that read positions here would be reading zeroes and passing on anything.
+    // The picture's mark is a child of the row now (see the next test), but an absolute
+    // one, which takes no space.
+    const inFlow = (row: HTMLElement) =>
+      Array.from(row.children).filter((child) => getComputedStyle(child).position !== 'absolute').length
     const idle = render(
       <AnswerOption label="Sweden" art={FLAG} badge="A" state="idle" onPress={() => {}} />,
     )
-    const before = face(idle.container).childElementCount
+    const before = inFlow(face(idle.container))
 
     const answered = render(
       <AnswerOption
@@ -44,24 +48,24 @@ describe('AnswerOption with a picture for an answer', () => {
         onPress={() => {}}
       />,
     )
-    expect(face(answered.container).childElementCount).toBe(before)
+    expect(inFlow(face(answered.container))).toBe(before)
   })
 
-  it('puts the mark inside the artwork rather than beside it', () => {
+  it('keeps the mark off the artwork', () => {
     const { getByTestId } = render(
       <AnswerOption
         label="Sweden"
         art={FLAG}
-        state="correct"
-        mark={<span data-testid="mark">✓</span>}
+        state="wrong"
+        mark={<span data-testid="mark">→</span>}
         onPress={() => {}}
       />,
     )
-    // The frame that wraps the flag is the mark's ancestor. That is what makes it land
-    // on the picture's corner instead of the cell's, whatever size the caller drew the
-    // flag at.
+    // It used to hang off the flag's corner, and covered Fiji's shield while the
+    // feedback described that shield (audit 2026-10-06). The mark sits in the card's
+    // corner now: never inside the frame that wraps the picture.
     const frame = getByTestId('art').parentElement!
-    expect(frame.contains(getByTestId('mark'))).toBe(true)
+    expect(frame.contains(getByTestId('mark'))).toBe(false)
   })
 
   it('still draws the mark in the row when the answer is words', () => {

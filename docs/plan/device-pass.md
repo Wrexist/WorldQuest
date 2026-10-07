@@ -129,8 +129,9 @@ zero**. The a11y skill is explicit that this is the part that matters.
 - [ ] Haptics fire on correct and wrong. **Wrong must be one soft bump**, never two
       sharp knocks. If it feels like a failed payment, `haptics.ts` has regressed.
 - [ ] Turn haptics off in Settings. They stop.
-- [ ] Turn sound on in Settings — it is **off by default**, deliberately — and answer a
-      question. Wrong is a gentle falling note, not a buzzer.
+- [ ] Finish one lesson on a fresh install. Home offers "Lessons with sound?" once;
+      "Turn on sound" plays the chime at once. Sound is **off by default**, deliberately
+      — answer a question after: wrong is a gentle falling note, not a buzzer.
 - [ ] Flick the hardware silent switch. Sound stops. (`playsInSilentModeIOS: false`.)
 - [ ] Start a podcast, then a lesson. The podcast ducks; it does not stop.
 - [ ] Turn on Reduce Motion. Buttons still respond — the face still moves, instantly.

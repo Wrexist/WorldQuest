@@ -256,26 +256,8 @@ export function AnswerOption({
         // above already announces the description this picture replaces, and a decoded
         // image would announce it a second time or, worse, announce a filename.
         <View style={styles.art} importantForAccessibility="no-hide-descendants" aria-hidden>
-          {/* A frame that is exactly the artwork's size, so the mark can be placed
-              against the PICTURE's corner rather than the cell's. */}
           <View style={styles.artFrame}>
             {art}
-            {/* The mark, ON the flag.
-
-                It used to be a sibling in the card's row, which is right for a text
-                option — the label is `flex: 1`, so a tick at the end takes its space
-                from the label and nothing moves. With a picture it is wrong twice over:
-                the artwork is centred in what is left of the row, so the mark appearing
-                SHRINKS that space and shoves the flag sideways at the exact moment the
-                user is looking at it, and the answered cell then sits visibly off-axis
-                from the three that were not answered.
-
-                Absolute, so it costs no layout and the flag does not move at all. */}
-            {glyph !== null && (
-              <Animated.View style={[styles.coin, { borderColor: skin.edge }, arriving]}>
-                {glyph}
-              </Animated.View>
-            )}
           </View>
         </View>
       ) : (
@@ -305,8 +287,24 @@ export function AnswerOption({
         </Text>
       )}
 
-      {/* The row-level mark, for the options made of words. A picture option draws its
-          own, over the artwork — see above. */}
+      {/* A picture option's mark, in the CARD's corner rather than on the picture.
+
+          It used to hang off the flag's trailing bottom corner, and the wrong-answer
+          feedback then said "a shield at the right" about a Fiji flag whose shield the
+          coin was covering (audit 2026-10-06). The mark must never hide the thing being
+          taught. Absolute, so it costs no layout and the flag still does not move — the
+          reason it left the row in the first place. */}
+      {art !== undefined && glyph !== null && (
+        <Animated.View
+          style={[styles.coin, { borderColor: skin.edge }, arriving]}
+          importantForAccessibility="no-hide-descendants"
+          aria-hidden
+        >
+          {glyph}
+        </Animated.View>
+      )}
+
+      {/* The row-level mark, for the options made of words. */}
       {art === undefined && glyph !== null && (
         <Animated.View
           style={[styles.glyphWrap, arriving]}
@@ -409,16 +407,15 @@ const useThemeValues = createThemeStyles((colors) => {
    */
   art: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   /**
-   * Shrink-wrapped around the artwork, and the anchor the mark is positioned against.
-   *
-   * `alignSelf: 'center'` rather than a width: the caller sizes its own flag and this
-   * has to be exactly that size, whatever it is, or the coin lands in empty space.
+   * Shrink-wrapped around the artwork. `alignSelf: 'center'` rather than a width: the
+   * caller sizes its own flag.
    */
   artFrame: { alignSelf: 'center', position: 'relative' },
   /**
-   * The mark's disc, hung off the artwork's trailing bottom corner.
+   * The mark's disc, in the card's top trailing corner — off the artwork, so it never
+   * covers the detail the feedback names.
    *
-   * `end`/`bottom` rather than `right`, so it mirrors with the writing direction along
+   * `end` rather than `right`, so it mirrors with the writing direction along
    * with everything else on the card.
    *
    * Dark disc, coloured ring, coloured mark: the fill is the app's own canvas colour
@@ -430,8 +427,8 @@ const useThemeValues = createThemeStyles((colors) => {
    */
   coin: {
     position: 'absolute',
-    end: -space[1],
-    bottom: -space[1],
+    end: space[1],
+    top: space[1],
     width: DISC,
     height: DISC,
     borderRadius: radius.full,
