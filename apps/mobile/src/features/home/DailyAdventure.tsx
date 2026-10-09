@@ -40,7 +40,10 @@ export function DailyAdventure({ goal, week, streak = 0, onPress, compact = fals
 
 const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
-  card: { backgroundColor: colors.journey.sand, borderColor: colors.league.gold.edge, gap: space[2], padding: space[3], flexShrink: 0 },
+  // The card's own clay with a gold rim. It was filled with `journey.sand`, which is a
+  // pale cream by day and, like any dark yellow, a muddy brown by night (owner
+  // screenshot, 2026-10-09). The rim keeps the warmth and the "today's reward" read.
+  card: { borderColor: colors.league.gold.edge, gap: space[2], padding: space[3], flexShrink: 0 },
   top: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space[2] },
   heading: { ...text('bodyStrong'), color: colors.text.primary, flexGrow: 1 },
   caption: { ...text('caption'), color: colors.text.secondary },
