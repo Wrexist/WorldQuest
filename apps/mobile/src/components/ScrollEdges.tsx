@@ -1,74 +1,122 @@
 /**
- * Soft edges for a scrolling screen: content blurs and fades as it reaches the top and
- * the bottom, instead of being cut off by a hard line.
+ * Soft edges for a scrolling screen: content blurs and dissolves into the canvas as it
+ * reaches the top and the bottom, instead of being cut off by a hard line.
  *
  * iOS 26 does this under every system bar (the "scroll edge effect"), and the owner asked
- * for it here (2026-10-09). The app's bars are its own clay, not UIKit's, so the effect
- * is drawn rather than inherited: a strip at each edge of the scroll view, strongest at
- * the edge and gone a few points in.
+ * for it here (2026-10-09). The app's bars are its own clay, not UIKit's, so the effect is
+ * drawn rather than inherited: a strip at each edge of the scroll view.
  *
- * ## Nothing is blurred at rest
+ * ## Clean, not banded (owner review of the first cut, 2026-10-09)
  *
- * Each strip is exactly as tall as the screen's own padding at that edge (16 pt at the
- * top, 24 at the bottom on the tabs), so at the top of the page, and at the end, it lies
- * over empty canvas. Only content that is scrolled INTO an edge softens.
+ * The first cut was a 16 and a 24 point LINEAR fade. Too short to hide the line where the
+ * scroll view clips, and a linear ramp has a visible start, so the edge showed twice.
+ * Now:
+ *
+ * - **Taller** (`TOP`, `BOTTOM`), so the content dissolves over a distance the eye reads
+ *   as a transition rather than a stripe.
+ * - **Eased.** The alpha follows a smoothstep through `STOPS` stops, so there is no
+ *   corner where the ramp begins or ends.
+ * - **Only where there is something to soften.** The top edge shows once the page has
+ *   scrolled and the bottom edge hides at the end, each fading in and out over
+ *   `motion.quick`. At the top of a page the bar and first card are never blurred; at the
+ *   end, the last card is not.
  *
  * ## By platform
  *
- * - **iOS:** a real blur (`expo-blur`), masked by a gradient so it ramps in, with a wash of
- *   the canvas colour on top so the content also fades into the edge.
- * - **Android and web:** the fade alone. Android's blur is experimental and costly
- *   (`experimentalBlurMethod`), and react-native-web has no mask; a fade reads the same
- *   at a glance and costs nothing.
- * - **Reduce Transparency (iOS):** the fade alone, as the setting asks.
+ * - **iOS:** a real blur (`expo-blur`), masked by the eased ramp, with a wash of the
+ *   canvas colour so the content also dissolves.
+ * - **Android and web:** the eased fade alone. Android's blur is experimental and costly
+ *   (`experimentalBlurMethod`), and react-native-web has no mask.
+ * - **Reduce Transparency (iOS):** the fade alone. **Reduce Motion:** the edges appear and
+ *   go without the fade.
  *
- * ## Lighter while moving
+ * ## Cheap
  *
- * A heavy blur over text in motion is mush, and it is GPU work every frame. So the blur
- * drops to `illustration.edgeBlur.moving` while the content scrolls and settles back to
- * `rest` once it stops (a design-engineering tip the owner sent alongside the request).
- * Two state changes per gesture, from the scroll view's begin and end events; nothing per
- * frame. `useScrollEdges` supplies those handlers.
+ * The blur drops to `illustration.edgeBlur.moving` while the content scrolls and settles
+ * back to `rest` once it stops (a tip the owner sent with the request): a heavy blur over
+ * moving text is mush, and GPU work every frame. Every state here changes only when it
+ * flips (moving, scrolled away from the top, at the end), never per frame; the scroll
+ * handler compares and returns.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AccessibilityInfo, Platform, StyleSheet, View } from 'react-native'
+import {
+  AccessibilityInfo, Animated, Easing, Platform, StyleSheet, View,
+  type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent,
+} from 'react-native'
 import { BlurView } from 'expo-blur'
 import MaskedView from '@react-native-masked-view/masked-view'
 import { LinearGradient } from 'expo-linear-gradient'
-import { illustration, motion, space, useTheme } from '@worldquest/design'
+import { illustration, motion, space, useReducedMotion, useTheme } from '@worldquest/design'
 
-/** The tabs' content padding at each edge, which is what each strip may cover at rest. */
-const TOP = space[4]
-const BOTTOM = space[6]
+/** How far each edge reaches into the scroll view. */
+const TOP = space[7]
+const BOTTOM = space[8]
+/** Points on the eased ramp. Eight is where a smoothstep stops showing facets. */
+const STOPS = 8
+/** Within this many points of the top or the end counts as being there. */
+const NEAR = space[1]
+
+export type ScrollEdgeState = {
+  /** The content is being dragged or flung. */
+  moving: boolean
+  /** The page has scrolled away from its top: there is content under the top edge. */
+  scrolled: boolean
+  /** The page is at its end (or never overflowed): nothing under the bottom edge. */
+  atEnd: boolean
+}
 
 type Handlers = {
+  onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
+  onLayout: (event: LayoutChangeEvent) => void
+  onContentSizeChange: (width: number, height: number) => void
   onScrollBeginDrag: () => void
   onScrollEndDrag: () => void
   onMomentumScrollBegin: () => void
   onMomentumScrollEnd: () => void
+  scrollEventThrottle: number
 }
 
 /**
- * Whether the content is moving, and the scroll view handlers that say so. A drag that
- * ends without a fling never sends `onMomentumScrollEnd`, so "stopped" waits a beat
- * (`motion.quick`) after the drag ends, and a fling that follows cancels the wait.
+ * The edges' state and the scroll view props that keep it. A drag that ends without a
+ * fling never sends `onMomentumScrollEnd`, so "stopped" waits a beat (`motion.quick`)
+ * after the drag ends, and a fling that follows cancels the wait.
  */
-export function useScrollEdges(): { moving: boolean; handlers: Handlers } {
-  const [moving, setMoving] = useState(false)
+export function useScrollEdges(): ScrollEdgeState & { handlers: Handlers } {
+  const [state, setState] = useState<ScrollEdgeState>({ moving: false, scrolled: false, atEnd: true })
+  const geometry = useRef({ offset: 0, viewport: 0, content: 0 })
   const settle = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
+  // Set only on a flip, so a scroll event that changes nothing renders nothing.
+  const update = useCallback((next: Partial<ScrollEdgeState>) => {
+    setState(previous => {
+      const merged = { ...previous, ...next }
+      return merged.moving === previous.moving && merged.scrolled === previous.scrolled && merged.atEnd === previous.atEnd
+        ? previous : merged
+    })
+  }, [])
+  const measure = useCallback(() => {
+    const { offset, viewport, content } = geometry.current
+    update({ scrolled: offset > NEAR, atEnd: viewport === 0 || offset + viewport >= content - NEAR })
+  }, [update])
   const cancel = useCallback(() => {
     if (settle.current !== undefined) clearTimeout(settle.current)
     settle.current = undefined
   }, [])
   useEffect(() => cancel, [cancel])
+
   const handlers = useMemo<Handlers>(() => ({
-    onScrollBeginDrag: () => { cancel(); setMoving(true) },
-    onScrollEndDrag: () => { cancel(); settle.current = setTimeout(() => setMoving(false), motion.quick.duration) },
+    onScroll: event => { geometry.current.offset = event.nativeEvent.contentOffset.y; measure() },
+    onLayout: event => { geometry.current.viewport = event.nativeEvent.layout.height; measure() },
+    onContentSizeChange: (_width, height) => { geometry.current.content = height; measure() },
+    onScrollBeginDrag: () => { cancel(); update({ moving: true }) },
+    onScrollEndDrag: () => { cancel(); settle.current = setTimeout(() => update({ moving: false }), motion.quick.duration) },
     onMomentumScrollBegin: cancel,
-    onMomentumScrollEnd: () => { cancel(); setMoving(false) },
-  }), [cancel])
-  return { moving, handlers }
+    onMomentumScrollEnd: () => { cancel(); update({ moving: false }) },
+    scrollEventThrottle: 16,
+  }), [cancel, measure, update])
+
+  return { ...state, handlers }
 }
 
 /** iOS's Reduce Transparency, live. Always false elsewhere. */
@@ -86,38 +134,67 @@ function useReduceTransparency(): boolean {
 }
 
 /**
- * The two strips, absolutely positioned over a scroll view. Put it beside the scroll view
+ * The two edges, absolutely positioned over a scroll view. Put it beside the scroll view
  * inside a container that is the scroll view's size; it never takes a touch.
  */
-export function ScrollEdges({ moving = false, top = true, bottom = true }: { moving?: boolean; top?: boolean; bottom?: boolean }) {
-  const reduce = useReduceTransparency()
-  const blur = Platform.OS === 'ios' && !reduce
+export function ScrollEdges({ state, top = true, bottom = true }: {
+  state: ScrollEdgeState; top?: boolean; bottom?: boolean
+}) {
+  const blur = Platform.OS === 'ios' && !useReduceTransparency()
   return (
     <>
-      {top && <Edge side="top" blur={blur} moving={moving} />}
-      {bottom && <Edge side="bottom" blur={blur} moving={moving} />}
+      {top && <Edge side="top" shown={state.scrolled} blur={blur} moving={state.moving} />}
+      {bottom && <Edge side="bottom" shown={!state.atEnd} blur={blur} moving={state.moving} />}
     </>
   )
 }
 
-function Edge({ side, blur, moving }: { side: 'top' | 'bottom'; blur: boolean; moving: boolean }) {
+/**
+ * An eased ramp from the canvas at the screen's edge to clear inward: a smoothstep,
+ * sampled. The canvas with no alpha is the canvas made transparent, so the ramp never
+ * passes through grey on its way out.
+ */
+function ramp(canvas: string, side: 'top' | 'bottom') {
+  const colors: string[] = []
+  const locations: number[] = []
+  for (let i = 0; i < STOPS; i++) {
+    const t = i / (STOPS - 1)
+    const alpha = 1 - t * t * (3 - 2 * t)
+    colors.push(`${canvas}${Math.round(alpha * 255).toString(16).padStart(2, '0')}`)
+    locations.push(t)
+  }
+  if (side === 'bottom') { colors.reverse(); locations.reverse(); for (let i = 0; i < STOPS; i++) locations[i] = 1 - locations[i]! }
+  return { colors: colors as [string, string, ...string[]], locations: locations as [number, number, ...number[]] }
+}
+
+function Edge({ side, shown, blur, moving }: { side: 'top' | 'bottom'; shown: boolean; blur: boolean; moving: boolean }) {
   const { colors, mode } = useTheme()
+  const reduced = useReducedMotion()
   const canvas = colors.bg.canvas
-  // Opaque at the screen's edge, clear inward. A canvas colour with no alpha is the
-  // canvas, transparent: the gradient never passes through grey on its way out.
-  const toEdge = side === 'top' ? [canvas, `${canvas}00`] as const : [`${canvas}00`, canvas] as const
+  const gradient = useMemo(() => ramp(canvas, side), [canvas, side])
+  const opacity = useRef(new Animated.Value(shown ? 1 : 0)).current
+  useEffect(() => {
+    if (reduced) { opacity.setValue(shown ? 1 : 0); return }
+    const animation = Animated.timing(opacity, {
+      toValue: shown ? 1 : 0, duration: motion.quick.duration, easing: Easing.out(Easing.quad),
+      useNativeDriver: true, isInteraction: false,
+    })
+    animation.start()
+    return () => animation.stop()
+  }, [shown, reduced, opacity])
+
   const place = [styles.edge, side === 'top' ? { top: 0, height: TOP } : { bottom: 0, height: BOTTOM }]
   return (
-    <View pointerEvents="none" aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
-      style={place} testID={`scroll-edge-${side}`}>
+    <Animated.View pointerEvents="none" aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
+      style={[place, { opacity }]} testID={`scroll-edge-${side}`} dataSet={{ shown: String(shown) }}>
       {blur ? (
-        <MaskedView style={StyleSheet.absoluteFill} maskElement={<LinearGradient colors={toEdge} style={StyleSheet.absoluteFill} />}>
+        <MaskedView style={StyleSheet.absoluteFill} maskElement={<LinearGradient {...gradient} style={StyleSheet.absoluteFill} />}>
           <BlurView intensity={moving ? illustration.edgeBlur.moving : illustration.edgeBlur.rest}
             tint={mode === 'dark' ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
           <View style={[StyleSheet.absoluteFill, { backgroundColor: canvas, opacity: illustration.edgeBlur.fade }]} />
         </MaskedView>
-      ) : <LinearGradient colors={toEdge} style={StyleSheet.absoluteFill} />}
-    </View>
+      ) : <LinearGradient {...gradient} style={StyleSheet.absoluteFill} />}
+    </Animated.View>
   )
 }
 

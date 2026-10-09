@@ -313,7 +313,7 @@ export function ExploreScreen({
 
       </>}
     </ScrollView>
-    <ScrollEdges moving={edges.moving} />
+    <ScrollEdges state={edges} />
     </View>
   )
 }

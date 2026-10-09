@@ -264,8 +264,9 @@ export function HomeScreen({
         ref={bringIntoView.scroller}
         {...edges.handlers}
         contentContainerStyle={styles.content}
-        onLayout={bringIntoView.onViewport}
-        onScroll={bringIntoView.onScroll}
+        // Both hooks read the viewport and the offset; neither may drop the other's.
+        onLayout={event => { bringIntoView.onViewport(event); edges.handlers.onLayout(event) }}
+        onScroll={event => { bringIntoView.onScroll(event); edges.handlers.onScroll(event) }}
         scrollEventThrottle={16}
       >
         {/* Two-tier greeting: light salutation, bold role.
@@ -542,7 +543,7 @@ export function HomeScreen({
           </Card>
         )}
       </ScrollView>
-      <ScrollEdges moving={edges.moving} />
+      <ScrollEdges state={edges} />
       </View>
     </View>
   )

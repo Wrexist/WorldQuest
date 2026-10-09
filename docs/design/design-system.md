@@ -455,15 +455,17 @@ counter on Home (`CoinFlight`).
 
 ### Scroll edges
 
-Every tab's scroll view softens where content meets the top and bottom of the screen
-(`ScrollEdges`), as iOS 26 does under its bars: on iOS a real blur masked to ramp in
-from the edge, with a wash of the canvas colour; on Android and the web the fade alone;
-under iOS Reduce Transparency the fade alone. Each strip is exactly the screen's padding
-at that edge (16 pt top, 24 pt bottom on the tabs), so nothing is blurred at rest; only
-content scrolled into an edge softens. The blur drops from `illustration.edgeBlur.rest`
-to `.moving` while the content moves and settles back after, because a heavy blur over
-moving text is mush and costs the GPU every frame. New scrolling screens should wrap
-their scroll view the same way (`useScrollEdges` for the handlers).
+Every tab's scroll view dissolves content into the canvas where it meets the top and
+bottom of the screen (`ScrollEdges`), as iOS 26 does under its bars: on iOS a real blur
+masked to ramp in, with a wash of the canvas colour; on Android, the web and under iOS
+Reduce Transparency the fade alone. The ramp is eased (a sampled smoothstep), never
+linear, so there is no visible line where it starts, and tall enough (40 pt top, 48 pt
+bottom) to read as a transition rather than a stripe. Each edge shows only where there
+is content under it: the top once the page has scrolled, the bottom until the end, each
+fading in and out over `motion.quick`. The blur drops from `illustration.edgeBlur.rest`
+to `.moving` while the content moves, because a heavy blur over moving text is mush and
+costs the GPU every frame. State changes only on a flip, never per frame. New scrolling
+screens should wrap their scroll view the same way (`useScrollEdges` for the props).
 
 ## 11. Component inventory
 

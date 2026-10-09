@@ -257,7 +257,7 @@ export function ProfileScreen({
         </SceneEntrance>
         {onOpenFriends && <Button style={styles.friendsEntry} variant="secondary" label={t('friends:title')} onPress={onOpenFriends}/>}
       </ScrollView>
-      <ScrollEdges moving={edges.moving} />
+      <ScrollEdges state={edges} />
       </View>
     )
   }
@@ -497,7 +497,7 @@ export function ProfileScreen({
         </Card>
       )}
     </ScrollView>
-    <ScrollEdges moving={edges.moving} />
+    <ScrollEdges state={edges} />
     </View>
   )
 }

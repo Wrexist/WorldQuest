@@ -268,7 +268,7 @@ export function ShopScreen({
 
       <View style={styles.tail} />
     </ScrollView>
-    <ScrollEdges moving={edges.moving} />
+    <ScrollEdges state={edges} />
     </View>
   )
 }

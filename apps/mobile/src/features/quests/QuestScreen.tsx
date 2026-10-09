@@ -208,7 +208,7 @@ export function QuestScreen({
       )}
 
       </ScrollView>
-      <ScrollEdges moving={edges.moving} />
+      <ScrollEdges state={edges} />
     </View>
       {!quest.complete && <StickyFooter>
         <Button variant="discovery" label={t('quests:adventure.continue')} onPress={onStart} fullWidth />
