@@ -539,7 +539,10 @@ above the body-text floor; selected answers retain both a mark and selected stat
 
 Explore, Quests, Shop, Passport and private challenges share 16-point content
 gutters and section spacing. Wallet and daily rewards share the sand field; the
-streak-freeze panel uses sky. Friends uses the same AnswerOption and ProgressBar
+streak-freeze panel uses sky. Earned rewards themselves (the summary's XP card, the
++XP and +coin pills in a lesson, Profile's XP rule) are gold clay with gold ink, like
+the coin counter in the top bar, and XP is always the bolt: sand is a pale cream in the
+light theme but a muddy brown in the dark one (owner screenshot, 2026-10-09). Friends uses the same AnswerOption and ProgressBar
 as lessons, including their existing reduced-motion behavior. No new animation
 engine or decorative looping background was introduced.
 
