@@ -94,14 +94,14 @@ describe('sound — the files', () => {
     // A computed `require(\`...${name}.wav\`)` bundles nothing and fails at runtime on
     // device only — the one place nobody is looking.
     expect(source).not.toMatch(/require\(`/)
-    for (const name of ['correct', 'wrong', 'unlock', 'levelup', 'streak', 'tap']) {
+    for (const name of ['correct', 'wrong', 'unlock', 'levelup', 'streak', 'tap', 'coin']) {
       expect(source).toContain(`assets/sounds/${name}.wav`)
     }
   })
 
-  it('ships all six, and each is under the 600 ms the spec allows', () => {
+  it('ships all seven, and each is under the 600 ms the spec allows', () => {
     const dir = join(import.meta.dirname, '..', '..', 'assets', 'sounds')
-    for (const name of ['correct', 'wrong', 'unlock', 'levelup', 'streak', 'tap']) {
+    for (const name of ['correct', 'wrong', 'unlock', 'levelup', 'streak', 'tap', 'coin']) {
       const wav = readFileSync(join(dir, `${name}.wav`))
       // 44.1 kHz, 16-bit mono → 88200 bytes per second. Header is 44 bytes.
       const ms = ((wav.length - 44) / 88_200) * 1000

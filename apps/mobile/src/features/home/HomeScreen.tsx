@@ -767,7 +767,9 @@ const useThemeValues = createThemeStyles((colors) => {
   cardTitle: { ...text('h3'), color: colors.text.primary },
 
   offlineBar: { paddingHorizontal: space[4], paddingTop: space[4] },
-  topBar: { paddingHorizontal: space[4], paddingTop: space[4] },
+  // Above the scroll view, which follows it: coins fly into the bar's counter from
+  // below it (`CoinFlight`) and must cross the path on top, not under it.
+  topBar: { paddingHorizontal: space[4], paddingTop: space[4], zIndex: 1 },
   offline: {
     backgroundColor: colors.bg.surfaceRaised,
     padding: space[3],

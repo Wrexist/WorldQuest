@@ -139,5 +139,13 @@ write("streak", mix(
 # Tap — barely there. A confirmation, not an event.
 write("tap", tone(NOTE["C5"], 45, volume=0.14, harmonic=0.05, release_ms=30))
 
-print("\n✓ six sounds written. Generated, so the project owns them outright —")
+# Coin — coins landing in the counter on Home. A quick bright step up a fourth into the
+# top C, brighter (more harmonic) than "correct" so the two never read as one event,
+# and short: coins land one after another and each must finish before the next.
+write("coin", mix(
+    tone(NOTE["G5"], 60, volume=0.20, harmonic=0.45, release_ms=30),
+    after(55, tone(NOTE["C6"], 170, volume=0.20, harmonic=0.40, release_ms=110)),
+))
+
+print("\n✓ seven sounds written. Generated, so the project owns them outright —")
 print("  no licence to track, no attribution to carry.\n")

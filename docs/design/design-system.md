@@ -435,9 +435,11 @@ Respects the Settings toggle and the OS setting. Never fires more than once per 
 ## 9. Sound
 
 Short (< 600 ms), musical, in one key (C major) so overlaps don't clash. Correct ·
-wrong (neutral, not a buzzer) · unlock · level-up · streak · tap. Off by default on
-first launch; a one-time prompt offers to enable. Never plays when the device is
-silenced.
+wrong (neutral, not a buzzer) · unlock · level-up · streak · tap · coin. Off by default
+on first launch; a one-time prompt offers to enable. Never plays when the device is
+silenced. Tap is for picking, not answering: a matching card, a wheel, tapping Atlas
+(an answer already sounds right or wrong). Coin plays as coins land in the top bar's
+counter on Home (`CoinFlight`).
 
 ## 10. Layout
 
@@ -538,7 +540,8 @@ same blue field as selected answers and navigation cards. Button contrast remain
 above the body-text floor; selected answers retain both a mark and selected state.
 
 Explore, Quests, Shop, Passport and private challenges share 16-point content
-gutters and section spacing. Wallet and daily rewards share the sand field; the
+gutters and section spacing. The daily goal card on Home wears the ordinary card clay
+with a gold rim (it was the sand field, which is brown in the dark theme); the
 streak-freeze panel uses sky. Earned rewards themselves (the summary's XP card, the
 +XP and +coin pills in a lesson, Profile's XP rule) are gold clay with gold ink, like
 the coin counter in the top bar, and XP is always the bolt: sand is a pale cream in the
