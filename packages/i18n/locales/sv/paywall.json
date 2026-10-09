@@ -17,7 +17,7 @@
   "paywall:plans.loading": "Hämtar priser från butiken …",
   "paywall:plans.offline": "Butikens priser kräver internet. Du kan gå tillbaka till dina nedladdade lektioner.",
   "paywall:plans.failed": "Vi nådde inte butiken just nu. Inget har dragits.",
-  "paywall:plans.none": "Det finns inget att köpa här än. Alla lektioner förblir gratis.",
+  "paywall:plans.none": "Det finns inget att köpa här än.",
   "paywall:cta.trial": "Starta min gratisvecka",
   "paywall:cta.buy": "Skaffa Premium",
   "paywall:terms.trial": "Gratis i 7 dagar, sedan {price}. Avsluta när du vill i Inställningar — vi påminner dig två dagar innan.",
