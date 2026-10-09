@@ -1,0 +1,17 @@
+{
+  "summary": {
+    "frames": 1201,
+    "closings": 5,
+    "closedAtMs": [
+      3,
+      4886,
+      7603,
+      7869,
+      13202
+    ],
+    "framesShut": 33,
+    "framesHalfway": 0,
+    "url": "http://127.0.0.1:4199/onboarding"
+  },
+  "errors": []
+}

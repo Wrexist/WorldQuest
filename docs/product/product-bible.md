@@ -71,8 +71,8 @@ WorldQuest is a night sky full of places you haven't been yet. It is a well-made
 expedition, not a classroom and not a slot machine.
 
 **Voice** — an enthusiastic expedition guide who assumes you're capable.
-**Mascot** — **Atlas**, a small robot explorer in a safari hat. Atlas is curious and
-encouraging, and is never disappointed in you. Atlas appears at emotional beats
+**Mascot** — **Atlas**, a small living globe in an explorer's hat. Atlas is curious and
+encouraging, and is never disappointed in you: the travel buddy who is thrilled you came along. Atlas appears at emotional beats
 (welcome, milestone, comeback), not on every screen.
 
 Full guide: [`../design/voice-and-tone.md`](../design/voice-and-tone.md).

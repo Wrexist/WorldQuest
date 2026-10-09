@@ -2,8 +2,9 @@
 import { useState } from 'react'
 import { Animated, Image, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native'
 import { space } from '@worldquest/design'
-import { ATLAS_CLAY, type AtlasClayMood } from '../lib/atlasClay.generated.js'
+import { ATLAS_CLAY, ATLAS_CLAY_BLINK, type AtlasClayMood } from '../lib/atlasClay.generated.js'
 import { useMascotMotion } from './useMascotMotion.js'
+import { useMascotBlink } from './useMascotBlink.js'
 import { hapticSelect } from '../lib/haptics.js'
 
 export type AtlasMood = AtlasClayMood
@@ -27,6 +28,13 @@ const GESTURES: Record<Gesture, { lift: number[]; scale: number[]; tilt: string[
   hop: { lift: [0, -space[4], 0, 0], scale: [1, 1.06, .96, 1], tilt: ['0deg', '-4deg', '2deg', '0deg'] },
   ponder: { lift: [0, 0, -space[1] / 2, 0], scale: [1, 1, 1.01, 1], tilt: ['0deg', '6deg', '4deg', '0deg'] },
 }
+/**
+ * The smallest Atlas that blinks. The blink frame is a second full image, so an
+ * icon-sized Atlas skips it: below this his eyes are a few points tall and nobody would
+ * see them close.
+ */
+const BLINK_MIN_SIDE = space[9]
+
 const gestureFor = (mood: AtlasClayMood): Gesture =>
   mood === 'celebrate' || mood === 'laughing' || mood === 'surprised' ? 'hop' : mood === 'thinking' ? 'ponder' : 'greet'
 
@@ -42,6 +50,10 @@ export function WorldMascot({ mood = 'welcome', style, label, onBoopLabel }: {
   const [decoded, setDecoded] = useState<ReadonlySet<unknown>>(new Set())
   const { gesture, playing, boopNow, reduced } = useMascotMotion(mood, side, decoded)
   const art = ATLAS_CLAY[playing]
+  // Only where he is big enough to be seen blinking, and only once the open pose is on
+  // screen: closed eyes over a pose that is still decoding would float on their own.
+  const blink = !reduced && side >= BLINK_MIN_SIDE ? ATLAS_CLAY_BLINK[playing] : undefined
+  const lids = useMascotBlink(blink !== undefined && decoded.has(art))
   const character = <View testID={`mascot-pose-${playing}`} style={{ width: side, height: side }}>
     <Animated.View testID="mascot-motion" dataSet={{ gesture: gestureFor(playing) }} style={{ width: side, height: side, transform: reduced ? [] : [
       { translateY: gesture.interpolate({ inputRange: STEPS, outputRange: GESTURES[gestureFor(playing)].lift }) },
@@ -51,6 +63,8 @@ export function WorldMascot({ mood = 'welcome', style, label, onBoopLabel }: {
       <Image key={String(art)} testID="mascot-still" source={toSource(art)} alt="" {...hidden} resizeMode="contain"
         onLoad={() => setDecoded(previous => previous.has(art) ? previous : new Set([...previous, art]))}
         style={{ width: side, height: side }} />
+      {blink === undefined ? null : <Animated.Image key={String(blink)} testID="mascot-blink" source={toSource(blink)} alt="" {...hidden}
+        resizeMode="contain" style={[StyleSheet.absoluteFill, { width: side, height: side, opacity: lids }]} />}
     </Animated.View>
   </View>
 

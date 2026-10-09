@@ -103,7 +103,7 @@ and the Expedition props. Atlas is now a real 3D character built in Blender.
   breathes, wink winks.
 - **Render:** Cycles, AgX Punchy, key, fill, rim and top area lights, a shadow catcher,
   transparent film.
-- **Runtime:** `scripts/build-globe-mascot-art.cjs` packs each mood into a 6×6 sheet of
+- **Runtime (superseded October 2 by the liquid-clay stills, below):** `scripts/build-globe-mascot-art.cjs` packs each mood into a 6×6 sheet of
   320 px cells (rendered at 400) plus a 640 px still (`apps/mobile/assets/art/atlas-globe`,
   `src/lib/atlasGlobe.generated.ts`). `WorldMascot` steps through the sheet like the
   treasure chest: no 3D engine, no video. He plays his mood when he appears and again
@@ -130,3 +130,43 @@ The post-render component run passed 78 tests; `pnpm verify` passed in the origi
 working checkout. Browser E2E passed 107 checks, with one skipped because its lesson
 did not select an image question. Browser review covers the shared mascot in normal
 and reduced motion layouts; a native device pass for smoothness remains outstanding.
+
+## Liquid clay (October 2)
+
+The app's Atlas is now four complete clay poses (welcome, celebrate, thinking,
+resting) with the ten moods mapped onto them; prompts and provenance are in
+[`assets/atlas-liquid-clay/README.md`](assets/atlas-liquid-clay/README.md). The Blender
+sheets above stay as source history and are not imported. Each pose arrives with one
+finite native gesture (a hop for a cheer, a head tilt for a thought, a greeting
+otherwise) and then rests.
+
+## Alive: the blink (October 9)
+
+Personality: [`voice-and-tone.md`](voice-and-tone.md#atlas--the-mascot). The mascot
+research behind this pass: a character reads as alive through *subtle* idle motion, a
+blink above all, and big motion belongs only to big moments, which the gestures above
+already cover.
+
+- **Frames.** `scripts/build-clay-mascot.cjs` derives `welcome-blink`, `celebrate-blink`
+  and `thinking-blink` from the open poses (`scripts/lib/clay-lids.cjs`): it finds each
+  eye, fills it with the clay face around it (a Laplace fill, so the light carries
+  across without a seam), then lays on resting's own closed eyes, flipped to curve down
+  into a calm blink. Same sculpted navy clay as his brows, nothing drawn on. Resting has
+  no blink: its eyes are already closed.
+- **Invariant.** A blink frame differs from its open pose only around the eyes;
+  `scripts/lib/clay-lids.test.cjs` (in `pnpm test`) fails on any other changed pixel,
+  because the frame is shown over the pose and any other difference would flicker.
+- **Runtime.** `useMascotBlink` loops ONE native timing over the whole cycle and the
+  lids are an `interpolate` of it, so the JS thread does nothing between mount and
+  blur. The blink frame is a second `Image` laid over the pose; a blink is its opacity
+  snapping to 1 for `motion.blink.duration` (120 ms) after each of
+  `motion.blink.restMs` (3.4, 4.8, 2.6, 0.16, 5.2 s: uneven, with one double blink).
+  A snap, not a fade: the first in-app capture faded over 45 ms and caught open eyes
+  showing through closed ones, a ghost.
+  It runs only from `space[9]` (64 pt) up, once the open pose has decoded, and stops
+  with his eyes open on blur, in the background and under Reduce Motion.
+- **Cost.** One more 512 px image decoded per visible Atlas (1 MiB of raw RGBA), no
+  layout, no swaps. This is the first idle loop on him since #31 removed the
+  sheet-stepping idle for a reported iPhone stutter. **Physical iPhone check
+  outstanding**: if it stutters, set `BLINK_MIN_SIDE` in `WorldMascot.tsx` out of reach
+  and the blink is off everywhere, with no other change.

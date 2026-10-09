@@ -318,6 +318,7 @@
     "packages/i18n/src/i18n.test.ts",
     "scripts/expo-gl-frame-ack.test.cjs",
     "scripts/lib/browser-harness.test.cjs",
+    "scripts/lib/clay-lids.test.cjs",
     "scripts/lib/measure-ink.test.ts",
     "scripts/metro-content-transformer.test.cjs",
     "scripts/native-atlas-diagnostic.test.cjs",

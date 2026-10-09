@@ -23,15 +23,13 @@ node scripts/render-atlas.cjs
 
 This serially renders all five performances and the island, exports the animated GLB, then packages the runtime assets. GPU rendering uses the studio's `--gpu` option. Frames and atlases are lossless WebP to preserve transparent edges. Sources remain editable; the runtime does not include Three.js.
 
-To repack existing inspected renders only:
+**Retired from the app (2026-10-09).** The robot's runtime sheets, posters and poses
+(`apps/mobile/assets/art/atlas3d/*-sheet|poster|pose.webp`, `atlas3d.generated.ts`)
+were deleted: the clay globe replaced the robot in September and nothing imported
+them. `scripts/build-atlas-assets.cjs` now only copies the Expedition island, which the
+app still uses. Everything in this directory stays as source history.
 
-```sh
-node scripts/build-atlas-assets.cjs
-```
-
-`pnpm build:art` also calls the packaging step.
-
-## Runtime behavior and limits
+## Runtime behavior and limits (historical)
 
 Each 48-frame atlas is 2048 × 1536 pixels (12 MiB decoded), sampled at 20 fps. Only the current performance is mounted; after 2.35 seconds its atlas is replaced by a small still. Tiny portrait placements use stills. A poster remains visible during cold texture decoding, and the animation starts only after load. Focus and app-state changes stop or restart the bounded performance. Reduced motion uses an open-eyed expressive still immediately, including when the preference changes while mounted.
 

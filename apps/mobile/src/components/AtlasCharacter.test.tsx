@@ -5,6 +5,7 @@ import { act, fireEvent, render, renderHook, waitFor } from '@testing-library/re
 import { NavigationContext } from '@react-navigation/native'
 import { motion, setAppReducedMotion, useReducedMotion } from '@worldquest/design'
 import { useMascotMotion } from './useMascotMotion.js'
+import { LIDS, useMascotBlink } from './useMascotBlink.js'
 import { AtlasCharacter, type AtlasMood } from './AtlasCharacter.js'
 import { withFullMotion } from '../test/setup.js'
 import { usePreferences, initializeMotionPreference } from '../features/settings/usePreferences.js'
@@ -304,5 +305,99 @@ describe('Atlas moves like his face', () => {
     expect(gesture('celebrate')).toBe('hop')
     expect(gesture('thinking')).toBe('ponder')
     expect(gesture('welcome')).toBe('greet')
+  })
+})
+
+describe('Atlas blinks', () => {
+  function loops() {
+    const running = new Set<number>()
+    let id = 0
+    const timing = vi.spyOn(Animated, 'timing').mockReturnValue({ start: vi.fn(), stop: vi.fn(), reset: vi.fn() })
+    const loop = vi.spyOn(Animated, 'loop').mockImplementation(() => {
+      const key = id++
+      return { start: () => { running.add(key) }, stop: () => { running.delete(key) }, reset: vi.fn() }
+    })
+    return { running, timing, loop }
+  }
+
+  it('snaps his eyes shut once per rest, and starts and ends each cycle with them open', () => {
+    const { inputRange, outputRange } = LIDS
+    expect(inputRange[0]).toBe(0)
+    expect(inputRange.at(-1)).toBe(1)
+    inputRange.slice(1).forEach((at, i) => expect(at).toBeGreaterThan(inputRange[i]!))
+    expect(outputRange[0]).toBe(0)
+    expect(outputRange.at(-1)).toBe(0)
+    const closings = outputRange.filter((lid, i) => lid === 1 && outputRange[i - 1] === 0).length
+    expect(closings).toBe(motion.blink.restMs.length)
+    // Snapped, not faded: every edge between open and shut is shorter than a 120 Hz frame,
+    // so open eyes never show through closed ones.
+    outputRange.forEach((lid, i) => {
+      if (i > 0 && lid !== outputRange[i - 1]) expect((inputRange[i]! - inputRange[i - 1]!) * LIDS.cycle).toBeLessThan(1000 / 120)
+    })
+  })
+
+  it('runs as one native loop with no JS timers, and stops with his eyes open while hidden', async () => {
+    vi.useFakeTimers()
+    vi.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false)
+    const events = lifecycle()
+    const work = loops()
+    await withFullMotion(async () => {
+      const hook = renderHook(() => useMascotBlink(true), { wrapper: events.wrapper })
+      await flushPreference()
+      expect(work.running.size).toBe(1)
+      expect(work.timing.mock.calls.at(-1)?.[1]).toMatchObject({ useNativeDriver: true, isInteraction: false, duration: LIDS.cycle })
+      expect(vi.getTimerCount()).toBe(0)
+      events.focus(false)
+      expect(work.running.size).toBe(0)
+      events.focus(true)
+      expect(work.running.size).toBe(1)
+      events.app('background')
+      expect(work.running.size).toBe(0)
+      events.app('active')
+      expect(work.running.size).toBe(1)
+      hook.unmount()
+      expect(work.running.size).toBe(0)
+      expect(events.listenerCount()).toBe(0)
+    })
+  })
+
+  it('never blinks under reduced motion, or when the caller has nothing to blink', async () => {
+    vi.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false)
+    lifecycle()
+    const work = loops()
+    await withFullMotion(async () => {
+      const off = renderHook(() => useMascotBlink(false))
+      await flushPreference()
+      off.unmount()
+    })
+    setAppReducedMotion(true)
+    const reduced = renderHook(() => useMascotBlink(true))
+    await flushPreference()
+    reduced.unmount()
+    expect(work.loop).not.toHaveBeenCalled()
+  })
+
+  it('lays closed eyes over open-eyed poses only, and only where he is big enough to see', async () => {
+    vi.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false)
+    lifecycle()
+    loops()
+    const { WorldMascot } = await import('./WorldMascot.js')
+    await withFullMotion(async () => {
+      const overlay = async (mood: AtlasMood, side: number) => {
+        const view = render(<WorldMascot mood={mood} style={{ width: side, height: side }} />)
+        await flushPreference()
+        const blink = view.queryByTestId('mascot-blink')
+        const source = blink === null ? null : (blink.querySelector('img') ?? blink).getAttribute('src')
+        view.unmount()
+        return source
+      }
+      expect(await overlay('welcome', 160)).toContain('atlas-clay/welcome-blink.png')
+      expect(await overlay('celebrate', 160)).toContain('atlas-clay/celebrate-blink.png')
+      expect(await overlay('resting', 160)).toBeNull()
+      expect(await overlay('welcome', 40)).toBeNull()
+    })
+    setAppReducedMotion(true)
+    const still = render(<WorldMascot mood="welcome" style={{ width: 160, height: 160 }} />)
+    expect(still.queryByTestId('mascot-blink')).toBeNull()
   })
 })
