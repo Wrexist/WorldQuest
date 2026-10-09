@@ -105,6 +105,16 @@ export function CoursePath({
     )
   }
 
+  // Condensed, Home shows the unit you are in AND the one after it: its banner and its
+  // closed steps, so the trail visibly goes on rather than stopping three steps in at a
+  // button (feel audit 2026-10-06, gap 7: "a new user sees one node"). Duolingo's path
+  // runs on past the current unit the same way. The whole course is still one tap away.
+  const currentUnit = path.units.findIndex(unit => unit.state === 'current')
+  const onHome = (index: number) =>
+    index === currentUnit || (currentUnit >= 0 && index === currentUnit + 1)
+  const shown = path.units.filter((unit, index) =>
+    !condensed || showAll || onHome(index) || (path.complete && unit === path.units.at(-1)))
+
   const pressed = (node: PathNodeView) => () => {
     if (node.state === 'current') {
       setOpen(null)
@@ -119,7 +129,7 @@ export function CoursePath({
       style={styles.path}
       onLayout={(event: LayoutChangeEvent) => setMeasured(event.nativeEvent.layout.width)}
     >
-      {path.units.filter(unit => !condensed || showAll || unit.state === 'current' || (path.complete && unit === path.units.at(-1))).map(unit => <View key={unit.id} onLayout={event => {
+      {shown.map(unit => <View key={unit.id} onLayout={event => {
         unitTop.current.set(unit.id, event.nativeEvent.layout.y)
         report()
       }}>
@@ -129,7 +139,7 @@ export function CoursePath({
           onCurrentLayout={(y, height) => { current.current = { unitId: unit.id, y, height }; report() }} />
       </View>)}
 
-      {condensed && path.units.length > 1 && <Button variant="secondary"
+      {condensed && (showAll || shown.length < path.units.length) && <Button variant="secondary"
         label={t(showAll ? 'home:path.showCurrent' : 'home:path.showCourse')}
         onPress={() => setShowAll(value => !value)} testID="path-expand" />}
 
