@@ -1,4 +1,5 @@
 import { createThemeStyles } from '@worldquest/design'
+import { EdgeScrollView } from '../../components/ScrollEdges.js'
 /**
  * Achievements.
  *
@@ -16,7 +17,7 @@ import { createThemeStyles } from '@worldquest/design'
  *    rest. Sorting alphabetically buries the two rows a user actually wants to see.
  */
 
-import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Animated, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
   Card,
@@ -163,7 +164,7 @@ export function AchievementsScreen({ rows, onStartLesson, onBack }: Achievements
   })
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <EdgeScrollView style={styles.screen} contentContainerStyle={styles.content}>
       {onBack !== undefined && (
         <ScreenHeader title={t('achievements:title')} onBack={onBack} />
       )}
@@ -211,7 +212,7 @@ export function AchievementsScreen({ rows, onStartLesson, onBack }: Achievements
           </View>
         )
       })}
-    </ScrollView>
+    </EdgeScrollView>
   )
 }
 

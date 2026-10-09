@@ -18,9 +18,10 @@ import { createThemeStyles } from '@worldquest/design'
  * the celebration still lands — it just does not travel. Nothing blocks the button.
  */
 
-import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Animated, StyleSheet, Text, View } from 'react-native'
 import { useEffect, useRef, useState } from 'react'
 import { Button, space, text, useAnimatedTo, useCountUp } from '@worldquest/design'
+import { EdgeScrollView } from '../../components/ScrollEdges.js'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 import { WeekStrip, type WeekActivity } from '../../components/WeekStrip.js'
@@ -50,7 +51,7 @@ export type StreakExtendedProps = {
 const FLAME = 168
 
 export function StreakExtended({ streak, week, milestoneXp, onContinue, chest, onOpenChest }: StreakExtendedProps) {
-  const { styles } = useThemeValues()
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const [landed, setLanded] = useState(false)
   useEffect(() => setLanded(true), [])
@@ -72,7 +73,7 @@ export function StreakExtended({ streak, week, milestoneXp, onContinue, chest, o
 
   return (
     <View style={styles.screen} testID="streak-extended">
-      <ScrollView contentContainerStyle={styles.body}>
+      <EdgeScrollView contentContainerStyle={styles.body} edgeCanvas={colors.journey.lavender}>
         {chest !== undefined ? (
           <TreasureChest opened={opened} onOpen={open} onReveal={() => setRevealed(true)} />
         ) : <View style={styles.hero} pointerEvents="none">
@@ -117,8 +118,11 @@ export function StreakExtended({ streak, week, milestoneXp, onContinue, chest, o
         <View style={styles.week}>
           <WeekStrip week={week} />
         </View>
-      </ScrollView>
+      </EdgeScrollView>
 
+      {/* On the screen's own lavender, the page softening into it from above (its edges
+          wear the lavender too). It was a navy sheet with rounded shoulders, a dark block
+          cut into the purple (owner review, 2026-10-10: "no hard lines"). */}
       <View style={styles.actions}>
         {chest !== undefined && !opened && <Button label={t('streak:chest.open')} onPress={open} testID="open-streak-chest" />}
         <Button label={t('streak:extended.cta')} variant={chest !== undefined && !opened ? 'ghost' : 'primary'} onPress={onContinue} />
@@ -146,7 +150,7 @@ const useThemeValues = createThemeStyles((colors) => {
   body1: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
   milestone: { ...text('bodyStrong', { numeric: true }), color: colors.reward.xp, textAlign: 'center' },
   week: { alignSelf: 'stretch', marginTop: space[4] },
-  actions: { backgroundColor: colors.bg.canvas, borderTopLeftRadius: space[6], borderTopRightRadius: space[6], padding: space[4], gap: space[2] },
+  actions: { backgroundColor: colors.journey.lavender, padding: space[4], gap: space[2] },
   chestCopy: { backgroundColor: colors.bg.surface, borderRadius: space[5], padding: space[4], alignSelf: 'stretch', alignItems: 'center', gap: space[2] },
   treasure: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: space[3] },
   receipt: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },

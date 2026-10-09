@@ -1,4 +1,5 @@
 import { createThemeStyles } from '@worldquest/design'
+import { EdgeScrollView } from '../../components/ScrollEdges.js'
 /**
  * The end of a lesson — mockup screen 6, and the app's biggest emotional moment.
  *
@@ -32,7 +33,7 @@ import { createThemeStyles } from '@worldquest/design'
  */
 
 import { useMemo } from 'react'
-import { Animated, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
+import { Animated, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import {
   Button,
   Card,
@@ -227,7 +228,7 @@ export function LessonSummary({
     <View style={styles.screen}>
       {isOffline && <OfflineNote />}
 
-      <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+      <EdgeScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
         {/* Centred by spacers rather than `justifyContent` — see `Spacer`. This screen's
             centring was added in this same session, before the hazard was understood: a
             summary with a wrapped reward row and a long streak line overflows a short
@@ -430,7 +431,7 @@ export function LessonSummary({
           </Animated.View>
         )}
         <Spacer />
-      </ScrollView>
+      </EdgeScrollView>
 
       {!wasAbandoned && result !== null && <Text style={styles.nextPrompt}>{t('lesson:summary.adventure.prompt')}</Text>}
       <Button

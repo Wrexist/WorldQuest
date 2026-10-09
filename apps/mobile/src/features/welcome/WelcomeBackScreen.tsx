@@ -1,4 +1,5 @@
 import { createThemeStyles } from '@worldquest/design'
+import { EdgeScrollView } from '../../components/ScrollEdges.js'
 /**
  * Welcome back — hidden screen H2, for a user returning after a week or more.
  *
@@ -27,7 +28,7 @@ import { createThemeStyles } from '@worldquest/design'
  * Purely presentational.
  */
 
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { Button, Card, Tally, space, text } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
@@ -65,7 +66,7 @@ export function WelcomeBackScreen({
 
        It looked fine in this repo's harness only because a browser scrolls the document
        when a page overflows. A phone does not. */
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <EdgeScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.hero}>
         {/* Atlas waving with both arms, from a low angle. The brief for this frame is
             specifically "greeting someone returning after a long time — warm, glad, NO
@@ -116,7 +117,7 @@ export function WelcomeBackScreen({
             must be able to look around. */}
         <Button variant="ghost" label={t('welcome:later')} onPress={onDismiss} />
       </View>
-    </ScrollView>
+    </EdgeScrollView>
   )
 }
 

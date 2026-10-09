@@ -1,4 +1,6 @@
 import { LessonIntroduction } from './LessonIntroduction.js'
+import { LinearGradient } from 'expo-linear-gradient'
+import { ramp } from '../../components/ScrollEdges.js'
 import { visualQuestion } from './visualQuestion.js'
 import { captureStorage } from '../../lib/storage.js'
 import { createThemeStyles } from '@worldquest/design'
@@ -30,6 +32,7 @@ import {
   Button,
   ClaySurface,
   layout,
+  motion,
   ProgressBar,
   radius,
   Skeleton,
@@ -38,6 +41,7 @@ import {
   squircle,
   text,
   useCelebration,
+  useReducedMotion,
   useRiseIn,
 } from '@worldquest/design'
 import {
@@ -1189,6 +1193,9 @@ export function LessonScreen({
       </ScrollView>
 
       {boardSettled || !answered ? null : (
+        <SheetBackdrop key={`backdrop-${answeredCount}`} height={sheetHeight} />
+      )}
+      {boardSettled || !answered ? null : (
         <RiseIn key={answeredCount} style={[styles.footer, styles.feedbackFooter]} onHeight={setSheetHeight}>
           {/* Out of hearts is a fork, not a wall. The engine has held the flag since
               the machine was written and nothing rendered it — so the lesson simply
@@ -1441,6 +1448,37 @@ function RiseIn({ children, style, onHeight }: { children: ReactNode; style: Sty
       onHeight?.(event.nativeEvent.layout.height)
     }}>
       {children}
+    </Animated.View>
+  )
+}
+
+/** How far above the answer sheet the lesson dissolves into the canvas. */
+const SHEET_FADE = space[7]
+
+/**
+ * Behind the answer sheet: the canvas, rising from the bottom of the screen to just above
+ * the sheet, where the lesson dissolves into it on the eased ramp.
+ *
+ * The sheet lies over the lesson (see `scroller`), inset from the screen's sides, so the
+ * options it covered poked out beside its rounded corners: half a card on each side of
+ * the verdict (owner review, 2026-10-10: "no hard lines"). Fades in with the sheet, and
+ * never takes a touch: anything under it is a swipe away (iOS), as before.
+ */
+function SheetBackdrop({ height }: { height: number }) {
+  const { colors, styles } = useThemeValues()
+  const reduced = useReducedMotion()
+  const opacity = useRef(new Animated.Value(reduced ? 1 : 0)).current
+  useEffect(() => {
+    if (reduced) { opacity.setValue(1); return }
+    const animation = Animated.timing(opacity, { toValue: 1, duration: motion.base.duration, useNativeDriver: true, isInteraction: false })
+    animation.start()
+    return () => animation.stop()
+  }, [reduced, opacity])
+  return (
+    <Animated.View pointerEvents="none" aria-hidden testID="sheet-backdrop"
+      style={[styles.sheetBackdrop, { height: height + space[4] + SHEET_FADE, opacity }]}>
+      <LinearGradient {...ramp(colors.bg.canvas, 'bottom')} style={{ height: SHEET_FADE }} />
+      <View style={styles.sheetBackdropFill} />
     </Animated.View>
   )
 }
@@ -1827,6 +1865,8 @@ const useThemeValues = createThemeStyles((colors) => {
   footer: { paddingBottom: space[4] },
   // Over the lesson rather than under it (see `scroller`), inset like the screen's own
   // padding, which an absolute child does not inherit.
+  sheetBackdrop: { position: 'absolute', start: 0, end: 0, bottom: 0 },
+  sheetBackdropFill: { flex: 1, backgroundColor: colors.bg.canvas },
   feedbackFooter: { position: 'absolute', start: space[4], end: space[4], bottom: space[4], maxHeight: '65%' },
   feedbackScroll: { flexGrow: 0 },
   retry: { marginTop: space[4] },

@@ -1,4 +1,5 @@
 import { createThemeStyles } from '@worldquest/design'
+import { EdgeScrollView } from '../../components/ScrollEdges.js'
 /**
  * Giving an anonymous account a way home — mockup-adjacent, and the last dead end.
  *
@@ -38,7 +39,7 @@ import { createThemeStyles } from '@worldquest/design'
  * Purely presentational. Every decision arrives already made.
  */
 
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from 'react-native'
 import {
   Button,
   Card,
@@ -189,7 +190,7 @@ export function AccountScreen({
         style={styles.fill}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+        <EdgeScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           {offline === true && stage !== 'done' ? (
             <View style={styles.hero}>
               <Art name="states/offline" size={HERO} />
@@ -325,7 +326,7 @@ export function AccountScreen({
               />
             </>
           )}
-        </ScrollView>
+        </EdgeScrollView>
       </KeyboardAvoidingView>
     </View>
   )

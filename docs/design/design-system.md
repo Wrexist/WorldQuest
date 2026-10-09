@@ -464,8 +464,25 @@ bottom) to read as a transition rather than a stripe. Each edge shows only where
 is content under it: the top once the page has scrolled, the bottom until the end, each
 fading in and out over `motion.quick`. The blur drops from `illustration.edgeBlur.rest`
 to `.moving` while the content moves, because a heavy blur over moving text is mush and
-costs the GPU every frame. State changes only on a flip, never per frame. New scrolling
-screens should wrap their scroll view the same way (`useScrollEdges` for the props).
+costs the GPU every frame. State changes only on a flip, never per frame.
+
+**No hard lines (owner review, 2026-10-10).** Wherever content meets an edge it dissolves
+on the same eased ramp (`ramp` in `ScrollEdges.tsx`) instead of being cut:
+
+- **Full-screen lists** use `EdgeScrollView`, a drop-in `ScrollView` with the edges built
+  in (`edgeCanvas` when the page is not `bg.canvas`, as the streak's lavender). The five
+  tabs wire `useScrollEdges` by hand because Home shares its scroll handlers.
+- **`StickyFooter`** has no hairline and no fade of its own: the list above it is an
+  `EdgeScrollView`, whose bottom edge dissolves into the footer and steps aside at the end.
+- **The answer sheet** sits on a backdrop that dissolves the lesson into the canvas above
+  and around it, so covered options never poke out beside its corners.
+- **A scene on a plate** (the unit banner) fades its last 32 pt through a mask, so the
+  plate's own colour shows through; on the web the edge stays (no mask there).
+- **A row that runs off the screen** (Explore's continents) fades toward its end and pads
+  the last item clear of the fade.
+
+New screens follow the same rule: no 1 pt dividers between content and chrome, and no
+content cut by a straight edge.
 
 ## 11. Component inventory
 

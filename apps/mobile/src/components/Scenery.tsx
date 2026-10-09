@@ -7,8 +7,11 @@
  * children into the reading order; the landscape itself stays decorative.
  */
 import type { ReactNode } from 'react'
-import { Animated, Image, StyleSheet, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native'
-import { createThemeStyles, driftStyle, radius, space } from '@worldquest/design'
+import { Animated, Image, Platform, StyleSheet, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native'
+import MaskedView from '@react-native-masked-view/masked-view'
+import { LinearGradient } from 'expo-linear-gradient'
+import { createThemeStyles, driftStyle, radius, space, useTheme } from '@worldquest/design'
+import { ramp } from './ScrollEdges.js'
 import { useSceneDrift } from '../hooks/useSceneDrift.js'
 import { ADVENTURE_ART } from '../lib/adventure.generated.js'
 import { EXPEDITION_ART } from '../lib/expedition.generated.js'
@@ -75,12 +78,13 @@ export function SceneryBanner({ name, height, style, rounded = 'top', children, 
   const sceneAccessibility = interactiveChildren ? { pointerEvents: 'box-none' as const } : { ...hidden, pointerEvents: 'none' as const }
   const foreground = children === undefined ? null : <View style={styles.foreground}>{children}</View>
   if (scene.fit === 'cover') {
+    // Explicit size, not absoluteFill: on the web an Image positioned by its edges alone
+    // falls back to the file's own pixels and shows its top-left corner.
+    const image = <View {...hidden} pointerEvents="none" style={styles.fill}>
+      <Image {...hidden} source={toSource(scene.source)} resizeMode="cover" style={styles.fill} alt="" />
+    </View>
     return <View {...sceneAccessibility} testID={`scenery-${name}`} style={frame}>
-      {/* Explicit size, not absoluteFill: on the web an Image positioned by its edges
-          alone falls back to the file's own pixels and shows its top-left corner. */}
-      <View {...hidden} pointerEvents="none" style={styles.fill}>
-        <Image {...hidden} source={toSource(scene.source)} resizeMode="cover" style={styles.fill} alt="" />
-      </View>
+      {rounded === 'top' ? <Dissolve height={height}>{image}</Dissolve> : image}
       {foreground}
     </View>
   }
@@ -125,6 +129,32 @@ export function FloatingProp({ name, size, phase, style }: { name: PathProp; siz
   return <Animated.View {...hidden} pointerEvents="none" testID={`path-prop-${name}`} style={[style, driftStyle(drift, space[2])]}>
     <Image source={toSource(EXPEDITION_ART[name].asset)} resizeMode="contain" style={{ width: size, height: size }} alt="" />
   </Animated.View>
+}
+
+/** How far up from its lower edge a banner's scene melts into the plate it sits on. */
+const DISSOLVE = space[6]
+
+/**
+ * A scene on a plate ends in a dissolve, not a line: its last `DISSOLVE` points fade out
+ * on an eased ramp, so the plate's own colour shows through. It was a hard horizontal
+ * edge, a bright landscape straight into a dark card (owner review, 2026-10-10: "no hard
+ * lines"). The scene itself fades, through a mask, rather than having a colour laid
+ * over it: the plate is clay plus a continent tint, and no single colour would match it.
+ * Not on the web, where the mask library draws the mask instead of the scene.
+ */
+function Dissolve({ height, children }: { height: number; children: ReactNode }) {
+  const { colors } = useTheme()
+  if (Platform.OS === 'web') return <>{children}</>
+  const fade = ramp(colors.bg.canvas, 'top')
+  const from = 1 - Math.min(1, DISSOLVE / Math.max(height, 1))
+  // Solid down to `from`, then the eased ramp to clear at the bottom.
+  const mask = {
+    colors: [fade.colors[0], ...fade.colors] as [string, string, ...string[]],
+    locations: [0, ...fade.locations.map(at => from + at * (1 - from))] as [number, number, ...number[]],
+  }
+  return <MaskedView pointerEvents="none" style={StyleSheet.absoluteFill} maskElement={<LinearGradient {...mask} style={StyleSheet.absoluteFill} />}>
+    {children}
+  </MaskedView>
 }
 
 const useThemeValues = createThemeStyles((colors) => {

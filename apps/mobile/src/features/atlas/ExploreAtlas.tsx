@@ -14,7 +14,9 @@
 
 import { useEffect, useMemo, useState, type Ref } from 'react'
 import { I18nManager, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ViewProps } from 'react-native'
-import { ClaySurface, clayShadow, createThemeStyles, layout, radius, space, text } from '@worldquest/design'
+import { ClaySurface, clayShadow, createThemeStyles, layout, radius, space, text, useTheme } from '@worldquest/design'
+import { LinearGradient } from 'expo-linear-gradient'
+import { ramp } from '../../components/ScrollEdges.js'
 import { Flag } from '../../components/Flag.js'
 import { ClayMap } from '../../components/ClayMap.js'
 import { Icon } from '../../components/Icon.js'
@@ -79,12 +81,19 @@ export function ExploreAtlas({ countries, names, selected, onSelect, region, onR
   )
   return (
     <View style={styles.column} testID="explore-atlas" onLayout={onLayout}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
-        <RegionChip label={t('atlas:explore.all')} active={region === null} onPress={() => onRegion(null)} />
-        {ATLAS_REGIONS.map((r) => (
-          <RegionChip key={r} label={t(REGION_KEY[r])} active={region === r} onPress={() => onRegion(r)} />
-        ))}
-      </ScrollView>
+      {/* The row runs off the screen's end, so it fades there rather than being chopped
+          through a chip ("No" for North America): softer, and it says "there is more"
+          (owner review, 2026-10-10: "no hard lines"). The padding at the end lets the last
+          chip scroll clear of the fade. */}
+      <View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
+          <RegionChip label={t('atlas:explore.all')} active={region === null} onPress={() => onRegion(null)} />
+          {ATLAS_REGIONS.map((r) => (
+            <RegionChip key={r} label={t(REGION_KEY[r])} active={region === r} onPress={() => onRegion(r)} />
+          ))}
+        </ScrollView>
+        <ChipRowFade />
+      </View>
 
       {globeFailed ? <View testID="explore-map-fallback">
         <ClayMap name={selected ?? (region ? `region-${region}` : 'world')} style={{ width: '100%', height: globeHeight }} />
@@ -168,10 +177,19 @@ function RegionChip({ label, active, onPress }: { label: string; active: boolean
   )
 }
 
+/** The chip row's soft end: clear to the canvas, toward the screen's end edge (left in RTL). */
+function ChipRowFade() {
+  const { colors } = useTheme()
+  const { styles } = useThemeValues()
+  const across = I18nManager.isRTL ? { start: { x: 1, y: 0.5 }, end: { x: 0, y: 0.5 } } : { start: { x: 0, y: 0.5 }, end: { x: 1, y: 0.5 } }
+  return <LinearGradient pointerEvents="none" aria-hidden {...ramp(colors.bg.canvas, 'bottom')} {...across} style={styles.chipFade} />
+}
+
 const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
     column: { gap: space[3] },
-    chips: { gap: space[2], paddingVertical: space[1] },
+    chips: { gap: space[2], paddingVertical: space[1], paddingEnd: space[7] },
+    chipFade: { position: 'absolute', top: 0, bottom: 0, end: 0, width: space[7] },
     chip: {
       minHeight: 48,
       paddingHorizontal: space[4],

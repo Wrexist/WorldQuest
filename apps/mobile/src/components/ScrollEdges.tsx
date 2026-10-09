@@ -39,10 +39,10 @@
  * handler compares and returns.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  AccessibilityInfo, Animated, Easing, Platform, StyleSheet, View,
-  type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent,
+  AccessibilityInfo, Animated, Easing, Platform, ScrollView, StyleSheet, View,
+  type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent, type ScrollViewProps,
 } from 'react-native'
 import { BlurView } from 'expo-blur'
 import MaskedView from '@react-native-masked-view/masked-view'
@@ -137,24 +137,27 @@ function useReduceTransparency(): boolean {
  * The two edges, absolutely positioned over a scroll view. Put it beside the scroll view
  * inside a container that is the scroll view's size; it never takes a touch.
  */
-export function ScrollEdges({ state, top = true, bottom = true }: {
+export function ScrollEdges({ state, top = true, bottom = true, canvas }: {
   state: ScrollEdgeState; top?: boolean; bottom?: boolean
+  /** The colour the page is painted, when it is not `bg.canvas` (the streak's lavender). */
+  canvas?: string | undefined
 }) {
   const blur = Platform.OS === 'ios' && !useReduceTransparency()
   return (
     <>
-      {top && <Edge side="top" shown={state.scrolled} blur={blur} moving={state.moving} />}
-      {bottom && <Edge side="bottom" shown={!state.atEnd} blur={blur} moving={state.moving} />}
+      {top && <Edge side="top" shown={state.scrolled} blur={blur} moving={state.moving} canvas={canvas} />}
+      {bottom && <Edge side="bottom" shown={!state.atEnd} blur={blur} moving={state.moving} canvas={canvas} />}
     </>
   )
 }
 
 /**
- * An eased ramp from the canvas at the screen's edge to clear inward: a smoothstep,
+ * An eased ramp from `canvas` at the screen's edge to clear inward: a smoothstep,
  * sampled. The canvas with no alpha is the canvas made transparent, so the ramp never
- * passes through grey on its way out.
+ * passes through grey on its way out. `side` is where the solid end is. Shared with
+ * `StickyFooter`, so every edge in the app dissolves the same way.
  */
-function ramp(canvas: string, side: 'top' | 'bottom') {
+export function ramp(canvas: string, side: 'top' | 'bottom') {
   const colors: string[] = []
   const locations: number[] = []
   for (let i = 0; i < STOPS; i++) {
@@ -167,10 +170,12 @@ function ramp(canvas: string, side: 'top' | 'bottom') {
   return { colors: colors as [string, string, ...string[]], locations: locations as [number, number, ...number[]] }
 }
 
-function Edge({ side, shown, blur, moving }: { side: 'top' | 'bottom'; shown: boolean; blur: boolean; moving: boolean }) {
+function Edge({ side, shown, blur, moving, canvas: paint }: {
+  side: 'top' | 'bottom'; shown: boolean; blur: boolean; moving: boolean; canvas?: string | undefined
+}) {
   const { colors, mode } = useTheme()
   const reduced = useReducedMotion()
-  const canvas = colors.bg.canvas
+  const canvas = paint ?? colors.bg.canvas
   const gradient = useMemo(() => ramp(canvas, side), [canvas, side])
   const opacity = useRef(new Animated.Value(shown ? 1 : 0)).current
   useEffect(() => {
@@ -200,4 +205,41 @@ function Edge({ side, shown, blur, moving }: { side: 'top' | 'bottom'; shown: bo
 
 const styles = StyleSheet.create({
   edge: { position: 'absolute', start: 0, end: 0 },
+  // The frame takes the caller's size; `flex: 1` is the default a screen list wants.
+  frame: { flex: 1 },
+  fill: { flex: 1 },
 })
+
+/**
+ * A full-screen `ScrollView` with soft edges built in: the drop-in for any screen whose
+ * list fills it. The caller's `style` sizes the frame (so `flex: 1` keeps working) and
+ * the scroll view fills the frame; every scroll handler the caller passes still runs,
+ * after the edges have read the event.
+ *
+ * Not for a scroll view sized by its content (`flexGrow: 0` inside a sheet): the frame
+ * would have nothing to fill. Those keep a plain `ScrollView`.
+ */
+export const EdgeScrollView = forwardRef<ScrollView, ScrollViewProps & { edgeTop?: boolean; edgeBottom?: boolean; edgeCanvas?: string }>(
+  function EdgeScrollView({
+    style, edgeTop = true, edgeBottom = true, edgeCanvas,
+    onScroll, onLayout, onContentSizeChange, onScrollBeginDrag, onScrollEndDrag, onMomentumScrollBegin, onMomentumScrollEnd,
+    scrollEventThrottle, ...props
+  }, ref) {
+    const edges = useScrollEdges()
+    const { handlers } = edges
+    return (
+      <View style={[styles.frame, style]}>
+        <ScrollView ref={ref} {...props} style={styles.fill}
+          scrollEventThrottle={Math.min(scrollEventThrottle ?? handlers.scrollEventThrottle, handlers.scrollEventThrottle)}
+          onScroll={event => { handlers.onScroll(event); onScroll?.(event) }}
+          onLayout={event => { handlers.onLayout(event); onLayout?.(event) }}
+          onContentSizeChange={(width, height) => { handlers.onContentSizeChange(width, height); onContentSizeChange?.(width, height) }}
+          onScrollBeginDrag={event => { handlers.onScrollBeginDrag(); onScrollBeginDrag?.(event) }}
+          onScrollEndDrag={event => { handlers.onScrollEndDrag(); onScrollEndDrag?.(event) }}
+          onMomentumScrollBegin={event => { handlers.onMomentumScrollBegin(); onMomentumScrollBegin?.(event) }}
+          onMomentumScrollEnd={event => { handlers.onMomentumScrollEnd(); onMomentumScrollEnd?.(event) }} />
+        <ScrollEdges state={edges} top={edgeTop} bottom={edgeBottom} canvas={edgeCanvas} />
+      </View>
+    )
+  },
+)

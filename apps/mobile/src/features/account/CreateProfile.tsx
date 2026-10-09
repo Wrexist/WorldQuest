@@ -1,4 +1,5 @@
 import { createThemeStyles } from '@worldquest/design'
+import { EdgeScrollView } from '../../components/ScrollEdges.js'
 /**
  * "Create a profile" — the ask after a guest's first finished lessons.
  *
@@ -26,7 +27,7 @@ import { createThemeStyles } from '@worldquest/design'
  * Motion. Nothing fades, and nothing waits: both buttons work from the first frame.
  */
 
-import { Animated, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native'
+import { Animated, StyleSheet, Text, useWindowDimensions, View } from 'react-native'
 import { Button, space, Spacer, text, useScaleIn } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
@@ -70,7 +71,7 @@ export function CreateProfile({ onCreate, onLater, offline = false }: CreateProf
       {/* Scrolls, and is centred by spacers rather than `justifyContent`: at 200 % text
           on a 320pt phone the words outgrow the screen, and a centred scroll view puts
           its overflow above scroll position zero where nothing reaches it (`Spacer`). */}
-      <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+      <EdgeScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
         <Spacer />
         {/* Decorative — the heading says what this is. */}
         <Animated.View style={[styles.hero, hero]} pointerEvents="none">
@@ -82,7 +83,7 @@ export function CreateProfile({ onCreate, onLater, offline = false }: CreateProf
         <Text style={styles.lede}>{t('account:ask.body')}</Text>
         <Text style={styles.note}>{t('account:ask.privacy')}</Text>
         <Spacer />
-      </ScrollView>
+      </EdgeScrollView>
 
       <View style={styles.actions}>
         {offline && (

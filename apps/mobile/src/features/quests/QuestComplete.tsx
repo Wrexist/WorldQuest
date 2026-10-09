@@ -1,4 +1,5 @@
 import { createThemeStyles } from '@worldquest/design'
+import { EdgeScrollView } from '../../components/ScrollEdges.js'
 /**
  * The quest is finished — mockup screen 8.
  *
@@ -53,7 +54,7 @@ import { createThemeStyles } from '@worldquest/design'
  * motion, so the celebration still LANDS — it just does not travel.
  */
 
-import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Animated, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
   Card,
@@ -123,7 +124,7 @@ export function QuestComplete({ done, total, streak, milestoneXp, onDone }: Ques
 
   return (
     <View style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.body}>
+      <EdgeScrollView contentContainerStyle={styles.body}>
         <Animated.View style={[styles.hero, burst]} pointerEvents="none">
           <Art name="celebration/burst" size={HERO} />
           <View style={StyleSheet.absoluteFill}>
@@ -177,7 +178,7 @@ export function QuestComplete({ done, total, streak, milestoneXp, onDone }: Ques
         {milestoneXp !== undefined && (
           <Text style={styles.milestone}>{t('quests:done.milestone', { amount: milestoneXp })}</Text>
         )}
-      </ScrollView>
+      </EdgeScrollView>
 
       <View style={styles.actions}>
         {/* Not "Claim". Nothing is withheld — see the header. */}

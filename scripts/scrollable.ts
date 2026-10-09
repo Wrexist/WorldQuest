@@ -51,10 +51,11 @@ const COMPONENTS = join(MOBILE, 'src', 'components')
 /**
  * Anything that scrolls, including the two list primitives that scroll on their own.
  *
- * `KeyboardAwareScrollView` and the like would go here too. Matched on the JSX tag rather
- * than the import so a component imported and never rendered does not count.
+ * `KeyboardAwareScrollView` and the like would go here too, as `EdgeScrollView` (a
+ * `ScrollView` with soft edges, `components/ScrollEdges.tsx`) is. Matched on the JSX tag
+ * rather than the import so a component imported and never rendered does not count.
  */
-const SCROLLS = /<(ScrollView|FlatList|SectionList|VirtualizedList)\b/
+const SCROLLS = /<(ScrollView|EdgeScrollView|FlatList|SectionList|VirtualizedList)\b/
 
 /**
  * Prose, stripped — for the same reason `five-states.ts` strips it.
