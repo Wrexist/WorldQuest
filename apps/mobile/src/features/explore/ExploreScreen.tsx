@@ -26,6 +26,7 @@ import { ClayMap } from '../../components/ClayMap.js'
 import { AtlasCompanion } from '../../components/AtlasCompanion.js'
 import { SceneEntrance } from '../../components/SceneEntrance.js'
 import { TopBar } from '../../components/TopBar.js'
+import { ScrollEdges, useScrollEdges } from '../../components/ScrollEdges.js'
 import { DaylightIllustration } from '../../components/DaylightIllustration.js'
 import { Flag } from '../../components/Flag.js'
 import type { CountryRow } from './RegionScreen.js'
@@ -99,6 +100,8 @@ export function ExploreScreen({
   const [atlasRegion, setAtlasRegion] = useState<string | null>(null)
   const [globeGestureActive, setGlobeGestureActive] = useState(false)
   const scroll = useRef<ScrollView>(null)
+  // Soft top and bottom edges, lighter while the page moves (`ScrollEdges`).
+  const edges = useScrollEdges()
   const atlasTop = useRef(0)
   const revealSelection = useRef(false)
   const countryOpen = useRef<View>(null)
@@ -144,7 +147,8 @@ export function ExploreScreen({
   const byRegion = new Map(world.regions.map((r) => [r.region, r]))
 
   return (
-    <ScrollView ref={scroll} testID="explore-scroll" scrollEnabled={!globeGestureActive} style={styles.screen} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
+    <View style={styles.screen}>
+    <ScrollView ref={scroll} {...edges.handlers} testID="explore-scroll" scrollEnabled={!globeGestureActive} style={styles.screen} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
       <TopBar
         initials="EX"
         {...(coins !== undefined ? { coins } : {})}
@@ -309,6 +313,8 @@ export function ExploreScreen({
 
       </>}
     </ScrollView>
+    <ScrollEdges moving={edges.moving} />
+    </View>
   )
 }
 

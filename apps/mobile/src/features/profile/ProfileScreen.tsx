@@ -45,6 +45,7 @@ import { avatarArt } from '../settings/AvatarPicker.js'
 import { INSIGNIA_SIZE, insigniaFor } from '../../lib/insignia.js'
 import { Icon } from '../../components/Icon.js'
 import { TopBar } from '../../components/TopBar.js'
+import { ScrollEdges, useScrollEdges } from '../../components/ScrollEdges.js'
 import { AnswerReward } from '../../components/AnswerReward.js'
 import { StreakGemCollection } from '../streak/StreakGemCollection.js'
 import { AchievementMedal } from '../achievements/AchievementMedal.js'
@@ -171,12 +172,15 @@ export function ProfileScreen({
   // Falls back to initials when nothing is chosen, and also when a stored id names an
   // avatar this build does not ship — a set that shrinks must not leave a blank circle.
   const portrait = avatarArt(avatar ?? null)
+  // Soft top and bottom edges, lighter while the page moves (`ScrollEdges`).
+  const edges = useScrollEdges()
 
   if (loading) return <ProfileSkeleton />
 
   if (stats === null || stats.xpTotal === 0) {
     return (
-      <ScrollView style={styles.screen} contentContainerStyle={styles.emptyContent}>
+      <View style={styles.screen}>
+      <ScrollView style={styles.screen} contentContainerStyle={styles.emptyContent} {...edges.handlers}>
         {/* The gear, on the state that needs it MOST.
 
             Settings stopped being a tab in the August 2026 redesign and moved behind
@@ -253,6 +257,8 @@ export function ProfileScreen({
         </SceneEntrance>
         {onOpenFriends && <Button style={styles.friendsEntry} variant="secondary" label={t('friends:title')} onPress={onOpenFriends}/>}
       </ScrollView>
+      <ScrollEdges moving={edges.moving} />
+      </View>
     )
   }
 
@@ -267,7 +273,8 @@ export function ProfileScreen({
   const earned = (badges ?? []).slice(0, RECENT_BADGES)
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <View style={styles.screen}>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content} {...edges.handlers}>
       <TopBar
         initials="EX"
         {...(portrait !== null ? { avatar: <Art name={portrait} size={40} /> } : {})}
@@ -490,6 +497,8 @@ export function ProfileScreen({
         </Card>
       )}
     </ScrollView>
+    <ScrollEdges moving={edges.moving} />
+    </View>
   )
 }
 

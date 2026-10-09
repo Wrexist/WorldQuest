@@ -46,6 +46,7 @@ import type { IconName } from '../../lib/icons.generated.js'
 import { Stat } from '../../components/Stat.js'
 import { DailyAdventure, type DailyAdventureProps } from './DailyAdventure.js'
 import { TopBar } from '../../components/TopBar.js'
+import { ScrollEdges, useScrollEdges } from '../../components/ScrollEdges.js'
 import { StreakNoticeCard, type StreakNoticeCardProps } from '../streak/StreakNoticeCard.js'
 import { CoursePath, type CoursePathProps } from '../course/components/CoursePath.js'
 import { CoursePathSkeleton } from '../course/components/CoursePathSkeleton.js'
@@ -228,6 +229,8 @@ export function HomeScreen({
   // translated copy too.
   const t = useT()
   const bringIntoView = useScrollIntoView()
+  // Soft top and bottom edges, lighter while the page moves (`ScrollEdges`).
+  const edges = useScrollEdges()
   const { height, fontScale } = useWindowDimensions()
 
   if (loading) return <HomeSkeleton />
@@ -256,8 +259,10 @@ export function HomeScreen({
           </View>
         </View>
       )}
+      <View style={styles.edgeFrame}>
       <ScrollView
         ref={bringIntoView.scroller}
+        {...edges.handlers}
         contentContainerStyle={styles.content}
         onLayout={bringIntoView.onViewport}
         onScroll={bringIntoView.onScroll}
@@ -537,6 +542,8 @@ export function HomeScreen({
           </Card>
         )}
       </ScrollView>
+      <ScrollEdges moving={edges.moving} />
+      </View>
     </View>
   )
 }
@@ -692,6 +699,8 @@ function HomeSkeleton() {
 const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
   screen: { flex: 1 },
+  // The scroll view's own box, so its soft edges sit on it and not on the bar above.
+  edgeFrame: { flex: 1 },
   content: { padding: space[4], gap: space[4], paddingBottom: space[6] },
   flex: { flex: 1 },
 

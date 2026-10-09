@@ -453,6 +453,18 @@ counter on Home (`CoinFlight`).
 | Primary action | bottom third, above the safe area + 16 |
 | Nothing critical | within 44 pt of the top edge |
 
+### Scroll edges
+
+Every tab's scroll view softens where content meets the top and bottom of the screen
+(`ScrollEdges`), as iOS 26 does under its bars: on iOS a real blur masked to ramp in
+from the edge, with a wash of the canvas colour; on Android and the web the fade alone;
+under iOS Reduce Transparency the fade alone. Each strip is exactly the screen's padding
+at that edge (16 pt top, 24 pt bottom on the tabs), so nothing is blurred at rest; only
+content scrolled into an edge softens. The blur drops from `illustration.edgeBlur.rest`
+to `.moving` while the content moves and settles back after, because a heavy blur over
+moving text is mush and costs the GPU every frame. New scrolling screens should wrap
+their scroll view the same way (`useScrollEdges` for the handlers).
+
 ## 11. Component inventory
 
 Each ships with: every state, a Storybook story, an a11y strategy, RTL support, and a
