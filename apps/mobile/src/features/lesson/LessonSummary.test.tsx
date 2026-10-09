@@ -353,3 +353,15 @@ describe('LessonSummary — the level check', () => {
     expect(screen.queryByTestId('summary-placement')).toBeNull()
   })
 })
+
+describe('the island on a short phone', () => {
+  it('shrinks with Atlas on it below 600 pt, so the XP card clears the sticky footer', async () => {
+    // At 320×568 the full island pushed the XP card under the footer: "XP", but not how much.
+    const { stageFor } = await import('./LessonSummary.js')
+    const tall = stageFor(844)
+    const short = stageFor(568)
+    expect(short.size).toBeLessThan(tall.size)
+    expect(short.explorer.width / tall.explorer.width).toBeCloseTo(short.size / tall.size, 1)
+    expect(stageFor(667).size).toBe(tall.size)
+  })
+})

@@ -178,9 +178,12 @@ const MASCOT_OF_SHEET = 0.3
  * Smaller on a phone as short as an SE: the sheet is as tall as its mascot, and at 0.3 the
  * sheet took the fourth option's row at 320 x 568. Measured, not chosen — the 0.22 that
  * leaves all four options above the sheet is the largest that does.
+ *
+ * Under 700 rather than 640 since the sheet lies over the lesson (2026-10-09): on the
+ * 375×667 phones (SE 2 and 3, iPhone 8) every point of sheet is a point of answers covered.
  */
 const MASCOT_OF_SHORT_SHEET = 0.22
-const VERY_SHORT_SCREEN = 640
+const VERY_SHORT_SCREEN = 700
 
 /**
  * A phone short enough that the question does not fit at its comfortable size.
