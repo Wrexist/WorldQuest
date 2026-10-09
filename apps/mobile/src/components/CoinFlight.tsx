@@ -107,7 +107,9 @@ export function CoinFlight({ trigger, onLanded }: { trigger: number; onLanded: (
     setFlying(true)
     const animation = Animated.timing(progress, {
       toValue: 1,
-      delay: motion.base.duration,
+      // Long enough for Home to finish bringing the current step into view: a first cut
+      // started with the scroll, and the coins flew over a landscape still sliding by.
+      delay: motion.expressive.duration + motion.base.duration,
       duration: motion.celebrate.duration,
       easing: Easing.linear,
       useNativeDriver: true,
@@ -127,10 +129,12 @@ export function CoinFlight({ trigger, onLanded }: { trigger: number; onLanded: (
       {Array.from({ length: COINS }, (_, i) => {
         const start = i * STAGGER
         const end = start + TRAVEL
-        // From below and to the start side of the counter, fanned so no two coins share
-        // a line: the bar sits at the top, so below is where a reward comes from.
-        const dx = -(space[6] + (i % 3) * space[5])
-        const dy = space[9] + space[6] + (i % 2) * space[6]
+        // From below and to the start side of the counter, fanned so no two coins share a
+        // line: the bar sits at the top, so below is where a reward comes from. From around
+        // the middle of the screen: the first cut started a hand's width under the bar, and
+        // six small coins over the unit's landscape were easy to miss.
+        const dx = -(space[8] + (i % 3) * space[8])
+        const dy = space[9] * 3 + (i % 2) * space[8]
         // Fast up, then easing in: most of the climb in the first half of each coin's trip.
         const at = (fraction: number) => start + TRAVEL * fraction
         return (
@@ -139,7 +143,7 @@ export function CoinFlight({ trigger, onLanded }: { trigger: number; onLanded: (
             transform: [
               { translateX: progress.interpolate(stops([[0, dx], [start, dx], [at(0.5), dx * 0.3], [end, 0], [1, 0]])) },
               { translateY: progress.interpolate(stops([[0, dy], [start, dy], [at(0.5), dy * 0.2], [end, 0], [1, 0]])) },
-              { scale: progress.interpolate(stops([[0, 1.15], [start, 1.15], [end, 0.7], [1, 0.7]])) },
+              { scale: progress.interpolate(stops([[0, 1.4], [start, 1.4], [end, 0.7], [1, 0.7]])) },
             ],
           }]}>
             <HeaderJewel name="coins" size={space[6]} />
