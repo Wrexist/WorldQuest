@@ -347,22 +347,17 @@ export function LessonScreen({
   const atlasWidth = Math.min(width - space[4] * 2, layout.maxContentWidth)
 
   /**
-   * Bringing the answer back into view when the feedback sheet arrives.
+   * The lesson stands still when the feedback sheet arrives; the sheet slides up over it.
    *
-   * The sheet is a sibling below the scroll view, not an overlay — so when it appears it
-   * takes real height and the scroll viewport shrinks by that much. On a phone the
-   * question, its map and four options already overflow, so the options the user was
-   * just looking at get pushed under the sheet: read off a device, "japansk yen" — the
-   * CORRECT answer, freshly marked — was behind the card that had just said "Perfekt!".
-   *
-   * A learning app that hides which one was right at the exact moment it says whether
-   * you were right has failed at the only thing the screen is for. Scrolling the options
-   * block to the top of what is left is the cheapest correct answer: after answering, the
-   * prompt and the illustration have done their job and the options are the content.
-   *
-   * Not `scrollToEnd`, which was the first attempt — it pins the LAST option to the
-   * bottom, so with four options and a short viewport the first two go off the top, and
-   * the correct one is hidden again whenever it happens to be first.
+   * The owner's call (2026-10-09), and Duolingo's: an answer is a moment, and the screen
+   * jumping under your finger to make room for the verdict reads as the app taking the
+   * question away. So the sheet is an overlay, not a sibling that shrinks the scroll view
+   * (which recentred the question and moved it even with no scroll at all), and nothing
+   * scrolls by itself. History: the sheet once hid "japansk yen", the correct answer, on
+   * a phone (ios-native-audit D3), and the fix scrolled the options into view; that is
+   * the movement that was not wanted. The sheet names the right answer in words on a
+   * miss, and on iOS the scroll view gets the sheet's height as a bottom inset, so
+   * anything it covers is one swipe away rather than out of reach.
    */
   /**
    * Set by the end-of-lesson effect when this lesson landed the quest's last task.
@@ -373,10 +368,8 @@ export function LessonScreen({
   const questCompleted = useRef(false)
   const scroller = useRef<ScrollView>(null)
   const [globeGestureActive, setGlobeGestureActive] = useState(false)
-  const optionsTop = useRef(0)
-  const optionsBottom = useRef(0)
-  /** The scroll view's own height: it shrinks when the feedback sheet mounts below it. */
-  const viewport = useRef(0)
+  /** The feedback sheet's height, as room to scroll into under it (iOS). */
+  const [sheetHeight, setSheetHeight] = useState(0)
   const mascot = Math.round(sheetWidth * (height < VERY_SHORT_SCREEN ? MASCOT_OF_SHORT_SHEET : MASCOT_OF_SHEET))
 
 
@@ -682,52 +675,12 @@ export function LessonScreen({
   }, [lesson.state.phase, answeredCount])
 
   /**
-   * On the transition into feedback, put the options back on screen. See `scroller`.
-   *
-   * Keyed on `answered` alone rather than on the answer, so it runs once per question at
-   * the moment the sheet mounts and not again while the user reads it. `animated`, and
-   * deliberately not gated on reduced motion: this is not decoration — it is the screen
-   * showing the user the thing they asked to be shown, and the alternative under reduced
-   * motion is the same movement without the tween, which `scrollTo` gives us anyway on a
-   * platform that honours the setting.
-   *
-   * ABOVE every early return, and that is not a style preference. It first sat next to
-   * the JSX it affects, which is below `if (!question) return <LoadingState />` — so the
-   * hook count changed between the loading render and the question render and React threw
-   * "Rendered more hooks than during the previous render" on all fourteen lesson tests.
-   * A conditional hook is a crash, not a lint note.
-   */
-  const revealOptions = useCallback(() => {
-    const view = viewport.current
-    // The gap the body puts between its blocks, so the stop lands in the gap above the
-    // options rather than inside the prompt. Stopping `space[3]` above them cut through
-    // the prompt's letters, or its map, wherever the gap was narrower than that.
-    const gap = compact ? space[3] : space[5]
-    // Every option is already above the sheet: nothing moves and the prompt stays whole,
-    // which is most questions on most phones (round-3 design review).
-    if (view > 0 && optionsBottom.current + gap <= view) return
-    // Scroll only as far as it takes to lift the last option above the sheet, never
-    // further than putting the first option at the top. It used to always go to the
-    // top, which scrolled the prompt away (half a "NEW" tag at 390, the whole flag and
-    // question at 320) at the moment the learner reads the correction against it
-    // (audit 2026-10-06). The least movement keeps the most of the question.
-    const enough = view > 0 ? optionsBottom.current + gap - view : Number.POSITIVE_INFINITY
-    const y = Math.min(enough, optionsTop.current - gap)
-    scroller.current?.scrollTo({ y: Math.max(0, y), animated: true })
-  }, [compact])
-
-  useEffect(() => {
-    if (lesson.state.phase !== 'answered') return
-    revealOptions()
-  }, [lesson.state.phase, revealOptions])
-
-  /**
    * Every new question starts at the top.
    *
-   * The scroll view outlives the question, so the offset `revealOptions` left behind
-   * carried into the next one: on a short phone the new prompt arrived half scrolled off
-   * the top, and the first thing a user saw of a question was its answers. Not animated —
-   * this is a new page, not movement within one.
+   * The scroll view outlives the question, so an offset the learner scrolled to carried
+   * into the next one: on a short phone the new prompt arrived half scrolled off the top,
+   * and the first thing a user saw of a question was its answers. Not animated — this is
+   * a new page, not movement within one.
    */
   useEffect(() => {
     scroller.current?.scrollTo({ y: 0, animated: false })
@@ -1014,19 +967,20 @@ export function LessonScreen({
         // keyboard first" — and the view lifts itself clear of the keyboard on iOS.
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets={typedQuestion}
+        // Room to scroll whatever the sheet covers into view, by hand. An inset rather than
+        // padding: padding would grow the content and the Spacers would recentre it, which
+        // is the movement the overlay exists to avoid. iOS only; elsewhere the sheet simply
+        // covers, as it does in Duolingo.
+        contentInset={answered ? { bottom: sheetHeight } : undefined}
+        scrollIndicatorInsets={answered ? { bottom: sheetHeight } : undefined}
         contentContainerStyle={[styles.body, compact && styles.bodyShort, shortQuestion && styles.bodyTiny]}
-        onLayout={(event) => {
-          viewport.current = event.nativeEvent.layout.height
-          // The sheet arriving is what shrinks this; ask again with the new height.
-          if (answered) revealOptions()
-        }}
       >
-        {/* Centred by spacers, not by `justifyContent` — see `Spacer`. A two-option
-            question should not cling to the top of a tall phone, and at 320×568 the
-            prompt plus a map plus four options overflow, which is where centring with
-            `justifyContent` puts the prompt above scroll position zero and out of reach.
-            Measured before the change: option four sat at 535–594 of 568. */}
-        <Spacer />
+        {/* Top-aligned, as Duolingo's are: the question starts under the header and the
+            spare height collects at the bottom (the Spacer at the end), which is exactly
+            where the feedback sheet lands. Centring put the answers low, under the sheet:
+            with the sheet over the lesson rather than shrinking it (see `scroller`), a
+            centred flag question had all four flags covered, tick included, while the
+            sheet said "the right one has the tick" (2026-10-09). */}
         {reviewing && (
           // Duolingo's "previous mistake" tag: this one came back because it was missed.
           <View>
@@ -1135,19 +1089,6 @@ export function LessonScreen({
            * between drawing art and drawing text.
            */
           style={[styles.options, pictureOptions && styles.optionsGrid]}
-          // Measured rather than assumed: the prompt is one or two lines, the
-          // illustration is present or not, and both move this by tens of points.
-          onLayout={(event) => {
-            optionsTop.current = event.nativeEvent.layout.y
-            optionsBottom.current = event.nativeEvent.layout.y + event.nativeEvent.layout.height
-            // Scrolled from HERE as well as from the effect, and this is the call that
-            // actually lands. The sheet is a sibling, so mounting it shrinks the scroll
-            // viewport and the two Spacers inside the content redistribute — which moves
-            // this block. The effect fires on the phase change, before that relayout, so
-            // on its own it scrolls to where the options USED to be and leaves the first
-            // one clipped under the header. This fires after the new position is known.
-            if (answered) revealOptions()
-          }}
         >
           {typedQuestion && (
             <TypedAnswer
@@ -1245,7 +1186,7 @@ export function LessonScreen({
       </ScrollView>
 
       {boardSettled || !answered ? null : (
-        <RiseIn key={answeredCount} style={[styles.footer, styles.feedbackFooter]}>
+        <RiseIn key={answeredCount} style={[styles.footer, styles.feedbackFooter]} onHeight={setSheetHeight}>
           {/* Out of hearts is a fork, not a wall. The engine has held the flag since
               the machine was written and nothing rendered it — so the lesson simply
               carried on at zero hearts, which made the whole mechanic decorative. */}
@@ -1430,16 +1371,20 @@ export function LessonScreen({
                     })
               }
               // Picture answers are labelled with whole flag descriptions, so naming the
-              // chosen one and then the right one ran to five lines of bold text — and
-              // on a small phone pushed the question off screen while the learner read
-              // it (feel audit 2026-10-06). Both flags are already marked on screen, so
-              // the sheet says one short line and lets the pictures do the telling. A
-              // screen reader still hears both full sentences.
+              // chosen one and then the right one ran to five lines of bold text (feel
+              // audit 2026-10-06). So the sheet says one short line and SHOWS the right
+              // picture. Shown in the sheet rather than pointed at ("the right one has the
+              // tick"): the sheet lies over the lesson now, and on a short phone it covers
+              // the options, tick and all. A screen reader still hears both sentences.
               short={
                 pictureOptions && lastAnswer?.chosenOptionId != null && lastAnswer.typedText === undefined
                   ? t('lesson:feedback.wrong.picture')
                   : undefined
               }
+              picture={(() => {
+                const asset = question.options.find((option) => option.isCorrect)?.asset
+                return asset === undefined ? undefined : <Flag path={asset} width={space[9]} />
+              })()}
             />
           )}
               </View>
@@ -1485,10 +1430,13 @@ export function atlasHeight(
  * inside is pressable from the first frame, and a user who knows the drill can tap
  * through the slide. Under reduced motion the sheet is in place from the start.
  */
-function RiseIn({ children, style }: { children: ReactNode; style: StyleProp<ViewStyle> }) {
+function RiseIn({ children, style, onHeight }: { children: ReactNode; style: StyleProp<ViewStyle>; onHeight?: (height: number) => void }) {
   const rise = useRiseIn('base')
   return (
-    <Animated.View style={[style, rise.style]} onLayout={rise.onLayout}>
+    <Animated.View style={[style, rise.style]} onLayout={(event) => {
+      rise.onLayout(event)
+      onHeight?.(event.nativeEvent.layout.height)
+    }}>
       {children}
     </Animated.View>
   )
@@ -1699,18 +1647,28 @@ export function WrongFeedback({
   title,
   body,
   short,
+  picture,
 }: {
   titleRef: React.Ref<Text>
   title: string
   body: string
   short: string | undefined
+  /** The right answer's picture, under the short line. Decorative: the label says it in words. */
+  picture?: ReactNode
 }) {
   const { styles } = useThemeValues()
   if (short !== undefined) {
     return (
-      <Text ref={titleRef} style={styles.feedbackTitle} accessibilityLabel={`${title} ${body}`}>
-        {short}
-      </Text>
+      <>
+        <Text ref={titleRef} style={styles.feedbackTitle} accessibilityLabel={`${title} ${body}`}>
+          {short}
+        </Text>
+        {picture === undefined ? null : (
+          <View testID="wrong-feedback-picture" aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+            {picture}
+          </View>
+        )}
+      </>
     )
   }
   return (
@@ -1864,7 +1822,9 @@ const useThemeValues = createThemeStyles((colors) => {
   // share a row that is already 150 points narrower than the sheet.
   rewards: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
   footer: { paddingBottom: space[4] },
-  feedbackFooter: { maxHeight: '65%', flexShrink: 0 },
+  // Over the lesson rather than under it (see `scroller`), inset like the screen's own
+  // padding, which an absolute child does not inherit.
+  feedbackFooter: { position: 'absolute', start: space[4], end: space[4], bottom: space[4], maxHeight: '65%' },
   feedbackScroll: { flexGrow: 0 },
   retry: { marginTop: space[4] },
   offline: {

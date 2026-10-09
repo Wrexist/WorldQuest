@@ -12,7 +12,7 @@
 
 import { describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { AccessibilityInfo, Animated } from 'react-native'
+import { AccessibilityInfo, Animated, Text } from 'react-native'
 import { motion, setAppReducedMotion } from '@worldquest/design'
 import { BALANCE } from '@worldquest/engines'
 import { withFullMotion } from '../../test/setup.js'
@@ -160,15 +160,18 @@ describe('Lesson', () => {
     expect(container.textContent).not.toMatch(/wrong!|incorrect|oops|failed/i)
   })
 
-  it('says one short line after a wrong picture answer, and the whole of it to a reader', () => {
+  it('says one short line after a wrong picture answer, shows the right picture, and the whole of it to a reader', () => {
     // Flag answers are labelled with full descriptions, so "You picked …" and "The answer
-    // is …" ran to five lines and pushed the question off a small phone. The pictures are
-    // marked; the sheet points at the tick. A screen reader still hears both sentences.
-    const { container } = render(
-      <WrongFeedback titleRef={null} title="You picked three stripes." body="The answer is a red disc." short="The right one has the tick." />,
+    // is …" ran to five lines. The sheet says one line and SHOWS the right picture: it lies
+    // over the lesson, and on a short phone it covers the marked options. A screen reader
+    // still hears both sentences, and not the picture, which the words already name.
+    const { container, getByTestId } = render(
+      <WrongFeedback titleRef={null} title="You picked three stripes." body="The answer is a red disc." short="The right one:"
+        picture={<Text>red disc</Text>} />,
     )
-    expect(container.textContent).toBe('The right one has the tick.')
+    expect(container.textContent).toBe('The right one:red disc')
     expect(container.querySelector('[aria-label="You picked three stripes. The answer is a red disc."]')).not.toBeNull()
+    expect(getByTestId('wrong-feedback-picture').getAttribute('aria-hidden')).toBe('true')
   })
 
   it('names both answers in words when there is no picture to point at', () => {

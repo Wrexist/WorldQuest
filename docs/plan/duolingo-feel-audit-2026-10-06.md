@@ -22,9 +22,15 @@ the hand.
 - **Bug 2, country map:** the map takes the full column and gets a thin frame edge.
 - **Bug 3, mark on the flag:** a picture answer's mark sits in the card's top corner,
   off the artwork.
-- **Bug 4, lesson scroll:** after an answer the lesson scrolls only as far as the last
-  option needs. At 320 pt the prompt still leaves, because the feedback copy is five
-  lines — that is gap 8.
+- **Bug 4, lesson scroll:** superseded by the owner's call on 2026-10-09: **nothing
+  scrolls when you answer.** The feedback sheet now lies over the lesson (it used to
+  shrink the scroll view, which recentred the question and moved it even without a
+  scroll), the question is top-aligned so the spare height sits where the sheet lands,
+  and a wrong picture answer shows the right picture in the sheet ("The right one:")
+  instead of pointing at a tick the sheet may cover. Measured in the web build: 0 px of
+  movement on 20 of 20 answers at 390×844 and 375×667; on a 375×667 phone the sheet
+  still covers a map question's options, which the sheet's own picture and an iOS
+  scroll inset make up for.
 - **Bug 5, Home landing:** Home lands on the unit banner's edge when the banner and the
   step both fit. At 320 pt they do not, and the step wins, as before.
 - **Gap 1, sound:** `useSoundAsk` offers sound once on Home, after the first finished
