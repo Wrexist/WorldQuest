@@ -1,11 +1,11 @@
 import type { ContextType, ReactNode } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { AccessibilityInfo, Animated, AppState, type AppStateStatus } from 'react-native'
+import { AccessibilityInfo, Animated, AppState, Platform, type AppStateStatus } from 'react-native'
 import { act, fireEvent, render, renderHook, waitFor } from '@testing-library/react'
 import { NavigationContext } from '@react-navigation/native'
 import { motion, setAppReducedMotion, useReducedMotion } from '@worldquest/design'
 import { useMascotMotion } from './useMascotMotion.js'
-import { LIDS, useMascotBlink } from './useMascotBlink.js'
+import { IDLE, useMascotIdle } from './useMascotIdle.js'
 import { AtlasCharacter, type AtlasMood } from './AtlasCharacter.js'
 import { withFullMotion } from '../test/setup.js'
 import { usePreferences, initializeMotionPreference } from '../features/settings/usePreferences.js'
@@ -105,8 +105,8 @@ describe('Atlas and motion preferences', () => {
 
   it.each<[AtlasMood, string]>([
     ['welcome', 'welcome'], ['celebrate', 'celebrate'], ['thinking', 'thinking'], ['resting', 'resting'],
-    ['encouraging', 'welcome'], ['laughing', 'celebrate'], ['surprised', 'celebrate'],
-    ['proud', 'welcome'], ['sleepy', 'resting'], ['wink', 'welcome'],
+    ['encouraging', 'welcome'], ['laughing', 'laughing'], ['surprised', 'celebrate'],
+    ['proud', 'proud'], ['sleepy', 'resting'], ['wink', 'wink'],
   ])('preserves the logical %s pose with the complete %s artwork', (mood, mapped) => {
       setAppReducedMotion(true)
       const view = render(<AtlasCharacter size={140} mood={mood} />)
@@ -244,7 +244,7 @@ describe('Booping Atlas', () => {
     const start = vi.fn()
     vi.spyOn(Animated, 'timing').mockReturnValue({ start, stop: vi.fn(), reset: vi.fn() })
     await withFullMotion(async () => {
-      const hook = renderHook(() => useMascotMotion('laughing', 112, art('laughing')))
+      const hook = renderHook(() => useMascotMotion('laughing', 112, art('laughing', 'wink')))
       await flushPreference()
       expect(start).toHaveBeenCalledOnce()
       act(() => hook.result.current.boopNow())
@@ -290,6 +290,11 @@ describe('Booping Atlas', () => {
     expect(view.getByTestId('mascot-pose-welcome')).toBeTruthy()
     act(() => { fireEvent.click(button) })
     expect(view.getByTestId('mascot-pose-laughing')).toBeTruthy()
+    // A second tap winks: two reactions in turn, not one button.
+    act(() => { fireEvent.click(button) })
+    expect(view.getByTestId('mascot-pose-wink')).toBeTruthy()
+    act(() => { fireEvent.click(button) })
+    expect(view.getByTestId('mascot-pose-laughing')).toBeTruthy()
   })
 })
 
@@ -308,7 +313,7 @@ describe('Atlas moves like his face', () => {
   })
 })
 
-describe('Atlas blinks', () => {
+describe('Atlas at rest: he breathes and blinks', () => {
   function loops() {
     const running = new Set<number>()
     let id = 0
@@ -321,7 +326,7 @@ describe('Atlas blinks', () => {
   }
 
   it('snaps his eyes shut once per rest, and starts and ends each cycle with them open', () => {
-    const { inputRange, outputRange } = LIDS
+    const { inputRange, outputRange } = IDLE.lids
     expect(inputRange[0]).toBe(0)
     expect(inputRange.at(-1)).toBe(1)
     inputRange.slice(1).forEach((at, i) => expect(at).toBeGreaterThan(inputRange[i]!))
@@ -332,8 +337,20 @@ describe('Atlas blinks', () => {
     // Snapped, not faded: every edge between open and shut is shorter than a 120 Hz frame,
     // so open eyes never show through closed ones.
     outputRange.forEach((lid, i) => {
-      if (i > 0 && lid !== outputRange[i - 1]) expect((inputRange[i]! - inputRange[i - 1]!) * LIDS.cycle).toBeLessThan(1000 / 120)
+      if (i > 0 && lid !== outputRange[i - 1]) expect((inputRange[i]! - inputRange[i - 1]!) * IDLE.cycle).toBeLessThan(1000 / 120)
     })
+  })
+
+  it('breathes whole, slow breaths that meet at the loop seam', () => {
+    const { inputRange, outputRange } = IDLE.breath
+    expect(inputRange[0]).toBe(0)
+    expect(inputRange.at(-1)).toBe(1)
+    expect(outputRange[0]).toBeCloseTo(0)
+    expect(outputRange.at(-1)).toBeCloseTo(0)
+    const peaks = outputRange.filter(value => value > 0.999).length
+    expect(peaks).toBe(IDLE.breaths)
+    // Within a fifth of the token: a whole number of breaths has to fit the blink cycle.
+    expect(Math.abs(IDLE.cycle / IDLE.breaths - motion.breathe.duration)).toBeLessThan(motion.breathe.duration / 5)
   })
 
   it('runs as one native loop with no JS timers, and stops with his eyes open while hidden', async () => {
@@ -342,10 +359,12 @@ describe('Atlas blinks', () => {
     const events = lifecycle()
     const work = loops()
     await withFullMotion(async () => {
-      const hook = renderHook(() => useMascotBlink(true), { wrapper: events.wrapper })
+      const hook = renderHook(() => useMascotIdle(true), { wrapper: events.wrapper })
       await flushPreference()
       expect(work.running.size).toBe(1)
-      expect(work.timing.mock.calls.at(-1)?.[1]).toMatchObject({ useNativeDriver: true, isInteraction: false, duration: LIDS.cycle })
+      expect(work.timing).toHaveBeenCalledTimes(1)
+      // These tests render on react-native-web, where the loop must use the JS driver.
+      expect(work.timing.mock.calls.at(-1)?.[1]).toMatchObject({ useNativeDriver: false, isInteraction: false, duration: IDLE.cycle })
       expect(vi.getTimerCount()).toBe(0)
       events.focus(false)
       expect(work.running.size).toBe(0)
@@ -361,23 +380,42 @@ describe('Atlas blinks', () => {
     })
   })
 
+  it('runs on the native driver on a phone', async () => {
+    vi.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false)
+    lifecycle()
+    const work = loops()
+    const platform = Platform as unknown as { OS: string }
+    const os = platform.OS
+    platform.OS = 'ios'
+    try {
+      await withFullMotion(async () => {
+        const hook = renderHook(() => useMascotIdle(true))
+        await flushPreference()
+        expect(work.timing.mock.calls.at(-1)?.[1]).toMatchObject({ useNativeDriver: true })
+        hook.unmount()
+      })
+    } finally {
+      platform.OS = os
+    }
+  })
+
   it('never blinks under reduced motion, or when the caller has nothing to blink', async () => {
     vi.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false)
     lifecycle()
     const work = loops()
     await withFullMotion(async () => {
-      const off = renderHook(() => useMascotBlink(false))
+      const off = renderHook(() => useMascotIdle(false))
       await flushPreference()
       off.unmount()
     })
     setAppReducedMotion(true)
-    const reduced = renderHook(() => useMascotBlink(true))
+    const reduced = renderHook(() => useMascotIdle(true))
     await flushPreference()
     reduced.unmount()
     expect(work.loop).not.toHaveBeenCalled()
   })
 
-  it('lays closed eyes over open-eyed poses only, and only where he is big enough to see', async () => {
+  it('lays closed eyes over open-eyed poses only, breathes in every pose, and only where he is big enough to see', async () => {
     vi.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false)
     lifecycle()
     loops()
@@ -388,16 +426,20 @@ describe('Atlas blinks', () => {
         await flushPreference()
         const blink = view.queryByTestId('mascot-blink')
         const source = blink === null ? null : (blink.querySelector('img') ?? blink).getAttribute('src')
+        const breathing = view.getByTestId('mascot-breath').style.transform !== ''
         view.unmount()
-        return source
+        return { source, breathing }
       }
-      expect(await overlay('welcome', 160)).toContain('atlas-clay/welcome-blink.png')
-      expect(await overlay('celebrate', 160)).toContain('atlas-clay/celebrate-blink.png')
-      expect(await overlay('resting', 160)).toBeNull()
-      expect(await overlay('welcome', 40)).toBeNull()
+      expect(await overlay('welcome', 160)).toEqual({ source: expect.stringContaining('atlas-clay/welcome-blink.png'), breathing: true })
+      expect(await overlay('celebrate', 160)).toEqual({ source: expect.stringContaining('atlas-clay/celebrate-blink.png'), breathing: true })
+      // Eyes already shut: nothing to blink, but he still breathes.
+      expect(await overlay('resting', 160)).toEqual({ source: null, breathing: true })
+      expect(await overlay('proud', 160)).toEqual({ source: null, breathing: true })
+      expect(await overlay('welcome', 40)).toEqual({ source: null, breathing: false })
     })
     setAppReducedMotion(true)
     const still = render(<WorldMascot mood="welcome" style={{ width: 160, height: 160 }} />)
     expect(still.queryByTestId('mascot-blink')).toBeNull()
+    expect(still.getByTestId('mascot-breath').style.transform).toBe('')
   })
 })

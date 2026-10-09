@@ -158,17 +158,21 @@ animation has to fit all three:
    or fade and dim when he's ignored. Those work on adults in other apps; they are
    guilt, and children are users here (rule 7).
 
-**How he is alive.** He blinks while he is on screen. He reacts once to every moment:
-a hop for a cheer, a head tilt for a thought, a small greeting otherwise. Where the
-screen allows it, he laughs when tapped. Nothing else loops: an idle that is always
-moving is a character asking for attention, so his stays subtle on purpose. Reduce
-Motion keeps every expression and drops the movement. Implementation:
-[`world-mascot.md`](world-mascot.md#alive-the-blink-october-9).
+**How he is alive.** While he is on screen he breathes, slowly, and blinks every few
+seconds. He reacts once to every moment: a hop for a cheer, a head tilt for a thought,
+a small greeting otherwise. Where the screen allows it, a tap makes him laugh, and the
+next one makes him wink. Nothing else loops: an idle that is always moving is a
+character asking for attention, so his stays subtle on purpose. Reduce Motion keeps
+every expression and drops the movement. Implementation:
+[`world-mascot.md`](world-mascot.md#alive-breath-blink-and-new-faces-october-9).
 
 | Pose | Feels | Where he wears it |
 |---|---|---|
 | welcome (waving) | glad you're here | first launch, the path, a friend or league hero |
 | celebrate (arms up, hop) | delighted | a perfect lesson, a finished quest |
+| laughing (arms up, eyes shut in a grin) | tickled | the lesson summary, a tap |
+| proud (arms up, eyes shut, closed smile) | proud of you | achievements, collection, streak, quest complete |
+| wink | in on the joke | a second tap |
 | thinking (hand at cheek) | curious | after a miss, a search with no results, a quest in progress |
 | resting (eyes closed) | content | calm, quiet moments; never as a punishment |
 

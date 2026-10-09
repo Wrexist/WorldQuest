@@ -357,7 +357,8 @@ alone is never a control unless it is universally understood (back, close, setti
 | `motion.expressive` | 420 | `spring(damping 0.7, stiffness 180)` | Card entrance, mascot, celebration card |
 | `motion.celebrate` | 900 | Lottie | Correct answer, level up, unlock |
 | `motion.drift` | 4200 (looped) | `easeInOut` (sine) | Ambient float of decorative scenery (`useDrift`): path props, the island stage. Off under Reduce Motion, on screen blur and in the background |
-| `motion.blink` | 120 shut, after each of `restMs` (looped) | snap | Atlas's blink (`useMascotBlink`): the closed-eye frame's opacity, snapped rather than faded, one native loop. Off under Reduce Motion, on screen blur and in the background |
+| `motion.breathe` | 3400 (looped) | cosine | Atlas's breath (`useMascotIdle`): 1.6 % taller from his boots. Shares one native loop with the blink. Off under Reduce Motion, on screen blur and in the background |
+| `motion.blink` | 120 shut, after each of `restMs` (looped) | snap | Atlas's blink (`useMascotIdle`): the closed-eye frame's opacity, snapped rather than faded. Off under Reduce Motion, on screen blur and in the background |
 
 **Principles**
 - Things **scale and spring**; they do not fade in place. Fade is for disappearing.

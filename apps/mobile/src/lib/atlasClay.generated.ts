@@ -6,6 +6,9 @@ import resting from '../../assets/art/atlas-clay/resting.png'
 import welcomeBlink from '../../assets/art/atlas-clay/welcome-blink.png'
 import celebrateBlink from '../../assets/art/atlas-clay/celebrate-blink.png'
 import thinkingBlink from '../../assets/art/atlas-clay/thinking-blink.png'
+import laughing from '../../assets/art/atlas-clay/laughing.png'
+import proud from '../../assets/art/atlas-clay/proud.png'
+import wink from '../../assets/art/atlas-clay/wink.png'
 
 export const ATLAS_CLAY = {
   welcome: welcome,
@@ -13,23 +16,20 @@ export const ATLAS_CLAY = {
   thinking: thinking,
   resting: resting,
   encouraging: welcome,
-  laughing: celebrate,
+  laughing: laughing,
   surprised: celebrate,
-  proud: welcome,
+  proud: proud,
   sleepy: resting,
-  wink: welcome,
+  wink: wink,
 } as const
 
 export type AtlasClayMood = keyof typeof ATLAS_CLAY
 
-/** The same complete pose with its eyes closed, for a blink. Resting has none: its eyes are closed. */
+/** The same complete pose with its eyes closed, for a blink. Only open-eyed poses have one. */
 export const ATLAS_CLAY_BLINK: { readonly [mood in AtlasClayMood]?: typeof welcome } = {
   welcome: welcomeBlink,
   celebrate: celebrateBlink,
   thinking: thinkingBlink,
   encouraging: welcomeBlink,
-  laughing: celebrateBlink,
   surprised: celebrateBlink,
-  proud: welcomeBlink,
-  wink: welcomeBlink,
 }

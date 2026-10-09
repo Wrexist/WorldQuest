@@ -1,16 +1,42 @@
 {
   "summary": {
-    "frames": 1201,
-    "closings": 5,
+    "frames": 2162,
+    "closings": 11,
     "closedAtMs": [
-      3,
-      4886,
-      7603,
-      7869,
-      13202
+      1,
+      4851,
+      7567,
+      7851,
+      13167,
+      16700,
+      21617,
+      24333,
+      24617,
+      29933,
+      33450
     ],
-    "framesShut": 33,
-    "framesHalfway": 0,
+    "framesShut": 73,
+    "framesHalfway": 1,
+    "breath": {
+      "minScaleY": 1,
+      "maxScaleY": 1.016,
+      "minScaleX": 0.994667,
+      "maxRisePx": -1.64,
+      "peaksAtMs": [
+        1551,
+        4901,
+        8251,
+        11601,
+        14950,
+        18317,
+        21667,
+        25017,
+        28367,
+        31733,
+        35083
+      ],
+      "largestFrameStepScaleY": 0.000280000000000058
+    },
     "url": "http://127.0.0.1:4199/onboarding"
   },
   "errors": []

@@ -4,7 +4,7 @@ import { Animated, Image, Pressable, StyleSheet, View, type StyleProp, type View
 import { space } from '@worldquest/design'
 import { ATLAS_CLAY, ATLAS_CLAY_BLINK, type AtlasClayMood } from '../lib/atlasClay.generated.js'
 import { useMascotMotion } from './useMascotMotion.js'
-import { useMascotBlink } from './useMascotBlink.js'
+import { useMascotIdle } from './useMascotIdle.js'
 import { hapticSelect } from '../lib/haptics.js'
 
 export type AtlasMood = AtlasClayMood
@@ -18,8 +18,8 @@ const toSource = (asset: unknown) => (typeof asset === 'string' ? { uri: asset }
  * and the lesson's reaction was only a picture swap (feel audit 2026-10-06, gap 3). Now
  * the movement matches the face: a cheer is a real hop with a squash on landing, a
  * thought is a slow head tilt, everything else keeps the greeting. Still one finite
- * gesture per pose: the idle loop was removed in #31 for a reported iPhone stutter, and
- * a reaction that plays once costs nothing while he stands still.
+ * gesture per pose: big motion is for big moments. Between them he only breathes and
+ * blinks (`useMascotIdle`).
  */
 type Gesture = 'greet' | 'hop' | 'ponder'
 const STEPS = [0, .35, .7, 1]
@@ -29,11 +29,13 @@ const GESTURES: Record<Gesture, { lift: number[]; scale: number[]; tilt: string[
   ponder: { lift: [0, 0, -space[1] / 2, 0], scale: [1, 1, 1.01, 1], tilt: ['0deg', '6deg', '4deg', '0deg'] },
 }
 /**
- * The smallest Atlas that blinks. The blink frame is a second full image, so an
- * icon-sized Atlas skips it: below this his eyes are a few points tall and nobody would
- * see them close.
+ * The smallest Atlas that breathes and blinks. The blink frame is a second full image, so
+ * an icon-sized Atlas skips both: below this his eyes are a few points tall and a breath
+ * is under a point. It is also the off switch: set it out of reach and no Atlas idles.
  */
-const BLINK_MIN_SIDE = space[9]
+const IDLE_MIN_SIDE = space[9]
+/** How far a breath fills him out: under two percent taller, a little narrower. */
+const BREATH = .016
 
 const gestureFor = (mood: AtlasClayMood): Gesture =>
   mood === 'celebrate' || mood === 'laughing' || mood === 'surprised' ? 'hop' : mood === 'thinking' ? 'ponder' : 'greet'
@@ -50,21 +52,29 @@ export function WorldMascot({ mood = 'welcome', style, label, onBoopLabel }: {
   const [decoded, setDecoded] = useState<ReadonlySet<unknown>>(new Set())
   const { gesture, playing, boopNow, reduced } = useMascotMotion(mood, side, decoded)
   const art = ATLAS_CLAY[playing]
-  // Only where he is big enough to be seen blinking, and only once the open pose is on
-  // screen: closed eyes over a pose that is still decoding would float on their own.
-  const blink = !reduced && side >= BLINK_MIN_SIDE ? ATLAS_CLAY_BLINK[playing] : undefined
-  const lids = useMascotBlink(blink !== undefined && decoded.has(art))
+  // Only where he is big enough to see, and only once his pose is on screen: closed eyes
+  // over a pose that is still decoding would float on their own.
+  const idle = !reduced && side >= IDLE_MIN_SIDE
+  const blink = idle ? ATLAS_CLAY_BLINK[playing] : undefined
+  const { lids, breath } = useMascotIdle(idle && decoded.has(art))
   const character = <View testID={`mascot-pose-${playing}`} style={{ width: side, height: side }}>
     <Animated.View testID="mascot-motion" dataSet={{ gesture: gestureFor(playing) }} style={{ width: side, height: side, transform: reduced ? [] : [
       { translateY: gesture.interpolate({ inputRange: STEPS, outputRange: GESTURES[gestureFor(playing)].lift }) },
       { scale: gesture.interpolate({ inputRange: STEPS, outputRange: GESTURES[gestureFor(playing)].scale }) },
       { rotate: gesture.interpolate({ inputRange: STEPS, outputRange: GESTURES[gestureFor(playing)].tilt }) },
     ] }}>
-      <Image key={String(art)} testID="mascot-still" source={toSource(art)} alt="" {...hidden} resizeMode="contain"
-        onLoad={() => setDecoded(previous => previous.has(art) ? previous : new Set([...previous, art]))}
-        style={{ width: side, height: side }} />
-      {blink === undefined ? null : <Animated.Image key={String(blink)} testID="mascot-blink" source={toSource(blink)} alt="" {...hidden}
-        resizeMode="contain" style={[StyleSheet.absoluteFill, { width: side, height: side, opacity: lids }]} />}
+      {/* The breath grows him from his boots, so his feet stay on the ground. */}
+      <Animated.View testID="mascot-breath" style={{ width: side, height: side, transform: idle ? [
+        { translateY: breath.interpolate({ inputRange: [0, 1], outputRange: [0, -side * BREATH / 2] }) },
+        { scaleY: breath.interpolate({ inputRange: [0, 1], outputRange: [1, 1 + BREATH] }) },
+        { scaleX: breath.interpolate({ inputRange: [0, 1], outputRange: [1, 1 - BREATH / 3] }) },
+      ] : [] }}>
+        <Image key={String(art)} testID="mascot-still" source={toSource(art)} alt="" {...hidden} resizeMode="contain"
+          onLoad={() => setDecoded(previous => previous.has(art) ? previous : new Set([...previous, art]))}
+          style={{ width: side, height: side }} />
+        {blink === undefined ? null : <Animated.Image key={String(blink)} testID="mascot-blink" source={toSource(blink)} alt="" {...hidden}
+          resizeMode="contain" style={[StyleSheet.absoluteFill, { width: side, height: side, opacity: lids }]} />}
+      </Animated.View>
     </Animated.View>
   </View>
 
