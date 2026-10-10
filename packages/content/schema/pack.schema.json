@@ -443,8 +443,8 @@
           }
         },
         "input": {
-          "enum": ["typed"],
-          "description": "How the learner answers: absent means by choosing an option, \"typed\" means by typing it. A typed question has no wrong options to build, so distractors are ignored, and it is only ever asked of a fact the learner has met more than once."
+          "enum": ["typed", "tap"],
+          "description": "How the learner answers: absent means by choosing an option, \"typed\" means by typing it, \"tap\" means by pointing at it on a map. A typed question has no wrong options to build, so distractors are ignored, and it is only ever asked of a fact the learner has met more than once. A tap question offers every candidate in its distractor pool (count is then a minimum), and is only asked in a lesson that asks for tapping."
         },
         "when": {
           "type": "object",

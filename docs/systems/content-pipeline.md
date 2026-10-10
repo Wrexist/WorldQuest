@@ -480,7 +480,7 @@ a rivers pack would use the same three.
   entities whose own value differs, and `template.when.valueId` restricts a template to the
   facts it is true of (there is one template for "landlocked" and one for "coastal").
 
-### Ways of being asked: typed answers and boards
+### Ways of being asked: typed answers, taps and boards
 
 A template may say `"input": "typed"`: it has no wrong options to build, its one option is the
 right one, and the learner types the answer (`docs/systems/learning-engine.md` §3). The
@@ -492,6 +492,16 @@ An entity may carry `aliases`: other things a person might type ("USA"). They ar
 to judge a typed answer, and `scripts/build-aliases.cjs` drops any that is also another entity's
 name or alias. A question may carry `group` (`{ id, size, position }`): it is one of the four
 that make a matching board, composed by the engine, never authored.
+
+A template may say `"input": "tap"`: the learner answers by tapping the place on a map — the
+map drill, `tpl.find-on-map.tap`, "Find Austria on the map". Every candidate in the distractor
+pool becomes an option (each is a place the map may accept, and the Worker grades only options
+it issued), so `distractors.count` is a minimum; `excludeSimilarStrings` is off, because
+Slovakia and Slovenia are a spelling trap in a list and two places on a map. The question
+carries `tap: true` and no `locator` (the outline would be the answer). A tap template is used
+ONLY in a lesson that asks for one (`ComposeInput.input: 'tap'`, the Worker's `input` on
+prepare), and a lesson that asks uses nothing else; a screen-reader lesson gets the template's
+`equivalentTemplate` for the same facts. Design and research: `docs/design/map-drill.md`.
 
 ### The fame packs: ranked, measured, server-delivered
 

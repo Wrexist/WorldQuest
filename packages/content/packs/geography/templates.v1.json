@@ -236,6 +236,32 @@
       "difficultyModifier": 0
     },
     {
+      "id": "tpl.find-on-map.tap",
+      "attribute": "location",
+      "modality": "map",
+      "prompt": {
+        "key": "lesson:prompt.find_on_map",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "input": "tap",
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "excludeSimilarStrings": false
+      },
+      "a11y": {
+        "screenReaderSafe": false,
+        "equivalentTemplate": "tpl.location-of.mc4"
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
       "id": "tpl.language.mc4",
       "attribute": "language",
       "modality": "text",

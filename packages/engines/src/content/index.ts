@@ -171,11 +171,24 @@ export function itemsForFact(
      * asked, after the easier ones, rather than silently dropped.
      */
     preferModifierAtMost?: number
+    /**
+     * `tap`: this lesson answers by tapping a map, so ONLY tap templates are usable.
+     * Absent: tap templates are never usable. Both directions are a filter, not an order —
+     * a tap question in an ordinary lesson asks for a map the host never offered to draw,
+     * and an ordinary question in a map drill breaks the one promise the drill made.
+     *
+     * A screen-reader lesson never taps (no tap template is screen-reader safe), so there
+     * the request falls through to the spoken equivalents of the same facts, the parity
+     * `docs/design/accessibility.md` §8 asks for.
+     */
+    input?: 'tap'
   } = {},
 ): Item[] {
   const candidates = index.itemsByFact.get(factId) ?? []
+  const wantsTap = options.input === 'tap' && options.screenReaderOnly !== true
   const usable = candidates.filter((i) => {
     if (options.screenReaderOnly && !i.screenReaderSafe) return false
+    if ((index.templates.get(i.templateId)?.input === 'tap') !== wantsTap) return false
     if (options.modalities === undefined) return true
     const modality = index.templates.get(i.templateId)?.modality
     return modality !== undefined && options.modalities.includes(modality)
@@ -590,6 +603,9 @@ export function isSelfAnswering(index: ContentIndex, item: Item, locale: string)
   // "Which country borders Guinea-Bissau?" → Guinea. The answer is a word of the prompt and
   // not a leak: it is a different country, and the relation is the thing being asked.
   if (resolved.template.answer.from === 'fact.value.entity') return false
+  // "Where is Austria?" answered by tapping Austria. The name is the question; the answer is
+  // a PLACE, and nothing on screen says where it is until it has been tapped.
+  if (resolved.template.input === 'tap') return false
   const params = Object.values(resolved.promptParams)
   if (params.some((value) => namesAnswer(value, resolved.correctLabel))) return true
 
@@ -860,6 +876,8 @@ export function buildQuestion(
   // A typed answer has no wrong options to build: the only option is the right one, kept so
   // the answer can still be SENT as an option id (see `TYPED_WRONG`).
   const typed = template.input === 'typed'
+  // A tapped answer offers EVERY candidate: each is a place on the map that may be tapped.
+  const tap = template.input === 'tap'
   if (spec && !typed) {
     /**
      * What this candidate would READ as, which is not always its own name.
@@ -920,7 +938,7 @@ export function buildQuestion(
       const chosen: AnswerOption[] = []
 
       for (const candidate of shuffle([...pool], rng)) {
-        if (chosen.length >= spec.count) break
+        if (!tap && chosen.length >= spec.count) break
         if (excluded?.has(candidate.id)) continue
         if (
           spec.differentValueOnly === true &&
@@ -1067,8 +1085,9 @@ export function buildQuestion(
   const isMapPrompt = template.modality === 'map'
   if (isMapPrompt && !hasMap) return null
 
+  // Never for a tap question: the outline of the country being asked for IS the answer.
   const locator =
-    hasMap && (isMapPrompt || template.answer.from !== 'entity.names')
+    hasMap && !tap && (isMapPrompt || template.answer.from !== 'entity.names')
       ? { path: mapAsset, contextPath: contextAsset }
       : undefined
 
@@ -1085,6 +1104,7 @@ export function buildQuestion(
     timeLimitMs: template.timeLimitMs ?? null,
     isNew: opts.isNew ?? false,
     ...(typed ? { typed: typedSpec(index, template, fact, entity) } : {}),
+    ...(tap ? { tap: true as const } : {}),
     // A hint only when it ADDS something — see `hintFor`. Omitted rather than set to
     // undefined, because `exactOptionalPropertyTypes` distinguishes the two.
     ...(hint !== undefined ? { hint } : {}),

@@ -76,7 +76,8 @@ import { queueUnlocks } from '../achievements/pending.js'
 import { todaysQuest } from '../quests/useDailyQuest.js'
 import { recordQuestEvent } from '../quests/questProgress.js'
 import { useContent } from '../../lib/content.js'
-import { currentLocale, tContent, useT } from '../../lib/i18n.js'
+import { currentLocale, tContent, useT, type TranslationKey } from '../../lib/i18n.js'
+import { compassFrom, type Compass } from '../atlas/scene/locateScene.js'
 import { track } from '../../lib/analytics.js'
 import { recordLessonCompleted } from '../profile/useWeekActivity.js'
 import { rememberDailyChest } from '../streak/dailyChest.js'
@@ -255,6 +256,7 @@ export function LessonScreen({
   courseNode,
   length,
   placement,
+  input,
 }: {
   onExit: (summary: LessonExit) => void
   /**
@@ -323,6 +325,12 @@ export function LessonScreen({
    * rewarded by the same code — so what the learner answers still counts.
    */
   placement?: boolean | undefined
+  /**
+   * `tap`: a map drill. Every question is answered by tapping the country on the map — the
+   * region on screen, the name in the prompt, nothing labelled until it is graded. Graded,
+   * scheduled and rewarded exactly like any other lesson; only the way of answering differs.
+   */
+  input?: 'tap' | undefined
 }) {
   const { colors, styles } = useThemeValues()
   const { set: setPreference } = usePreferences()
@@ -377,6 +385,21 @@ export function LessonScreen({
   const [globeGestureActive, setGlobeGestureActive] = useState(false)
   /** The feedback sheet's height, as room to scroll into under it (iOS). */
   const [sheetHeight, setSheetHeight] = useState(0)
+  /**
+   * A map drill's map, and how much of its bottom edge the answer sheet covers, so the
+   * reveal eases in on the answer ABOVE the sheet rather than under it. Measured in the
+   * window because the sheet is: both are absolute to the screen, not to the scroll view.
+   */
+  const drillMap = useRef<View>(null)
+  const [mapCovered, setMapCovered] = useState(0)
+  /** The globe could not draw. A drill cannot be answered without it, so it says so. */
+  const [mapLost, setMapLost] = useState(false)
+  const loseMap = useCallback(() => setMapLost(true), [])
+  /**
+   * A drill's tries after a graded miss: what has been tapped since, and whether it was found.
+   * Keyed to the answer it follows, so the next question starts clean without an effect.
+   */
+  const [drillTries, setDrillTries] = useState<DrillTries | null>(null)
   const mascot = Math.round(sheetWidth * (height < VERY_SHORT_SCREEN ? MASCOT_OF_SHORT_SHEET : MASCOT_OF_SHEET))
 
 
@@ -399,7 +422,7 @@ export function LessonScreen({
   // The plain way of asking first for someone just starting, harder shapes as they go.
   const { maxModifier, introduceFrom } = useDifficultyRamp()
   const remote = useD1Lesson(remoteLessons && screenReaderStatus !== null, {
-    count: length ?? lessonLength(itemMs),
+    count: length ?? (input === 'tap' ? DRILL_LENGTH : lessonLength(itemMs)),
     locale: currentLocale() === 'sv' ? 'sv' : 'en',
     screenReader: screenReaderOn,
     maxModifier,
@@ -408,17 +431,19 @@ export function LessonScreen({
     explicitFocus: focusIsExplicit,
     node: courseNode,
     ...(placement === true && remoteLessons ? { placement: true as const } : {}),
+    ...(input === 'tap' ? { input } : {}),
   })
   const issued = useMemo<readonly Question[]>(() => {
     if (remoteLessons) return remote.lesson?.questions ?? []
     if (status !== 'ready' || !index) return []
     return index.compose({
-      count: length ?? lessonLength(itemMs),
+      count: length ?? (input === 'tap' ? DRILL_LENGTH : lessonLength(itemMs)),
       maxModifier,
       introduceFrom,
       ...(focus ? { focus } : {}),
+      ...(input === 'tap' ? { input } : {}),
     })
-  }, [remoteLessons, remote.lesson, status, index, itemMs, focus, length, maxModifier, introduceFrom])
+  }, [remoteLessons, remote.lesson, status, index, itemMs, focus, length, maxModifier, introduceFrom, input])
   // A speed round is a race against a clock per question, and a board is one sitting over four.
   // Each of a board's questions is also a plain four-option question with the same answer key, so
   // the round simply plays them as that: nothing about grading or the ticket changes.
@@ -676,6 +701,21 @@ export function LessonScreen({
   useEffect(() => {
     if (boardAnswered) advanceBoard()
   }, [boardAnswered, advanceBoard, lesson.state.index])
+  // How much of a drill's map the answer sheet lies over, once both have been laid out.
+  const drill = drillOf(lesson.question, lesson.state, drillTries)
+  const drillAnswered = drill !== null && !drill.retrying
+  // Only once the sheet is up: a retry has none, and the reveal's arrives with it.
+  const drillSheet = drillAnswered ? sheetHeight : 0
+  useEffect(() => {
+    if (!drillAnswered || drillSheet === 0) {
+      setMapCovered(0)
+      return
+    }
+    drillMap.current?.measureInWindow((_x, y, _width, mapHeight) => {
+      const covered = y + mapHeight - (height - drillSheet)
+      setMapCovered(Math.round(Math.max(0, Math.min(mapHeight * MAP_COVER_LIMIT, covered))))
+    })
+  }, [drillAnswered, drillSheet, height])
   useEffect(() => {
     if (lesson.state.phase !== 'answered' || Platform.OS === 'web') return
     if (verdict.current !== null) AccessibilityInfo.sendAccessibilityEvent(verdict.current, 'focus')
@@ -818,7 +858,7 @@ export function LessonScreen({
   const answered = lesson.state.phase === 'answered'
   // Study is an explicit choice before the first answer, never a placement answer key.
   // Pause/resume preserves this exact lesson and keeps study time out of grading.
-  const canStudy = mode === 'normal' && placement !== true &&
+  const canStudy = mode === 'normal' && placement !== true && input !== 'tap' &&
     lesson.state.phase === 'presenting' && lesson.state.index === 0 && lesson.state.answers.length === 0
 
   /**
@@ -871,6 +911,35 @@ export function LessonScreen({
    * cannot see. The scroll view lifts itself above the keyboard (`automaticallyAdjustKeyboardInsets`).
    */
   const typedQuestion = question.typed !== undefined
+  /** A map drill question: answered by tapping the map, then Check (`input === 'tap'`). */
+  const tapQuestion = question.tap === true
+  /**
+   * A country as a sentence says it: "You tapped the United Kingdom." The pack's sentence
+   * form where it has one (the prompt already uses it), else the name on the option.
+   */
+  const nameOf = (id: string): string => {
+    const entity = index?.index.entities.get(id)
+    const locale = currentLocale()
+    return entity?.namesInSentence?.[locale] ?? entity?.names[locale] ?? chosenLabel(question, id)
+  }
+  /** Graded and missed, and still looking: the map stays live and the sheet waits. */
+  const retrying = drill?.retrying === true
+  const tries = drill?.tries
+  /** The question is over: graded right, found on a retry, or out of tries. */
+  const settled = answered && !retrying
+  const retryCheck = () => {
+    if (tries === undefined || tries.selected === null) return
+    const found = question.options.some((option) => option.isCorrect && option.id === tries.selected)
+    // Felt either way, and gently on a miss: a practice try is never a second verdict.
+    if (found) hapticCelebrate()
+    else hapticSelect()
+    setDrillTries({
+      ...tries,
+      found,
+      misses: found ? tries.misses : [...tries.misses, tries.selected],
+      selected: null,
+    })
+  }
   /**
    * A matching board, while it is being played: shown when the board's FIRST question is up and
    * nothing has been answered. Its four questions are answered together by `ANSWER_GROUP`, which
@@ -895,7 +964,7 @@ export function LessonScreen({
       // Why it is dimmed, read after "Check, dimmed" — a disabled control with no
       // reason is a dead end to a screen-reader user.
       {...(noSelection
-        ? { accessibilityHint: typedQuestion ? t('lesson:check.needsTyping') : t('lesson:check.needsAnswer') }
+        ? { accessibilityHint: typedQuestion ? t('lesson:check.needsTyping') : tapQuestion ? t('lesson:drill.needsTap') : t('lesson:check.needsAnswer') }
         : {})}
       testID="lesson-check"
     />
@@ -1047,10 +1116,11 @@ export function LessonScreen({
             words — "What is the capital of Japan?" — so a reader announcing the map
             would repeat it, and a reader user is not being shown anything a sighted
             user is not also told. */}
-        {question.locator !== undefined && lessonShowsAtlas(question, index?.index, answered) && (
+        {(question.locator !== undefined || tapQuestion) && lessonShowsAtlas(question, index?.index, answered) && (
           <View
+            ref={tapQuestion ? drillMap : undefined}
             style={styles.promptArt}
-            testID={question.modality === 'map' ? 'prompt-map' : 'prompt-locator'}
+            testID={tapQuestion ? 'drill-map' : question.modality === 'map' ? 'prompt-map' : 'prompt-locator'}
           >
             {/* The atlas, or its flat fallback, under ONE disclosure policy
                 (features/atlas/scene/lessonScene.ts): a capital question shows the
@@ -1064,20 +1134,53 @@ export function LessonScreen({
               sceneKey={questionScene}
               index={index?.index}
               selected={lesson.state.selectedOptionId !== null}
-              answered={answered}
+              answered={tapQuestion ? settled : answered}
               chosenOptionId={lastAnswer?.chosenOptionId ?? null}
               width={atlasWidth}
-              height={atlasHeight(height, {
+              height={tapQuestion ? drillMapHeight(height) : atlasHeight(height, {
                 shortQuestion,
                 compact,
                 isPrompt: question.modality === 'map',
                 pictureOptions,
               })}
+              {...(tapQuestion ? {
+                selectedOptionId: retrying ? (tries?.selected ?? null) : lesson.state.selectedOptionId,
+                misses: answered ? (tries?.misses ?? []) : [],
+                onSelectCountry: (countryId: string) => {
+                  hapticSelect()
+                  if (retrying && tries !== undefined) setDrillTries({ ...tries, selected: countryId })
+                  else lesson.select(countryId)
+                },
+                coveredBottom: settled ? mapCovered : 0,
+                onUnavailable: loseMap,
+              } : {})}
             />
+            {/* After a miss, on the map rather than above it, so nothing moves: which
+                country that was, which way to look, and another go. Live, so a screen
+                reader hears it; untouchable, so a tap under it still reaches the map. */}
+            {retrying && tries !== undefined && (
+              <View style={styles.drillHint} pointerEvents="none" accessibilityLiveRegion="polite" testID="drill-hint">
+                <Text style={styles.drillHintTitle}>
+                  {t('lesson:drill.wrong.title', { chosen: nameOf(tries.misses.at(-1)!) })}
+                </Text>
+                <Text style={styles.drillHintBody}>
+                  {`${drillDirection(t, question, tries.misses.at(-1)!, nameOf)} ${t('lesson:drill.tryAgain', { count: DRILL_TRIES - tries.misses.length })}`}
+                </Text>
+              </View>
+            )}
           </View>
         )}
 
-        {!showBoard && !boardSettled && (
+        {/* A drill whose globe cannot draw cannot be answered: say so, and offer the way out
+            rather than a map that ignores every tap. What was answered is kept. */}
+        {tapQuestion && mapLost && !answered && (
+          <View style={styles.drillLost} testID="drill-map-lost">
+            <Text style={styles.feedbackBody}>{t('lesson:drill.mapLost')}</Text>
+            <Button label={t('lesson:drill.end')} variant="secondary" onPress={lesson.abandon} />
+          </View>
+        )}
+
+        {!showBoard && !boardSettled && !tapQuestion && (
         <SceneEntrance
           replayKey={questionScene}
           testID="lesson-options-arrival"
@@ -1187,15 +1290,25 @@ export function LessonScreen({
         </SceneEntrance>
         )}
 
-        {typedQuestion && !answered && !showBoard && checkButton}
+        {(typedQuestion || (tapQuestion && !mapLost)) && !answered && !showBoard && checkButton}
+        {retrying && (
+          <Button
+            label={t('lesson:check.label')}
+            variant="discovery"
+            onPress={retryCheck}
+            disabled={tries?.selected == null}
+            {...(tries?.selected == null ? { accessibilityHint: t('lesson:drill.needsTap') } : {})}
+            testID="drill-retry-check"
+          />
+        )}
 
         <Spacer />
       </ScrollView>
 
-      {boardSettled || !answered ? null : (
+      {boardSettled || !answered || retrying ? null : (
         <SheetBackdrop key={`backdrop-${answeredCount}`} height={sheetHeight} />
       )}
-      {boardSettled || !answered ? null : (
+      {boardSettled || !answered || retrying ? null : (
         <RiseIn key={answeredCount} style={[styles.footer, styles.feedbackFooter]} onHeight={setSheetHeight}>
           {/* Out of hearts is a fork, not a wall. The engine has held the flag since
               the machine was written and nothing rendered it — so the lesson simply
@@ -1341,7 +1454,9 @@ export function LessonScreen({
                   ? t('lesson:typed.near.body', { correct: question.options.find((o) => o.isCorrect)?.label ?? '' })
                   : correctRun >= STREAK_PRAISE
                     ? t('lesson:feedback.correct.streak')
-                    : t('lesson:feedback.correct.discovery')}
+                    : tapQuestion
+                      ? t('lesson:drill.found', { country: nameOf(question.item.entityId) })
+                      : t('lesson:feedback.correct.discovery')}
               </Text>
               <View style={styles.rewards}>
                 <EarnedReward
@@ -1366,12 +1481,22 @@ export function LessonScreen({
                   ? t('lesson:speed.timeUp')
                   : lastAnswer.typedText !== undefined
                     ? t('lesson:typed.wrong.title', { typed: lastAnswer.typedText })
-                    : t('lesson:feedback.wrong.title', {
-                        chosen: chosenLabel(question, lastAnswer.chosenOptionId),
-                      })
+                    : tapQuestion && tries !== undefined
+                      ? tries.found
+                        ? t('lesson:drill.retryFound.title', { count: tries.misses.length + 1 })
+                        : t('lesson:drill.reveal.title', { country: nameOf(question.item.entityId) })
+                      : t('lesson:feedback.wrong.title', {
+                          chosen: chosenLabel(question, lastAnswer.chosenOptionId),
+                        })
               }
               body={
-                question.hint
+                // Found on a later try: true about what it earned, warm about what it means.
+                // Not found: which way it was from the last tap, with both now on the map.
+                tapQuestion && tries !== undefined && tries.misses.length > 0
+                  ? tries.found
+                    ? t('lesson:drill.retryFound.body', { country: nameOf(question.item.entityId) })
+                    : drillDirection(t, question, tries.misses.at(-1)!, nameOf)
+                  : question.hint
                   ? t('lesson:feedback.wrong.body', {
                       correct: question.options.find((o) => o.isCorrect)?.label ?? '',
                       hint: question.hint,
@@ -1531,6 +1656,91 @@ function optionState(
 
 const chosenLabel = (q: Question, id: string | null | undefined): string =>
   q.options.find((o) => o.id === id)?.label ?? ''
+
+
+const DIRECTION_KEY: Record<Compass, TranslationKey> = {
+  north: 'lesson:drill.direction.north',
+  northeast: 'lesson:drill.direction.northeast',
+  east: 'lesson:drill.direction.east',
+  southeast: 'lesson:drill.direction.southeast',
+  south: 'lesson:drill.direction.south',
+  southwest: 'lesson:drill.direction.southwest',
+  west: 'lesson:drill.direction.west',
+  northwest: 'lesson:drill.direction.northwest',
+}
+
+/**
+ * After a missed tap, which way the answer lies from the country tapped: "Austria is west
+ * of Hungary." The correction that teaches the map rather than the list — the learner's own
+ * tap is the landmark (docs/design/map-drill.md §3). Plain "The answer is X." if the atlas
+ * cannot place either country.
+ */
+function drillDirection(t: ReturnType<typeof useT>, question: Question, chosenId: string, nameOf: (id: string) => string): string {
+  const correct = nameOf(question.item.entityId)
+  const compass = compassFrom(chosenId, question.item.entityId)
+  return compass === null
+    ? t('lesson:feedback.wrong.bodyPlain', { correct })
+    : t('lesson:drill.wrong.body', { correct: sentenceStart(correct), direction: t(DIRECTION_KEY[compass]), chosen: nameOf(chosenId) })
+}
+
+/** "the United Kingdom" opening a sentence. A no-op in Swedish, which has no article here. */
+const sentenceStart = (text: string): string => text.charAt(0).toLocaleUpperCase(currentLocale()) + text.slice(1)
+
+/**
+ * Tries at one country in a map drill, the graded one included. Three, as Seterra and Lizard
+ * Point give, and then the answer is shown: a miss followed at once by the correction is
+ * how a map is learned (docs/design/map-drill.md §3).
+ */
+export const DRILL_TRIES = 3
+
+export type DrillTries = {
+  /** The graded answer these tries follow. */
+  readonly key: string
+  /** Wrong taps, the graded one first. */
+  readonly misses: readonly string[]
+  readonly found: boolean
+  /** Tapped since, not yet checked. */
+  readonly selected: string | null
+}
+
+/**
+ * Where a drill question stands once graded: its tries, and whether the learner is still
+ * looking (`retrying`) — which hides the sheet and keeps the map live. Only the FIRST tap is
+ * graded; the server never hears of a retry, so a second-try find earns nothing and the
+ * country comes back soon, which the sheet says. No retries once out of hearts: that fork
+ * comes first.
+ */
+export function drillOf(question: Question | null | undefined, state: LessonState, held: DrillTries | null): { tries: DrillTries; retrying: boolean } | null {
+  if (question?.tap !== true || state.phase !== 'answered') return null
+  const graded = lastAnswerOf(state)
+  const key = `${state.lessonId}:${state.index}:${state.answers.length}:${state.reviewed.length}`
+  const miss = graded !== undefined && !graded.wasCorrect && graded.chosenOptionId != null ? graded.chosenOptionId : null
+  const tries = held?.key === key ? held : { key, misses: miss === null ? [] : [miss], found: false, selected: null }
+  return { tries, retrying: miss !== null && !state.outOfHearts && !tries.found && tries.misses.length < DRILL_TRIES }
+}
+
+/** At most this much of a drill's map may sit under the sheet: the reveal needs the rest. */
+const MAP_COVER_LIMIT = 0.6
+
+/**
+ * A drill's map is the whole answer surface, so it takes what the screen has once the bar,
+ * the prompt and Check are placed — and never less than a continent can be read at.
+ */
+export function drillMapHeight(screenHeight: number): number {
+  // A short phone gives the prompt a second line ("Find the United Kingdom on the map")
+  // out of the same height, and Check has to stay on screen under the map.
+  const share = screenHeight < VERY_SHORT_SCREEN ? DRILL_MAP_SHARE_SHORT : DRILL_MAP_SHARE
+  return Math.round(Math.min(DRILL_MAP_MAX, Math.max(DRILL_MAP_MIN, screenHeight * share)))
+}
+const DRILL_MAP_SHARE = 0.62
+const DRILL_MAP_SHARE_SHORT = 0.56
+const DRILL_MAP_MIN = 260
+const DRILL_MAP_MAX = 640
+/**
+ * Ten countries a quiz. A drill question is quick, and the pace estimate sized lessons for
+ * a new learner at twenty: half a continent in one sitting is a chore, not a game.
+ */
+const DRILL_LENGTH = 10
 
 /**
  * A v4 UUID, client-side.
@@ -1791,6 +2001,24 @@ const useThemeValues = createThemeStyles((colors) => {
   reviewTag: { ...text('caption'), color: colors.text.secondary, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 },
   newTag: { color: colors.reward.gem },
   promptArt: { alignItems: 'center' },
+  drillLost: { gap: space[3], alignItems: 'stretch' },
+  // Over the map's top edge, inside its frame: the map does not move to make room, and the
+  // zoom buttons along the bottom stay in reach for the next try.
+  drillHint: {
+    position: 'absolute',
+    start: space[2],
+    end: space[2],
+    top: space[2],
+    gap: space[1],
+    paddingHorizontal: space[3],
+    paddingVertical: space[2],
+    borderRadius: radius.lg,
+    backgroundColor: colors.bg.surfaceRaised,
+    borderWidth: 1,
+    borderColor: colors.border.subtle,
+  },
+  drillHintTitle: { ...text('bodyStrong'), color: colors.text.primary },
+  drillHintBody: { ...text('caption'), color: colors.text.secondary },
   options: { gap: space[2] },
   /**
    * The picture-answer layout: two across, wrapping to two rows.

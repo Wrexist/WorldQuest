@@ -76,7 +76,11 @@ export function lessonAtlasPolicy(input: {
   readonly modality: Question['modality']
   readonly hasLocator: boolean
   readonly hasPromptAsset: boolean
+  /** Answered by tapping the map: the map is the answer surface, not the picture slot. */
+  readonly tap?: boolean
 }): LessonAtlasPolicy {
+  // Before the locator rule: a tap question has no locator on purpose (it would be the answer).
+  if (input.tap === true) return { mode: 'locate-country', beforeAnswer: true }
   // A flag question's picture is the flag. The atlas does not take that slot.
   if (input.hasPromptAsset) return null
   if (!input.hasLocator) return null

@@ -105,6 +105,8 @@ export type LessonRequest = {
   readonly introduceFrom?: number | undefined
   /** The level check: ten questions across the five levels. Ignores focus, count and the ramp. */
   readonly placement?: true | undefined
+  /** A map drill: every question answered by tapping the place on a map. */
+  readonly input?: 'tap' | undefined
 }
 
 /** The engines' focus, in the wire shape (mutable arrays, absent fields absent). */
@@ -133,11 +135,13 @@ const sameLesson = (t: D1PreparedLesson, focus: D1Focus | undefined, node: strin
  * A lesson issued for a screen reader (every question describable) suits anyone; one
  * issued without may show a flag or a map a VoiceOver user cannot answer.
  */
-const fitsRequest = (request: Pick<LessonRequest, 'locale' | 'screenReader' | 'placement'>) => (t: D1PreparedLesson) =>
+const fitsRequest = (request: Pick<LessonRequest, 'locale' | 'screenReader' | 'placement' | 'input'>) => (t: D1PreparedLesson) =>
   t.request.locale === request.locale && (t.request.screenReader || !request.screenReader)
   // A level check has a fixed cross-level composition. A saved ordinary lesson
   // cannot stand in for it, nor may an abandoned check become ordinary practice.
   && (t.request.placement === true) === (request.placement === true)
+  // A map drill is a different game, not a different topic: never one for the other.
+  && (t.request.input === 'tap') === (request.input === 'tap')
 
 /**
  * One preparation at a time. The queue holds a single persisted "preparing" slot, and a
@@ -235,6 +239,7 @@ async function take(request: LessonRequest): Promise<TakeResult> {
       ...(request.maxModifier !== undefined ? { maxModifier: request.maxModifier } : {}),
       ...(request.introduceFrom !== undefined ? { introduceFrom: request.introduceFrom } : {}),
       ...(request.placement === true ? { placement: true as const } : {}),
+      ...(request.input === 'tap' ? { input: 'tap' as const } : {}),
     })
     if (!lesson) return offline()
     return { kind: 'ready', lesson }

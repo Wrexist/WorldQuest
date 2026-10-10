@@ -65,7 +65,7 @@ export type ExploreScreenProps = {
    * the globe rather than leaving the screen — the card then opens the country page.
    * Absent: Explore is exactly what it was.
    */
-  readonly atlas?: { readonly names: AtlasNames } | undefined
+  readonly atlas?: { readonly names: AtlasNames; readonly onDrill?: ((region: string) => void) | undefined } | undefined
   /** The streak, for the flame chip in the top bar, and where tapping it goes. */
   readonly streak?: number | undefined
   readonly onOpenStreak?: (() => void) | undefined
@@ -219,6 +219,7 @@ export function ExploreScreen({
           }}
           matches={atlasMatches}
           onOpenCountry={(id) => onSelectCountry?.(id)}
+          onDrill={atlas.onDrill}
         />
       )}
       {needle.length === 0 && (atlas === undefined || selected === null) && <>

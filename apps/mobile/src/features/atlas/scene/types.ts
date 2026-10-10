@@ -17,6 +17,8 @@ export type AtlasMode =
   | 'identify-country'
   /** A question about the country that the map cannot answer (its currency, its TLD). */
   | 'context'
+  /** "Find X on the map" — the name is the question, so the map names nothing until graded. */
+  | 'locate-country'
   /** Free exploration: names, search, verified pins. */
   | 'explore'
 

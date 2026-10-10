@@ -159,8 +159,15 @@ export type Template = {
    * (see `TYPED_WRONG`). It is asked only of a fact the learner has already met more than
    * once: nobody can type what they were never shown, and a heart lost to that is the
    * "punishing a beginner for not knowing" that the hearts rule exists to prevent.
+   *
+   * `tap` means by pointing at the answer on a map: "Where is Austria?" over the region, and
+   * the learner taps it. Every candidate in the distractor pool becomes an option — each is a
+   * place that can be tapped, and the map has to know which ones it may accept — so
+   * `distractors.count` is a minimum rather than a size. A tap template is asked ONLY in a
+   * lesson that asks for it (`ComposeInput.input`): it needs a host that draws a pickable map,
+   * and a lesson that wandered into one would be a lesson that changed its own rules.
    */
-  readonly input?: 'typed'
+  readonly input?: 'typed' | 'tap'
   /**
    * Only ask this about facts whose `value.id` is this. Lets one attribute carry two
    * questions that cannot share a prompt: "which of these has no sea coast?" is true of a
@@ -333,6 +340,12 @@ export type Question = {
    * app reports. `options` then holds the one correct option and nothing else.
    */
   readonly typed?: { readonly accepts: readonly string[]; readonly rivals?: readonly string[] }
+  /**
+   * True when the answer is given by TAPPING it on a map (`Template.input: 'tap'`). The
+   * options are every place the map may accept, the prompt names the entity, and nothing on
+   * screen draws it before the answer: the map is the answer surface, never the prompt.
+   */
+  readonly tap?: true
   /**
    * Set when this question is one of the four that make up a "match the pairs" board
    * (`lesson/pairs.ts`). The four are consecutive, share one option list, and are each graded

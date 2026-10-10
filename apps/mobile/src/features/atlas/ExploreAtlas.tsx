@@ -14,29 +14,22 @@
 
 import { useEffect, useMemo, useState, type Ref } from 'react'
 import { I18nManager, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ViewProps } from 'react-native'
-import { ClaySurface, clayShadow, createThemeStyles, layout, radius, space, text, useTheme } from '@worldquest/design'
+import { Button, ClaySurface, clayShadow, createThemeStyles, layout, radius, space, text, useTheme } from '@worldquest/design'
 import { LinearGradient } from 'expo-linear-gradient'
 import { ramp } from '../../components/ScrollEdges.js'
 import { Flag } from '../../components/Flag.js'
 import { ClayMap } from '../../components/ClayMap.js'
 import { Icon } from '../../components/Icon.js'
 import { SceneEntrance } from '../../components/SceneEntrance.js'
-import { useT, type TranslationKey } from '../../lib/i18n.js'
+import { useT } from '../../lib/i18n.js'
 import { WorldAtlasView } from './WorldAtlasView.js'
 import { buildExploreScene } from './scene/exploreScene.js'
 import { ATLAS_COUNTRIES, ATLAS_PLACES } from './data/atlas.generated.js'
 import type { AtlasNames } from './useAtlasNames.js'
 
-export const ATLAS_REGIONS = ['EU', 'AS', 'AF', 'NA', 'SA', 'OC'] as const
+import { ATLAS_REGIONS, isAtlasRegion, REGION_KEY } from './regions.js'
 
-const REGION_KEY: Record<(typeof ATLAS_REGIONS)[number], TranslationKey> = {
-  EU: 'explore:region.EU',
-  AS: 'explore:region.AS',
-  AF: 'explore:region.AF',
-  NA: 'explore:region.NA',
-  SA: 'explore:region.SA',
-  OC: 'explore:region.OC',
-}
+export { ATLAS_REGIONS }
 
 export type ExploreAtlasCountry = { readonly id: string; readonly name: string; readonly region: string; readonly flagPath?: string | undefined }
 
@@ -56,9 +49,11 @@ export type ExploreAtlasProps = {
   readonly openRef?: Ref<View>
   /** The existing country page — Learn and Review live there. */
   readonly onOpenCountry: (id: string) => void
+  /** Start a map drill over a region: find its countries by tapping them. */
+  readonly onDrill?: ((region: string) => void) | undefined
 }
 
-export function ExploreAtlas({ countries, names, selected, onSelect, region, onRegion, matches, onOpenCountry, showBrowse = true, onLayout, openRef, onGestureActiveChange }: ExploreAtlasProps) {
+export function ExploreAtlas({ countries, names, selected, onSelect, region, onRegion, matches, onOpenCountry, showBrowse = true, onLayout, openRef, onGestureActiveChange, onDrill }: ExploreAtlasProps) {
   const { styles, colors } = useThemeValues()
   const t = useT()
   const { width, height, fontScale } = useWindowDimensions()
@@ -111,6 +106,22 @@ export function ExploreAtlas({ countries, names, selected, onSelect, region, onR
           if (event.type === 'countrySelected') onSelect(event.countryId)
         }}
       />}
+
+      {/* The map drill, offered where the region is on screen: "Europe" chosen, Europe
+          shown, and one tap from being asked to find its countries on it. Hidden while a
+          country card is open (one thing at a time) and on a globe that failed: the drill
+          is played on it. */}
+      {onDrill !== undefined && region !== null && isAtlasRegion(region) && country === undefined && !globeFailed && (
+        <SceneEntrance replayKey={region} testID="explore-drill">
+          <Button
+            variant="adventure"
+            label={t('atlas:drill.start', { region: t(REGION_KEY[region]) })}
+            accessibilityHint={t('atlas:drill.hint')}
+            onPress={() => onDrill(region)}
+            testID="explore-drill-start"
+          />
+        </SceneEntrance>
+      )}
 
       {country !== undefined && (
         <SceneEntrance replayKey={country.id} style={styles.card} testID="explore-atlas-card" accessibilityLiveRegion="polite">

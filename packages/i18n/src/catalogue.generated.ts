@@ -218,7 +218,11 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "explore.close": "Clear selection",
       "explore.all": "All",
       "explore.browse": "Browse countries ({count, number})",
-      "explore.listLabel": "Countries on the map"
+      "explore.listLabel": "Countries on the map",
+      "summary.locate": "Map of {region}. Find the country the question names, and tap it.",
+      "drill.start": "Find countries in {region}",
+      "drill.hint": "A map quiz: each question names a country, and you tap it on the map.",
+      "summary.locateRetry": "Map of {region}. {chosen} is marked; find the country the question names, and tap it."
     },
     "collection": {
       "flags.title": "Flags",
@@ -699,7 +703,26 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "intro.previous": "Previous",
       "intro.next": "Next discovery",
       "combo": "{count, plural, other {# in a row!}}",
-      "feedback.wrong.picture": "The right one:"
+      "feedback.wrong.picture": "The right one:",
+      "prompt.find_on_map": "Find {entityName} on the map",
+      "drill.needsTap": "Tap a country on the map first.",
+      "drill.mapLost": "The map couldn't load, so this map quiz can't go on. What you've answered is kept.",
+      "drill.end": "End the map quiz",
+      "drill.found": "You found {country} on the map.",
+      "drill.wrong.title": "You tapped {chosen}.",
+      "drill.wrong.body": "{correct} is {direction} of {chosen}.",
+      "drill.direction.north": "north",
+      "drill.direction.northeast": "northeast",
+      "drill.direction.east": "east",
+      "drill.direction.southeast": "southeast",
+      "drill.direction.south": "south",
+      "drill.direction.southwest": "southwest",
+      "drill.direction.west": "west",
+      "drill.direction.northwest": "northwest",
+      "drill.tryAgain": "{count, plural, one {One more try.} other {# more tries.}}",
+      "drill.retryFound.title": "Found it on try {count}.",
+      "drill.retryFound.body": "The first tap is the one that counts, so {country} will come back soon.",
+      "drill.reveal.title": "Here's {country}."
     },
     "nav": {
       "home": "Home",
@@ -1341,7 +1364,11 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "explore.close": "Rensa val",
       "explore.all": "Alla",
       "explore.browse": "Bläddra bland länder ({count, number})",
-      "explore.listLabel": "Länder på kartan"
+      "explore.listLabel": "Länder på kartan",
+      "summary.locate": "Karta över {region}. Hitta landet som frågan nämner och tryck på det.",
+      "drill.start": "Hitta länder i {region}",
+      "drill.hint": "Ett kartquiz: varje fråga nämner ett land, och du trycker på det på kartan.",
+      "summary.locateRetry": "Karta över {region}. {chosen} är markerat. Hitta landet som frågan nämner och tryck på det."
     },
     "collection": {
       "flags.title": "Flaggor",
@@ -1822,7 +1849,26 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "intro.previous": "Föregående",
       "intro.next": "Nästa upptäckt",
       "combo": "{count, plural, other {# i rad!}}",
-      "feedback.wrong.picture": "Rätt svar:"
+      "feedback.wrong.picture": "Rätt svar:",
+      "prompt.find_on_map": "Hitta {entityName} på kartan",
+      "drill.needsTap": "Tryck på ett land på kartan först.",
+      "drill.mapLost": "Kartan gick inte att ladda, så kartquizet kan inte fortsätta. Det du redan har svarat sparas.",
+      "drill.end": "Avsluta kartquizet",
+      "drill.found": "Du hittade {country} på kartan.",
+      "drill.wrong.title": "Du tryckte på {chosen}.",
+      "drill.wrong.body": "{correct} ligger {direction} om {chosen}.",
+      "drill.direction.north": "norr",
+      "drill.direction.northeast": "nordost",
+      "drill.direction.east": "öster",
+      "drill.direction.southeast": "sydost",
+      "drill.direction.south": "söder",
+      "drill.direction.southwest": "sydväst",
+      "drill.direction.west": "väster",
+      "drill.direction.northwest": "nordväst",
+      "drill.tryAgain": "{count, plural, one {Ett försök till.} other {# försök till.}}",
+      "drill.retryFound.title": "Hittat på försök {count}.",
+      "drill.retryFound.body": "Det är första trycket som räknas, så {country} kommer tillbaka snart.",
+      "drill.reveal.title": "Här ligger {country}."
     },
     "nav": {
       "home": "Hem",

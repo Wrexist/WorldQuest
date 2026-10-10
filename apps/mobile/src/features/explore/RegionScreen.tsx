@@ -99,6 +99,11 @@ export type RegionScreenProps = {
   readonly onSelectCountry: (id: string) => void
   readonly onStartLesson: () => void
   /**
+   * The map quiz over this continent: find its countries by tapping them. A second way in,
+   * secondary in weight — Start stays the one primary action. Absent where the globe is off.
+   */
+  readonly onStartDrill?: (() => void) | undefined
+  /**
    * Optional, like every other screen's, so the component tests and the screenshot
    * renderer mount without a router.
    *
@@ -127,6 +132,7 @@ export function RegionScreen({
   progress: regionTotals,
   onSelectCountry,
   onStartLesson,
+  onStartDrill,
   onBack,
 }: RegionScreenProps) {
   const { MASTERY_COLOR, styles } = useThemeValues()
@@ -263,6 +269,16 @@ export function RegionScreen({
 
       <StickyFooter>
         <Button label={t('common:start')} onPress={onStartLesson} fullWidth />
+        {onStartDrill !== undefined && (
+          <Button
+            label={t('atlas:drill.start', { region: t(regionNameKey) })}
+            accessibilityHint={t('atlas:drill.hint')}
+            variant="secondary"
+            onPress={onStartDrill}
+            fullWidth
+            testID="region-drill-start"
+          />
+        )}
       </StickyFooter>
     </View>
   )

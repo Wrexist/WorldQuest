@@ -38,5 +38,13 @@
   "atlas:explore.browse": "Browse countries ({count, number})",
   "atlas:explore.browse__note": "Disclosure that expands or collapses the accessible country list. {count} is the number of countries in the current region filter, or all countries when unfiltered.",
   "atlas:explore.listLabel": "Countries on the map",
-  "atlas:explore.listLabel__note": "Screen-reader name of the list that mirrors the globe, for anyone who cannot use the map by touch."
+  "atlas:explore.listLabel__note": "Screen-reader name of the list that mirrors the globe, for anyone who cannot use the map by touch.",
+  "atlas:summary.locate": "Map of {region}. Find the country the question names, and tap it.",
+  "atlas:summary.locate__note": "Screen-reader label for the globe in a map quiz, BEFORE answering. {region} is a continent name (explore:region.*). Must never name the country being asked for.",
+  "atlas:drill.start": "Find countries in {region}",
+  "atlas:drill.start__note": "Button under the Explore globe when a continent chip is selected. Starts a map quiz over that continent. {region} is explore:region.* (\"Europe\"). Max 32 characters.",
+  "atlas:drill.hint": "A map quiz: each question names a country, and you tap it on the map.",
+  "atlas:drill.hint__note": "Screen-reader hint for atlas:drill.start: what the button starts.",
+  "atlas:summary.locateRetry": "Map of {region}. {chosen} is marked; find the country the question names, and tap it.",
+  "atlas:summary.locateRetry__note": "Screen-reader label for the map quiz globe after a wrong tap, while the learner tries again. {chosen} is the country they tapped. Must never name the country being asked for."
 }

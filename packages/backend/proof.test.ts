@@ -162,6 +162,33 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     // The flag is a literal `true`: anything else is a request the Worker does not understand.
     expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'placement-2', locale: 'en', count: 10, placement: false })).status).toBe(400)
   })
+  it('issues a map quiz: every question tapped, every country of the region an option, graded like any other', async () => {
+    const a = await guest()
+    const europe = ['AT', 'BE', 'CH', 'CZ', 'DE', 'DK', 'ES', 'FR', 'HU', 'IT', 'NL', 'PL', 'PT', 'SE', 'SK', 'SI']
+    const input = { lessonId: 'drill-1', locale: 'en', count: 5, screenReader: false, focus: { entities: europe }, input: 'tap' }
+    const response = await call('/v1/lessons/prepare', a.token, input)
+    expect(response.status).toBe(200)
+    const lesson = await response.json() as { questions: Question[]; request: { input?: string } }
+    expect(lesson.request.input).toBe('tap')
+    expect(lesson.questions).toHaveLength(5)
+    for (const q of lesson.questions) {
+      expect(q.tap).toBe(true)
+      expect(q.locator).toBeUndefined()
+      // Every country the focus allows that shares the region is a place the map may accept.
+      expect(q.options.length).toBeGreaterThan(8)
+    }
+    // A wrong country is an answer like any other; one the ticket never offered is not.
+    const answers = lesson.questions.map((q, slot) => ({ slot, chosenOptionId: (slot === 0 ? q.options.find(o => !o.isCorrect) : q.options.find(o => o.isCorrect))!.id, elapsedMs: 9000 }))
+    expect((await call('/v1/lessons/submit', a.token, { lessonId: 'drill-1', answers: [{ slot: 0, chosenOptionId: 'XX', elapsedMs: 9000 }] })).status).toBe(400)
+    const result = await call('/v1/lessons/submit', a.token, { lessonId: 'drill-1', answers })
+    expect(result.status).toBe(200)
+    expect(await result.json()).toMatchObject({ correct: 4, reviews: 5 })
+    // Only `tap` is a way of answering the Worker knows.
+    expect((await call('/v1/lessons/prepare', a.token, { ...input, lessonId: 'drill-2', input: 'typed' })).status).toBe(400)
+    // A screen reader gets the same facts asked by ear.
+    const spoken = await (await call('/v1/lessons/prepare', a.token, { ...input, lessonId: 'drill-3', screenReader: true })).json() as { questions: Question[] }
+    expect(spoken.questions.every(q => q.tap === undefined && q.item.screenReaderSafe)).toBe(true)
+  })
   it('bounds outstanding offline tickets and frees capacity after an acknowledged lesson', async () => {
     const a = await guest()
     let first: { questions: Question[] } | undefined

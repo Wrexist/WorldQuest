@@ -47,7 +47,7 @@ export default function LessonRoute() {
   const { colors } = useThemeValues()
   // `/lesson?mode=speed`. A query param rather than a second route: it is the same
   // runner, the same items and the same scoring — only the clock differs.
-  const { mode, taster, facts, attr, entity, region, min, max, len, node, review, placement } = useLocalSearchParams<{
+  const { mode, taster, facts, attr, entity, region, min, max, len, node, review, placement, input } = useLocalSearchParams<{
     mode?: string
     /** `1` for the level check (Settings → Check my level). */
     placement?: string
@@ -63,6 +63,8 @@ export default function LessonRoute() {
     node?: string
     /** A finished course's review. */
     review?: string
+    /** `tap` for a map drill (Explore → a region → Find countries): answered on the map. */
+    input?: string
   }>()
 
   /**
@@ -158,6 +160,7 @@ export default function LessonRoute() {
       // who reinstalls.
       isTaster={taster === '1'}
       placement={placement === '1'}
+      {...(input === 'tap' ? { input: 'tap' as const } : {})}
       coins={data?.coins ?? 0}
       // Out of a lesson that never started (offline with nothing saved, a failure, an
       // empty focus). Nothing was answered, so there is nothing to record or celebrate.

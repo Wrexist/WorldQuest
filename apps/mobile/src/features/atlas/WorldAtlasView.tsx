@@ -50,6 +50,7 @@ import {
   zoomCamera,
 } from './geo/camera.js'
 import { countryAt, outlineSegments, type AtlasGeometry } from './geo/geometry.js'
+import { pickCountry } from './geo/pick.js'
 import type { Camera, Viewport } from './geo/types.js'
 import { ATLAS_COUNTRIES, ATLAS_RASTER } from './data/atlas.generated.js'
 import { GlobeRenderer, type GL, type GlobeQuality } from './render/GlobeRenderer.js'
@@ -82,6 +83,8 @@ export type WorldAtlasViewProps = {
 
 /** A press that moved less than this, in points, is a tap rather than a drag. */
 const TAP_SLOP = 8
+/** How far from land a tap may fall and still mean it: half a fingertip either side. */
+const TAP_REACH = 22
 const TAP_MS = 350
 /** Longest camera move, degrees of arc, that animates; farther ones cut, so no flights. */
 const MAX_ANIMATED_TRAVEL = 70
@@ -434,7 +437,18 @@ export function WorldAtlasView({
     const selectable = current.interaction.selectable
     if (selectable !== 'all' && selectable.length === 0) return
     const eligible = selectable === 'all' ? undefined : new Set(selectable)
-    const id = countryAt(g, point, eligible)
+    // A finger, not a point: rings and near misses count (`geo/pick.ts`).
+    const camera = displayedCamera.current
+    const id = pickCountry({
+      x,
+      y,
+      unproject: (px, py) => unproject(px, py, camera, s),
+      project: (p) => project(p, camera, s),
+      hit: (p) => countryAt(g, p, eligible),
+      rings: eligible === undefined ? current.rings : current.rings.filter((ring) => eligible.has(ring.countryId)),
+      ringRadius: RING / 2,
+      reach: TAP_REACH,
+    })
     if (id !== null) eventCallback.current?.({ type: 'countrySelected', sceneKey: current.sceneKey, countryId: id })
   }, [])
 
@@ -515,6 +529,7 @@ export function WorldAtlasView({
     requestDraw()
   }
 
+  const quietRings = spec.mode === 'locate-country'
   const labels = useMemo(() => {
     if (viewport === null || status !== 'ready') return []
     const pins = spec.markers.flatMap((m) => {
@@ -564,9 +579,13 @@ export function WorldAtlasView({
           {spec.rings.map((ring) => {
             const p = project(ring, camera, viewport)
             if (!p.visible) return null
+            // A map quiz rings EVERY microstate in play, and around Italy that is six rings
+            // in a thumb's width: there they are quiet marks, not gold targets. The tap still
+            // reaches the full ring's width (`handleTap`).
+            const size = quietRings ? RING_QUIET : RING
             return (
-              <View key={`ring:${ring.countryId}`} pointerEvents="none" style={[styles.ring, { start: p.x - RING / 2, top: p.y - RING / 2 }]}>
-                <View style={styles.ringInner} />
+              <View key={`ring:${ring.countryId}`} pointerEvents="none" style={[quietRings ? styles.ringQuiet : styles.ring, { start: p.x - size / 2, top: p.y - size / 2 }]}>
+                {!quietRings && <View style={styles.ringInner} />}
               </View>
             )
           })}
@@ -721,6 +740,7 @@ const LABEL_SCALE = {
 } as const
 
 const RING = 34
+const RING_QUIET = 20
 const PIN = 30
 const PULSE = 44
 const PIN_HIT = 48
@@ -742,6 +762,14 @@ const useThemeValues = createThemeStyles((colors) => {
       justifyContent: 'center',
     },
     ringInner: { width: RING - 6, height: RING - 6, borderRadius: (RING - 6) / 2, borderWidth: 2, borderColor: colors.map.atlasLabelHalo },
+    ringQuiet: {
+      position: 'absolute',
+      width: RING_QUIET,
+      height: RING_QUIET,
+      borderRadius: RING_QUIET / 2,
+      borderWidth: 2,
+      borderColor: colors.map.atlasLabelHalo,
+    },
     // Labels use the app's face/edge idiom — a solid edge under the face, never a blur.
     label: {
       position: 'absolute',

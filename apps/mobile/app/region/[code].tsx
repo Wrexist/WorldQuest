@@ -15,6 +15,7 @@ import { RegionScreen, type CountryRow } from '../../src/features/explore/Region
 import { ContentGate } from '../../src/components/ContentGate.js'
 import { useReferenceContent } from '../../src/lib/referenceContent.js'
 import { currentLocale, type TranslationKey } from '../../src/lib/i18n.js'
+import { useAtlasEnabled } from '../../src/features/atlas/atlasAvailability.js'
 
 const REGION_NAME: Record<RegionCode, TranslationKey> = {
   EU: 'explore:region.EU',
@@ -32,6 +33,7 @@ const isRegion = (value: string): value is RegionCode =>
 export default function RegionRoute() {
   const { code } = useLocalSearchParams<{ code: string }>()
   const { index, memory, status, reload, isOffline } = useReferenceContent()
+  const atlasOn = useAtlasEnabled()
 
   // A deep link can carry anything. An unknown code goes home rather than rendering
   // an empty continent that looks like a bug.
@@ -107,6 +109,8 @@ export default function RegionRoute() {
         // no-op, so the only control on the screen did nothing at all.
         onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
         onStartLesson={() => router.push(`/lesson?region=${encodeURIComponent(region)}`)}
+        // The map quiz is played on the globe, so it is offered only where the globe is.
+        {...(atlasOn ? { onStartDrill: () => router.push(`/lesson?region=${encodeURIComponent(region)}&input=tap`) } : {})}
       />
     </ContentGate>
   )
