@@ -1,4 +1,5 @@
 import { createThemeStyles } from '@worldquest/design'
+import { EdgeScrollView } from '../../components/ScrollEdges.js'
 import { StreakGemCollection } from './StreakGemCollection.js'
 /**
  * The streak, and the two things that protect it.
@@ -31,7 +32,7 @@ import { StreakGemCollection } from './StreakGemCollection.js'
  * Purely presentational. Every decision comes in already made by the engine.
  */
 
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { Button, Card, Tally, space, text } from '@worldquest/design'
 import {
@@ -323,7 +324,7 @@ export function StreakScreen({
 
        The header goes INSIDE, as it does on Country, Collection and Achievements. Four
        screens with a back button should put it in the same place. */
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <EdgeScrollView style={styles.screen} contentContainerStyle={styles.content}>
       {/* Named. `ScreenHeader` was drawn with a back chevron and no title, so this was
           the one screen with a back button that did not say where you were — Country,
           Collection, Achievements and League all do. `streak:title` has existed since the
@@ -475,7 +476,7 @@ export function StreakScreen({
           </>
         )}
       </Card>
-    </ScrollView>
+    </EdgeScrollView>
   )
 }
 

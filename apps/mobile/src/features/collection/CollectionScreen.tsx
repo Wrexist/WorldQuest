@@ -1,4 +1,5 @@
 import { createThemeStyles } from '@worldquest/design'
+import { EdgeScrollView } from '../../components/ScrollEdges.js'
 /**
  * Collection — mockup screen 10 (flags) and its country twin.
  *
@@ -176,7 +177,7 @@ export function CollectionScreen({
   }, [query, shown.length])
 
   return (
-    <ScrollView style={styles.root} contentContainerStyle={styles.content}>
+    <EdgeScrollView style={styles.root} contentContainerStyle={styles.content}>
       {onBack !== undefined && <ScreenHeader onBack={onBack} />}
       <View style={styles.header}>
         <Text style={styles.title} role="heading" aria-level={1}>
@@ -292,7 +293,7 @@ export function CollectionScreen({
           ))}
         </View>
       )}
-    </ScrollView>
+    </EdgeScrollView>
   )
 }
 

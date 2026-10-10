@@ -34,6 +34,7 @@ import { AnswerOption, createThemeStyles, motion, space, text } from '@worldques
 import type { Question } from '@worldquest/engines'
 import { Icon } from '../../components/Icon.js'
 import { hapticSelect } from '../../lib/haptics.js'
+import { soundTap } from '../../lib/sound.js'
 import { useT } from '../../lib/i18n.js'
 
 type Side = 'left' | 'right'
@@ -93,7 +94,10 @@ export function PairsBoard({
   )
 
   const tap = (side: Side, id: string) => {
+    // Heard as well as felt, like the cards in Duolingo's matching round. The tap sound,
+    // not the answer chime: picking a card is not yet an answer.
     hapticSelect()
+    soundTap()
     setMissed(null)
     if (side === 'left') {
       if (pickedRight !== null) return pair(id, pickedRight)

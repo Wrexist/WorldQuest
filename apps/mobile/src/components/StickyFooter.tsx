@@ -17,18 +17,27 @@ import { createThemeStyles } from '@worldquest/design'
  *
  * Because the interesting part is not the padding. A control pinned over scrolling
  * content needs a surface of its own or the words behind it show through the gap between
- * the button and the screen edge, and it needs a hairline so the eye reads it as chrome
+ * the button and the screen edge, and it needs a boundary so the eye reads it as chrome
  * rather than as the next row of the list. That is three decisions, and two screens
  * making them separately is how they drift.
  *
+ * ## The boundary is the list's soft edge, not a line
+ *
+ * It was a 1 pt hairline across the screen: a hard line with the list chopped off under
+ * it (owner review, 2026-10-10: "no hard lines"). The list above it is an
+ * `EdgeScrollView` (or carries `ScrollEdges`), whose bottom edge dissolves the list into
+ * the canvas right where this begins — and, unlike a fade of the footer's own, steps
+ * aside at the end of the list, so the last row is never dimmed at rest. Pair it with
+ * one.
+ *
  * ## What it deliberately does NOT do
  *
- * No shadow, no blur, no translucency. `Card` owns elevation in this design system and a
- * second elevated surface at the bottom of every screen would compete with it — and a
- * translucent bar over a dark canvas is where text contrast quietly stops being
- * measurable, which `design:contrast` checks token pairs for and cannot see through.
- * Solid `bg.canvas`, the same colour the screen is already painted in, so the only thing
- * that marks the boundary is the hairline.
+ * No shadow, no blur, no translucency on the footer itself. `Card` owns elevation in
+ * this design system and a second elevated surface at the bottom of every screen would
+ * compete with it — and a translucent bar over a dark canvas is where text contrast
+ * quietly stops being measurable, which `design:contrast` checks token pairs for and
+ * cannot see through. Solid `bg.canvas`, the same colour the screen is already painted in,
+ * so the button's label only ever sits on canvas.
  */
 
 import { StyleSheet, View, type ViewStyle } from 'react-native'
@@ -55,8 +64,6 @@ const useThemeValues = createThemeStyles((colors) => {
     // scrolls *under* this, so anything less than opaque puts a country name behind a
     // button label.
     backgroundColor: colors.bg.canvas,
-    borderTopWidth: 1,
-    borderTopColor: colors.border.subtle,
   },
 })
   return { colors, styles }

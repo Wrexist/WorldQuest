@@ -51,6 +51,7 @@ import {
 import { coinsShort, purchase, type ShopItem } from '@worldquest/engines'
 import { Icon } from '../../components/Icon.js'
 import { TopBar } from '../../components/TopBar.js'
+import { ScrollEdges, useScrollEdges } from '../../components/ScrollEdges.js'
 import { Art } from '../../components/Art.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
 import { CoinWallet } from '../../components/CoinWallet.js'
@@ -108,6 +109,8 @@ export function ShopScreen({
 }: ShopScreenProps) {
   const { colors, styles } = useThemeValues()
   const t = useT()
+  // Soft top and bottom edges, lighter while the page moves (`ScrollEdges`).
+  const edges = useScrollEdges()
   const { width, fontScale } = useWindowDimensions()
 
   if (error) {
@@ -126,7 +129,8 @@ export function ShopScreen({
   const unlockCaption = nextUnlock === undefined ? '' : coins >= nextUnlock.price ? t('shop:unlock.ready') : t('shop:unlock.progress', { coins, price: nextUnlock.price })
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <View style={styles.screen}>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content} {...edges.handlers}>
       {/* The same chrome the other four tabs wear.
 
           Shop was the only tab without it, so moving between tabs the header appeared and
@@ -264,6 +268,8 @@ export function ShopScreen({
 
       <View style={styles.tail} />
     </ScrollView>
+    <ScrollEdges state={edges} />
+    </View>
   )
 }
 

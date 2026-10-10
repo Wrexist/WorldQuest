@@ -1,4 +1,5 @@
 import { createThemeStyles } from '@worldquest/design'
+import { EdgeScrollView } from '../../components/ScrollEdges.js'
 /**
  * Settings — mockup screen 15.
  *
@@ -14,7 +15,7 @@ import { createThemeStyles } from '@worldquest/design'
  * showing a button that cannot work.
  */
 
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { space, text } from '@worldquest/design'
 import {
   ChoiceRow,
@@ -245,7 +246,7 @@ export function SettingsScreen({
         : t('settings:language.en')
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <EdgeScrollView style={styles.screen} contentContainerStyle={styles.content}>
       {/* Title stays below rather than moving into the header: `ScreenHeader`'s own
           note says a screen that already carries its title takes a back control and
           nothing else, so a reader does not hear "Settings" twice. */}
@@ -507,7 +508,7 @@ export function SettingsScreen({
       </Section>
 
       <View style={styles.tail} />
-    </ScrollView>
+    </EdgeScrollView>
   )
 }
 

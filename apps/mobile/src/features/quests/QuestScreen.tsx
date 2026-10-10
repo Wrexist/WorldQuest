@@ -43,6 +43,7 @@ import { ProgressSparkles } from '../../components/ProgressSparkles.js'
 import { Icon } from '../../components/Icon.js'
 import { SLOT_ICON, taskTitle } from './slots.js'
 import { TopBar } from '../../components/TopBar.js'
+import { ScrollEdges, useScrollEdges } from '../../components/ScrollEdges.js'
 import { StickyFooter } from '../../components/StickyFooter.js'
 import { WorldMascot } from '../../components/WorldMascot.js'
 import type { DayCountdown } from './useDayCountdown.js'
@@ -93,6 +94,8 @@ export function QuestScreen({
 }: QuestScreenProps) {
   const { colors, styles } = useThemeValues()
   const t = useT()
+  // Soft top and bottom edges, lighter while the page moves (`ScrollEdges`).
+  const edges = useScrollEdges()
   const { width, fontScale } = useWindowDimensions()
   const largeText = fontScale >= 1.5 && width < layout.maxContentWidth
 
@@ -118,7 +121,8 @@ export function QuestScreen({
 
   return (
     <View style={styles.screen}>
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <View style={styles.screen}>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content} {...edges.handlers}>
       <TopBar
         initials="EX"
         {...(coins !== undefined ? { coins } : {})}
@@ -204,6 +208,8 @@ export function QuestScreen({
       )}
 
       </ScrollView>
+      <ScrollEdges state={edges} />
+    </View>
       {!quest.complete && <StickyFooter>
         <Button variant="discovery" label={t('quests:adventure.continue')} onPress={onStart} fullWidth />
       </StickyFooter>}

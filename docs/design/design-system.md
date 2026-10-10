@@ -435,9 +435,11 @@ Respects the Settings toggle and the OS setting. Never fires more than once per 
 ## 9. Sound
 
 Short (< 600 ms), musical, in one key (C major) so overlaps don't clash. Correct ·
-wrong (neutral, not a buzzer) · unlock · level-up · streak · tap. Off by default on
-first launch; a one-time prompt offers to enable. Never plays when the device is
-silenced.
+wrong (neutral, not a buzzer) · unlock · level-up · streak · tap · coin. Off by default
+on first launch; a one-time prompt offers to enable. Never plays when the device is
+silenced. Tap is for picking, not answering: a matching card, a wheel, tapping Atlas
+(an answer already sounds right or wrong). Coin plays as coins land in the top bar's
+counter on Home (`CoinFlight`).
 
 ## 10. Layout
 
@@ -450,6 +452,37 @@ silenced.
 | Touch target | **≥ 44 × 44 pt, always** — extend the hit slop, not the visual |
 | Primary action | bottom third, above the safe area + 16 |
 | Nothing critical | within 44 pt of the top edge |
+
+### Scroll edges
+
+Every tab's scroll view dissolves content into the canvas where it meets the top and
+bottom of the screen (`ScrollEdges`), as iOS 26 does under its bars: on iOS a real blur
+masked to ramp in, with a wash of the canvas colour; on Android, the web and under iOS
+Reduce Transparency the fade alone. The ramp is eased (a sampled smoothstep), never
+linear, so there is no visible line where it starts, and tall enough (40 pt top, 48 pt
+bottom) to read as a transition rather than a stripe. Each edge shows only where there
+is content under it: the top once the page has scrolled, the bottom until the end, each
+fading in and out over `motion.quick`. The blur drops from `illustration.edgeBlur.rest`
+to `.moving` while the content moves, because a heavy blur over moving text is mush and
+costs the GPU every frame. State changes only on a flip, never per frame.
+
+**No hard lines (owner review, 2026-10-10).** Wherever content meets an edge it dissolves
+on the same eased ramp (`ramp` in `ScrollEdges.tsx`) instead of being cut:
+
+- **Full-screen lists** use `EdgeScrollView`, a drop-in `ScrollView` with the edges built
+  in (`edgeCanvas` when the page is not `bg.canvas`, as the streak's lavender). The five
+  tabs wire `useScrollEdges` by hand because Home shares its scroll handlers.
+- **`StickyFooter`** has no hairline and no fade of its own: the list above it is an
+  `EdgeScrollView`, whose bottom edge dissolves into the footer and steps aside at the end.
+- **The answer sheet** sits on a backdrop that dissolves the lesson into the canvas above
+  and around it, so covered options never poke out beside its corners.
+- **A scene on a plate** (the unit banner) fades its last 32 pt through a mask, so the
+  plate's own colour shows through; on the web the edge stays (no mask there).
+- **A row that runs off the screen** (Explore's continents) fades toward its end and pads
+  the last item clear of the fade.
+
+New screens follow the same rule: no 1 pt dividers between content and chrome, and no
+content cut by a straight edge.
 
 ## 11. Component inventory
 
@@ -538,7 +571,8 @@ same blue field as selected answers and navigation cards. Button contrast remain
 above the body-text floor; selected answers retain both a mark and selected state.
 
 Explore, Quests, Shop, Passport and private challenges share 16-point content
-gutters and section spacing. Wallet and daily rewards share the sand field; the
+gutters and section spacing. The daily goal card on Home wears the ordinary card clay
+with a gold rim (it was the sand field, which is brown in the dark theme); the
 streak-freeze panel uses sky. Earned rewards themselves (the summary's XP card, the
 +XP and +coin pills in a lesson, Profile's XP rule) are gold clay with gold ink, like
 the coin counter in the top bar, and XP is always the bolt: sand is a pale cream in the

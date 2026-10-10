@@ -29,11 +29,14 @@ import { createThemeStyles } from '@worldquest/design'
  * learner had picked in Settings. With no `avatar` given it now reads the preference.
  */
 
-import { useRef } from 'react'
+import { useCallback, useState } from 'react'
 import { Animated, StyleSheet, View, Pressable, Text, useWindowDimensions } from 'react-native'
 import { Avatar, ClaySurface, clayShadow, depth, layout, radius, space, text, useCelebration } from '@worldquest/design'
 import { Art } from './Art.js'
 import { HeaderJewel } from './HeaderJewel.js'
+import { CoinFlight, useArrivals } from './CoinFlight.js'
+import { soundCoin } from '../lib/sound.js'
+import { hapticSelect } from '../lib/haptics.js'
 
 import { Icon } from './Icon.js'
 import { currentLocale, formatCompact, formatNumber, useT } from '../lib/i18n.js'
@@ -59,19 +62,6 @@ export type TopBarProps = {
 
 /** Settings glyph inside its full touch target. */
 const GLYPH = 20
-
-/**
- * How many times `value` has gone UP while mounted — a trigger for `useCelebration`,
- * which fires on any change. Refs written during render, but idempotent: a repeated
- * render sees the value it already recorded and counts nothing.
- */
-function useRises(value: number | undefined): number {
-  const previous = useRef(value)
-  const rises = useRef(0)
-  if (value !== undefined && previous.current !== undefined && value > previous.current) rises.current += 1
-  previous.current = value
-  return rises.current
-}
 
 export function TopBar({
   initials,
@@ -106,8 +96,18 @@ export function TopBar({
   // what changed — Duolingo's "counter pulses" (feel audit 2026-10-06, gap 2). Only a
   // rise: spending coins or a reset streak is not a celebration. The tabs stay mounted,
   // so returning from a lesson to any tab is the change that triggers it.
-  const coinPop = useCelebration(useRises(coins))
-  const streakPop = useCelebration(useRises(streak))
+  // A rise counts when a bar is on screen to show it, even a bar on a Home rebuilt after
+  // the lesson that earned it; see `CoinFlight`. The counter pops when the coins land
+  // rather than when the number changes.
+  const coinRises = useArrivals('coins', coins)
+  const [coinsLanded, setCoinsLanded] = useState(0)
+  const land = useCallback(() => {
+    setCoinsLanded(count => count + 1)
+    soundCoin()
+    hapticSelect()
+  }, [])
+  const coinPop = useCelebration(coinsLanded)
+  const streakPop = useCelebration(useArrivals('streak', streak))
   const image = avatar ?? (portrait !== null ? <Art name={portrait} size={40} /> : undefined)
   // Spread rather than passed: `exactOptionalPropertyTypes` is on, so an explicit
   // `image={undefined}` is a different thing from an absent `image`, and `Avatar`'s
@@ -171,6 +171,7 @@ export function TopBar({
             <ClaySurface tone="gold" radius={radius.full} />
             <HeaderJewel name="coins" size={space[6]} />
             <Text style={[styles.value, styles.coinValue]}>{coinValue}</Text>
+            <CoinFlight trigger={coinRises} onLanded={land} />
           </Animated.View>
         </View>
       )}

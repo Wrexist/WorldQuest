@@ -1,4 +1,5 @@
 import { createThemeStyles } from '@worldquest/design'
+import { EdgeScrollView } from '../../components/ScrollEdges.js'
 /**
  * One continent's countries.
  *
@@ -18,7 +19,7 @@ import { createThemeStyles } from '@worldquest/design'
  */
 
 import { useState } from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import {
   ArtScrim,
   Button,
@@ -155,7 +156,7 @@ export function RegionScreen({
        away from the banner that motivates it. See `StickyFooter`. */
     <View style={styles.screen}>
       {onBack !== undefined && <ScreenHeader onBack={onBack} />}
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <EdgeScrollView style={styles.screen} contentContainerStyle={styles.content}>
       {/* The continent's own sky, again.
 
           Tapping Europe on Explore meant leaving a card with weather on it and landing
@@ -258,7 +259,7 @@ export function RegionScreen({
 
       {/* One primary action per screen. From here, the only thing worth doing is
           learning some of it. */}
-    </ScrollView>
+    </EdgeScrollView>
 
       <StickyFooter>
         <Button label={t('common:start')} onPress={onStartLesson} fullWidth />

@@ -161,13 +161,17 @@ export function ChoiceRow<T extends string>({
   value,
   onChange,
 }: ChoiceRowProps<T>) {
-  const { styles } = useThemeValues()
+  const { colors, styles } = useThemeValues()
   return (
     <View style={styles.rowStacked}>
       <Text style={styles.rowLabel} role="heading">
         {label}
       </Text>
       {help !== undefined && <Text style={styles.rowHelp}>{help}</Text>}
+      {/* The chosen one is green clay with a tick: the app's "this one" everywhere (the
+          current step, a done quest). It was sky beside ice, which by night are two
+          blues a few shades apart, so which daily goal was set could not be seen
+          (owner review, 2026-10-09) — and colour must never be the only carrier. */}
       <View style={styles.choices} role="radiogroup">
         {choices.map((choice) => {
           const selected = choice.value === value
@@ -182,7 +186,8 @@ export function ChoiceRow<T extends string>({
               onPress={() => onChange(choice.value)}
               style={({ pressed }) => [styles.choice, selected && styles.choiceSelected, pressed && styles.pressed]}
             >
-              <ClaySurface tone={selected ? 'sky' : 'ice'} radius={radius.full} />
+              <ClaySurface tone={selected ? 'lime' : 'ice'} radius={radius.full} />
+              {selected && <Icon name="check" size={space[4]} color={colors.clay.lime.ink} />}
               <Text style={[styles.choiceLabel, selected && styles.choiceLabelSelected]}>
                 {choice.label}
               </Text>
@@ -399,15 +404,18 @@ const useThemeValues = createThemeStyles((colors) => {
     //
     // A floor rather than a fixed size, so a long option in a longer language still grows.
     minWidth: layout.minTouchTarget,
+    // A row, so the chosen one's tick sits before its label.
+    flexDirection: 'row',
+    gap: space[1],
     alignItems: 'center',
     justifyContent: 'center',
   },
   choiceSelected: {
-    backgroundColor: colors.clay.sky.bottom,
-    borderColor: colors.clay.sky.rim,
+    backgroundColor: colors.clay.lime.bottom,
+    borderColor: colors.clay.lime.rim,
   },
   choiceLabel: { ...text('caption', { weight: '600' }), color: colors.clay.ice.ink },
-  choiceLabelSelected: { color: colors.clay.sky.ink },
+  choiceLabelSelected: { color: colors.clay.lime.ink },
 
   stepper: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   stepperButton: {

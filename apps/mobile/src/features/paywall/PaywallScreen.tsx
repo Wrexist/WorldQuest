@@ -115,7 +115,11 @@ function Offer({ plans, plansLoading = false, plansFailed = false, isOffline = f
           <View style={styles.perks}>{PERKS.map(([icon, key]) => <View key={key} style={styles.perk}>
             <Icon name={icon} size={space[4]} color={colors.action.secondary} /><Text style={styles.perkText}>{t(key)}</Text>
           </View>)}</View>
-        </Card> : <AbsentContent state={absent} minHeight={space[9] * 3} borderRadius={radius.xl} label={t(ABSENT_MESSAGE[absent])}>
+        </Card> : <AbsentContent state={absent}
+          // Held at the plans' height while they may still arrive, so nothing jumps when
+          // they do. "Nothing to buy" is final, and a 192-point box around one line read
+          // as a page that failed to load (owner review, 2026-10-09).
+          minHeight={absent === 'unavailable' ? 0 : space[9] * 3} borderRadius={radius.xl} label={t(ABSENT_MESSAGE[absent])}>
           {(absent === 'offline' || absent === 'error') && <Art name={absent === 'offline' ? 'states/offline' : 'states/error-generic'} size={space[9]} />}
           <Text style={styles.subtitle} aria-hidden>{t(ABSENT_MESSAGE[absent])}</Text>
           {absent === 'error' && onRetryPlans && <Button label={t('common:retry')} onPress={onRetryPlans} fullWidth={false} />}

@@ -6,6 +6,7 @@ import { ATLAS_CLAY, ATLAS_CLAY_BLINK, type AtlasClayMood } from '../lib/atlasCl
 import { useMascotMotion } from './useMascotMotion.js'
 import { useMascotIdle } from './useMascotIdle.js'
 import { hapticSelect } from '../lib/haptics.js'
+import { soundTap } from '../lib/sound.js'
 
 export type AtlasMood = AtlasClayMood
 const hidden = { 'aria-hidden': true, accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' as const }
@@ -84,7 +85,7 @@ export function WorldMascot({ mood = 'welcome', style, label, onBoopLabel }: {
     if (next > 0) setSide(previous => previous === next ? previous : next)
   }
   if (onBoopLabel !== undefined) {
-    return <Pressable testID="world-mascot" onPress={() => { hapticSelect(); boopNow() }} onLayout={onLayout} role="button" aria-label={onBoopLabel}
+    return <Pressable testID="world-mascot" onPress={() => { hapticSelect(); soundTap(); boopNow() }} onLayout={onLayout} role="button" aria-label={onBoopLabel}
       style={({ pressed }) => [{ alignItems: 'center', justifyContent: 'center', opacity: pressed ? .8 : 1 }, style]}>{character}</Pressable>
   }
   return <View testID="world-mascot" pointerEvents="none" {...(label === undefined ? hidden : { accessible: true, accessibilityRole: 'image' as const, accessibilityLabel: label })}

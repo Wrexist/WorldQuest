@@ -279,10 +279,11 @@ describe('Paywall — when there are no prices', () => {
 
   it('owns up when the store answers with nothing to sell', () => {
     // A configuration problem on our side, never the user's — said without alarming
-    // anyone, because every lesson is free regardless.
+    // anyone, because every lesson is free regardless. Said once: the line under the box
+    // already promises it, and the box used to repeat it.
     const { container } = plansPage({})
-    expect(container.textContent).toMatch(/nothing to buy here yet/i)
-    expect(container.textContent).toMatch(/nothing to buy here yet\. Every lesson stays free\./i)
+    expect(container.textContent).toMatch(/nothing to buy here yet\./i)
+    expect(container.textContent?.match(/Every lesson stays free/g)).toHaveLength(1)
   })
 
   it('is still escapable with no prices on it, in every one of those states', () => {

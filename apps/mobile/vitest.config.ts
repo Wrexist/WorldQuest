@@ -31,6 +31,10 @@ export default defineConfig({
       'react-native': 'react-native-web',
       // Render the same gradient props in jsdom without importing native Expo JSX.
       'expo-linear-gradient': fileURLToPath(new URL('../../scripts/screenshot/linear-gradient-web.tsx', import.meta.url)),
+      // Both ship untranspiled JSX in `.js`, which Vite will not parse. Stand-ins that keep
+      // what a test reads: the blur's props, and the masked children (src/test).
+      '@react-native-masked-view/masked-view': fileURLToPath(new URL('./src/test/maskedView.tsx', import.meta.url)),
+      'expo-blur': fileURLToPath(new URL('./src/test/expoBlur.tsx', import.meta.url)),
     },
   },
   esbuild: { jsx: 'automatic' },

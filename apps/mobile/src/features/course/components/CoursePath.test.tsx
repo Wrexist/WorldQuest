@@ -206,14 +206,17 @@ describe('the course path', () => {
 })
 
 
-it('keeps Home focused while retaining access to the whole course', () => {
+it('keeps Home to the current unit and the next, while retaining access to the whole course', () => {
+  // The next unit is there so the trail visibly goes on (feel audit gap 7), closed.
   const path = toPathView({ status: 'ready', course: COURSE, standing: courseStanding(COURSE, {}) })
   const { container } = render(<CoursePath condensed path={path} onStart={() => {}} onPractise={() => {}} onReview={() => {}} onPractiseAnyway={() => {}} />)
-  expect(steps(container).length).toBe(COURSE.units[0]!.nodes.length)
+  const onHome = COURSE.units[0]!.nodes.length + (COURSE.units[1]?.nodes.length ?? 0)
+  expect(steps(container).length).toBe(onHome)
+  expect(screen.getAllByTestId('path-unit')).toHaveLength(Math.min(2, COURSE.units.length))
   fireEvent.click(screen.getByTestId('path-expand'))
   expect(steps(container).length).toBe(TOTAL)
   fireEvent.click(screen.getByTestId('path-expand'))
-  expect(steps(container).length).toBe(COURSE.units[0]!.nodes.length)
+  expect(steps(container).length).toBe(onHome)
 })
 
 describe('the course path — a finished step that is fading', () => {

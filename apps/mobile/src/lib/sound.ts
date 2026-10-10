@@ -9,7 +9,7 @@
  *
  * A national flag is somebody's artwork with a licence attached, and we genuinely
  * cannot ship one until that is resolved. A correct-answer chime is a sine wave with
- * an envelope. `scripts/make-sounds.py` generates all six, which means the project
+ * an envelope. `scripts/make-sounds.py` generates all seven, which means the project
  * owns them outright — no licence to track, no attribution to carry, nothing to take
  * down. The blocker was never "audio is impossible", it was "we cannot license
  * someone else's chime", and nobody had separated the two.
@@ -21,7 +21,7 @@
  *
  * ## What each sound means (design-system.md §9)
  *
- * All six are in C major so two overlapping never clash, and all are under 600 ms so
+ * All seven are in C major so two overlapping never clash, and all are under 600 ms so
  * one is never still playing when the next question arrives.
  *
  * **Wrong is not a buzzer.** It is a gentle falling major second — deliberately not a
@@ -64,7 +64,7 @@
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio'
 import { readJson } from './storage.js'
 
-export type SoundName = 'correct' | 'wrong' | 'unlock' | 'levelup' | 'streak' | 'tap'
+export type SoundName = 'correct' | 'wrong' | 'unlock' | 'levelup' | 'streak' | 'tap' | 'coin'
 
 /**
  * Static `require`s, because Metro resolves assets at build time.
@@ -80,6 +80,7 @@ const FILES: Record<SoundName, number> = {
   levelup: require('../../assets/sounds/levelup.wav'),
   streak: require('../../assets/sounds/streak.wav'),
   tap: require('../../assets/sounds/tap.wav'),
+  coin: require('../../assets/sounds/coin.wav'),
 }
 /* eslint-enable @typescript-eslint/no-require-imports */
 
@@ -147,6 +148,8 @@ export const soundUnlock = (): void => play('unlock')
 export const soundLevelUp = (): void => play('levelup')
 export const soundStreak = (): void => play('streak')
 export const soundTap = (): void => play('tap')
+/** Coins landing in the top bar's counter (`CoinFlight`), once per arrival. */
+export const soundCoin = (): void => play('coin')
 
 /** Test seam: drop the cache so a test can assert loading behaviour. */
 export function __resetSoundsForTests(): void {

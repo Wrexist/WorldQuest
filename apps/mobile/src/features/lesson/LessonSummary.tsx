@@ -1,4 +1,5 @@
 import { createThemeStyles } from '@worldquest/design'
+import { EdgeScrollView } from '../../components/ScrollEdges.js'
 /**
  * The end of a lesson — mockup screen 6, and the app's biggest emotional moment.
  *
@@ -32,7 +33,7 @@ import { createThemeStyles } from '@worldquest/design'
  */
 
 import { useMemo } from 'react'
-import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Animated, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import {
   Button,
   Card,
@@ -141,6 +142,23 @@ const CALM_ATLAS = 112
  * than in front of a picture; the column below still starts above the fold on an SE.
  */
 const ISLAND_STAGE = 220
+/** And on a phone shorter than this, smaller (`ISLAND_STAGE_SHORT`): see `stageFor`. */
+const SHORT_SUMMARY = 600
+const ISLAND_STAGE_SHORT = 140
+/** Atlas on the island, at `ISLAND_STAGE`; he scales with it. */
+const EXPLORER = { width: 96, height: 110 }
+
+/**
+ * The island and Atlas on it, for a screen this tall. At 320×568 the full-size island
+ * pushed the XP card under the sticky footer, so the screen said "XP" and hid how much
+ * (feel audit 2026-10-06, bug 7; seen again 2026-10-09). On a short phone it shrinks
+ * by a third, which brings the whole card above the footer.
+ */
+export function stageFor(screenHeight: number) {
+  const size = screenHeight < SHORT_SUMMARY ? ISLAND_STAGE_SHORT : ISLAND_STAGE
+  const scale = size / ISLAND_STAGE
+  return { size, explorer: { width: Math.round(EXPLORER.width * scale), height: Math.round(EXPLORER.height * scale) } }
+}
 
 /** Wide enough to tell Chad from Romania, small enough that eight fit on a 320pt row. */
 const PRACTISED_FLAG_WIDTH = 44
@@ -191,6 +209,7 @@ export function LessonSummary({
   const { colors, styles } = useThemeValues()
   const t = useT()
   const outcome = outcomeOf(result, wasAbandoned)
+  const stage = stageFor(useWindowDimensions().height)
 
   const xp = result?.xpAwarded ?? 0
   const counted = useCountUp(xp, 'expressive', motion.quick.duration)
@@ -209,7 +228,7 @@ export function LessonSummary({
     <View style={styles.screen}>
       {isOffline && <OfflineNote />}
 
-      <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+      <EdgeScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
         {/* Centred by spacers rather than `justifyContent` — see `Spacer`. This screen's
             centring was added in this same session, before the hazard was understood: a
             summary with a wrapped reward row and a long streak line overflows a short
@@ -245,7 +264,7 @@ export function LessonSummary({
             add confetti; early exits retain the resting character and no motion. */}
         {outcome !== 'perfect' && (
           <View style={styles.headlineArt}>
-            {outcome === 'early' ? <Art name="atlas/resting" size={CALM_ATLAS} /> : <IslandStage size={ISLAND_STAGE}><AdventureArt name="explorer" mood="celebrate" style={{ width: 96, height: 110 }} /></IslandStage>}
+            {outcome === 'early' ? <Art name="atlas/resting" size={CALM_ATLAS} /> : <IslandStage size={stage.size}><AdventureArt name="explorer" mood="celebrate" style={stage.explorer} /></IslandStage>}
           </View>
         )}
         {outcome === 'perfect' && (
@@ -260,7 +279,7 @@ export function LessonSummary({
               <ConfettiBurst size={CELEBRATION_SIZE} />
             </View>
             {/* A perfect lesson gets the laugh: tears of joy, a belly shake. */}
-            <IslandStage size={ISLAND_STAGE}><AdventureArt name="explorer" mood="laughing" style={{ width: 96, height: 110 }} /></IslandStage>
+            <IslandStage size={stage.size}><AdventureArt name="explorer" mood="laughing" style={stage.explorer} /></IslandStage>
           </View>
         )}
         {/* `heading` and not a bare Text: this is the first thing a screen reader
@@ -412,7 +431,7 @@ export function LessonSummary({
           </Animated.View>
         )}
         <Spacer />
-      </ScrollView>
+      </EdgeScrollView>
 
       {!wasAbandoned && result !== null && <Text style={styles.nextPrompt}>{t('lesson:summary.adventure.prompt')}</Text>}
       <Button

@@ -34,18 +34,30 @@ the hand.
 - **Bug 5, Home landing:** Home lands on the unit banner's edge when the banner and the
   step both fit. At 320 pt they do not, and the step wins, as before.
 - **Gap 1, sound:** `useSoundAsk` offers sound once on Home, after the first finished
-  lesson. Accepting plays the chime. Button taps and a coin sound are still open.
+  lesson. Accepting plays the chime. Since 2026-10-09 the tap sound plays when picking
+  a matching card and when tapping Atlas, and a new coin sound (generated like the
+  rest, `scripts/make-sounds.py`) plays as coins land in the top bar.
 - **Gap 2, rewards that move:** the summary's coin tile counts up from zero once it has
   arrived, then pops. The header's coin and streak counters pulse when their number
-  rises — never when coins are spent. Coins flying across the screen to the counter are
-  still open: the summary has no header to fly to.
+  rises — never when coins are spent. Since 2026-10-09 six coins fly up into the counter
+  on Home and it pops as they land (`CoinFlight`). Tracing that showed the #34 pulse had
+  never played after a lesson: coming back rebuilds Home, so the bar that saw the old
+  balance was gone. `useArrivals` now remembers the last balance shown outside any bar.
 - **Gap 4, the run:** a "3 in a row!" badge pops under the progress bar after a correct
   answer, once the run reaches the "on a roll" point. **Heart loss is deliberately not
   animated:** the motion rules give a wrong answer a gentle settle and nothing that
   punishes, and a breaking heart is exactly that.
 
-- **Gap 8, wrong-answer copy:** a wrong picture answer gets one line ("The right one has
-  the tick.") instead of two flag descriptions; a screen reader still hears both.
+- **Gap 8, wrong-answer copy:** a wrong picture answer gets one line ("The right one:")
+  and the right picture, instead of two flag descriptions; a reader hears both.
+- **Gap 7, path depth (2026-10-09):** Home shows the current unit and the next one, its
+  banner and closed steps, so the trail goes on; the whole course is one tap away. No
+  chests: a chest is a reward, and rewards come from the balance table, not the path.
+- **Bugs 6–8 (2026-10-09):** the top bar's chips stay as they are, and Shop leaves the
+  coin chip out on purpose (its wallet card shows the balance; see `ShopScreen`). The
+  summary's island shrinks under 600 pt so "+XP" clears the footer at 320×568. Gold
+  reward surfaces are gold clay in both themes, and the Home daily goal card wears the
+  ordinary card clay with a gold rim instead of the sand that is brown at night.
 - **Gap 5, confetti:** `ConfettiBurst` throws 28 pieces out of Atlas on a perfect lesson,
   over the still burst, which stays as the Reduce Motion frame.
 - **Gap 6, unit colour:** a continent's unit tints its header with that continent's

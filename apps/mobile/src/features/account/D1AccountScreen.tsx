@@ -1,6 +1,7 @@
 import { createThemeStyles } from '@worldquest/design'
+import { EdgeScrollView } from '../../components/ScrollEdges.js'
 import { useEffect, useState } from 'react'
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from 'react-native'
 import { Button, Card, Skeleton, layout, radius, space, text } from '@worldquest/design'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { Art } from '../../components/Art.js'
@@ -39,7 +40,7 @@ export function D1AccountScreen({ flow, online, onBack, onSupport, onDone }: Pro
   return <View style={styles.screen}>
     <ScreenHeader title={t('account:d1.title')} onBack={onBack} />
     <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <EdgeScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         {!online && state.stage !== 'done' ? <>
           <Art name="states/offline" size={space[9]} />
           <Text role="heading" style={styles.title}>{t('account:offline.title')}</Text>
@@ -135,7 +136,7 @@ export function D1AccountScreen({ flow, online, onBack, onSupport, onDone }: Pro
           {state.error && <Text role="alert" aria-live="polite" style={styles.error}>{t(errorKeys[state.error] ?? 'account:error.generic')}</Text>}
         </>}
         {onSupport && button('account:d1.support', onSupport, false, 'ghost')}
-      </ScrollView>
+      </EdgeScrollView>
     </KeyboardAvoidingView>
   </View>
 }

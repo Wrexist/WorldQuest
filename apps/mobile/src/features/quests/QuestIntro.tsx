@@ -1,4 +1,5 @@
 import { createThemeStyles } from '@worldquest/design'
+import { EdgeScrollView } from '../../components/ScrollEdges.js'
 /**
  * The sheet that opens today's quest — mockup screen 3.
  *
@@ -33,7 +34,7 @@ import { createThemeStyles } from '@worldquest/design'
  * which is the same argument `QuestScreen` records for the same reasons.
  */
 
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { Button, Card, radius, space, squircle, text } from '@worldquest/design'
 import { BALANCE, questProgress, type DailyQuest } from '@worldquest/engines'
 import { useT } from '../../lib/i18n.js'
@@ -73,7 +74,7 @@ export function QuestIntro({ quest, onStart, onClose, resetsIn }: QuestIntroProp
           draw — and a back chevron that goes nowhere is worse than none. */}
       {onClose !== undefined && <ScreenHeader title={t('quests:intro.title')} onBack={onClose} />}
 
-      <ScrollView contentContainerStyle={styles.body}>
+      <EdgeScrollView contentContainerStyle={styles.body}>
         <View pointerEvents="none" style={styles.hero}>
           <Art name="atlas/thinking" size={88} />
           <ExplorerChestStill size={HERO} opened={quest?.complete === true} />
@@ -112,7 +113,7 @@ export function QuestIntro({ quest, onStart, onClose, resetsIn }: QuestIntroProp
             <Text style={styles.resetText}>{t('quests:resets', resetsIn)}</Text>
           </View>
         )}
-      </ScrollView>
+      </EdgeScrollView>
 
       <View style={styles.actions}>
         <Button

@@ -1,4 +1,5 @@
 import { createThemeStyles } from '@worldquest/design'
+import { EdgeScrollView } from '../../components/ScrollEdges.js'
 import { useEffect, useRef, useState } from 'react'
 import { AccessibilityInfo, Platform, ScrollView, Share, StyleSheet, Text, TextInput, View } from 'react-native'
 import { AnswerOption, Button, Card, ProgressBar, radius, Skeleton, space, text } from '@worldquest/design'
@@ -23,7 +24,7 @@ export function FriendsScreen({onBack}:{onBack:()=>void}) {
   },[roundId,model.answers.length])
   return <View style={styles.screen}>
     <ScreenHeader title={t('friends:title')} onBack={model.round?model.leaveRound:onBack}/>
-    <ScrollView ref={scroller} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+    <EdgeScrollView ref={scroller} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       {!online&&<Text style={styles.body} role="status">{t('friends:offline')}</Text>}
       {(model.error||model.loadError)&&<Card><Text style={styles.body} role="alert">{t('friends:error')}</Text><Button variant="tertiary" label={t('common:retry')} onPress={model.refresh} disabled={disabled}/></Card>}
       {model.notice&&<Text style={styles.body} role="status">{t(model.notice==='reported'?'friends:reported':'friends:blocked')}</Text>}
@@ -44,7 +45,7 @@ export function FriendsScreen({onBack}:{onBack:()=>void}) {
           {model.loading?<Skeleton height={space[9]+space[9]}/>:model.challenges.length===0?<Text style={styles.body}>{t('friends:empty')}</Text>:model.challenges.map(c=><ChallengeCard key={c.id} challenge={c} disabled={disabled} reportOpen={report===c.id} onReport={()=>setReport(report===c.id?null:c.id)} act={act}/>)}
           <Button variant="ghost" label={t('friends:refresh')} onPress={model.refresh} disabled={disabled}/>
         </>}
-    </ScrollView>
+    </EdgeScrollView>
   </View>
 }
 function Question({question,locale,onAnswer,disabled}:{question:ChallengeQuestion;locale:FriendChallenge['locale'];onAnswer:(id:string)=>void;disabled:boolean}) {

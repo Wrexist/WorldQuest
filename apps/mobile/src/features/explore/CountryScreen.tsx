@@ -1,4 +1,5 @@
 import { createThemeStyles } from '@worldquest/design'
+import { EdgeScrollView } from '../../components/ScrollEdges.js'
 /**
  * Country reference and entry to focused practice.
  * The September 27 redesign deliberately makes verified facts readable before a
@@ -8,7 +9,7 @@ import { createThemeStyles } from '@worldquest/design'
  */
 
 import { useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { StickyFooter } from '../../components/StickyFooter.js'
 import { Flag } from '../../components/Flag.js'
@@ -178,7 +179,7 @@ export function CountryScreen({
        with more than a few facts, so the primary action was reachable only by scrolling
        past the content you had come to read. See `StickyFooter`. */
     <View style={styles.screen}>
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <EdgeScrollView style={styles.screen} contentContainerStyle={styles.content}>
       {onBack !== undefined && <ScreenHeader onBack={onBack} />}
       <View style={styles.header}>
         <View style={styles.identityControls}>
@@ -265,7 +266,7 @@ export function CountryScreen({
         </Card>
       </View>
 
-    </ScrollView>
+    </EdgeScrollView>
 
       <StickyFooter>
         <Button label={t('country:practice')} onPress={onPractise} fullWidth />
