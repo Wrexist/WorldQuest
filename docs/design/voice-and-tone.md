@@ -137,14 +137,51 @@ See [`../engineering/localization.md`](../engineering/localization.md).
 
 ## Atlas — the mascot
 
-Atlas is a small robot explorer in a safari hat. He is **curious, encouraging, and
-never disappointed in you.**
+Atlas is a small living globe in an explorer's hat: a blue clay ocean with raised green
+continents, golden boots and a backpack. (He was a robot explorer until September 2026;
+the owner chose the globe, and nothing ships the robot any more.) He is **curious,
+encouraging, and never disappointed in you.**
+
+**His one job:** to be the travel buddy who is thrilled you came along. Every time he
+appears, the learner should feel *we're exploring this together* — never watched, never
+graded. A mascot with one emotional job is memorable; one that does everything is wallpaper.
+
+**Three questions, answered** (mascot brief, 2026-10-09). Any new pose, line or
+animation has to fit all three:
+
+1. **Who is he?** A young explorer who has seen a lot of the world and still gets
+   excited about every place in it. He knows things, but he asks rather than lectures.
+2. **How does he react?** A right answer delights him: he cheers and hops. A wrong one
+   interests him: he tilts his head and thinks it through with you. He is never sad,
+   because a wrong answer is how learning happens.
+3. **What does he never do?** Sulk, cry, nag, beg you to come back, look disappointed,
+   or fade and dim when he's ignored. Those work on adults in other apps; they are
+   guilt, and children are users here (rule 7).
+
+**How he is alive.** While he is on screen he breathes, slowly, and blinks every few
+seconds. He reacts once to every moment: a hop for a cheer, a head tilt for a thought,
+a small greeting otherwise. Where the screen allows it, a tap makes him laugh, and the
+next one makes him wink. Nothing else loops: an idle that is always moving is a
+character asking for attention, so his stays subtle on purpose. Reduce Motion keeps
+every expression and drops the movement. Implementation:
+[`world-mascot.md`](world-mascot.md#alive-breath-blink-and-new-faces-october-9).
+
+| Pose | Feels | Where he wears it |
+|---|---|---|
+| welcome (waving) | glad you're here | first launch, the path, a friend or league hero |
+| celebrate (arms up, hop) | delighted | a perfect lesson, a finished quest |
+| laughing (arms up, eyes shut in a grin) | tickled | the lesson summary, a tap |
+| proud (arms up, eyes shut, closed smile) | proud of you | achievements, collection, streak, quest complete |
+| wink | in on the joke | a second tap |
+| thinking (hand at cheek) | curious | after a miss, a search with no results, a quest in progress |
+| resting (eyes closed) | content | calm, quiet moments; never as a punishment |
 
 **Atlas appears at:** first launch · the taster lesson · a return after 7+ days ·
-level-up · a major milestone · empty and error states.
+level-up · a major milestone · empty and error states · beside each answer, in the
+sheet that slides up once the learner has answered.
 
-**Atlas does not appear:** on every screen · during a lesson (he'd be a distraction) ·
-in notifications about failure · in a paywall.
+**Atlas does not appear:** on every screen · on a question before it is answered (he'd
+be a distraction) · in notifications about failure · in a paywall.
 
 **Atlas never says:** "I'm sad", "you disappointed me", "where have you been?" His
 emotional range is *excited* → *interested* → *encouraging*. He has no guilt setting,

@@ -239,6 +239,11 @@ yen*, freshly marked — sat behind the card that had just said "Perfekt!". A le
 that hides which one was right at the moment it says whether you were right has failed at
 the only thing the screen is for.
 
+*Since 2026-10-09:* the fix (scrolling the options into view) was the movement the owner
+did not want. The sheet now lies over a top-aligned lesson that does not move, and the
+sheet carries the answer itself: the right picture on a picture miss, the right answer in
+words otherwise (`LessonScreen.tsx`, `scroller`).
+
 ---
 
 ## Audit 5 — cross-screen craft

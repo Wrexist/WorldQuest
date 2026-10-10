@@ -329,6 +329,12 @@ The logo composited into that empty centre is `brand/lockup-vertical.svg` from �
 
 ## 4. Atlas — the mascot
 
+> **Superseded (September 2026).** Atlas is now a living clay globe, not the robot
+> below. His current prompts and provenance are in
+> [`assets/atlas-liquid-clay/README.md`](assets/atlas-liquid-clay/README.md), and his
+> personality in [`voice-and-tone.md`](voice-and-tone.md#atlas--the-mascot). The robot
+> prompts stay as a record of how the first set was made.
+
 A small robot explorer in a safari hat: curious, encouraging, **never disappointed in
 you**. His emotional range is *excited → interested → encouraging*. He has no guilt
 setting.

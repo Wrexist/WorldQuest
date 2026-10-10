@@ -56,6 +56,8 @@ import { Flag } from '../../components/Flag.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
 import { IslandStage } from '../../components/Scenery.js'
 import { ConfettiBurst } from '../../components/ConfettiBurst.js'
+import { Icon } from '../../components/Icon.js'
+import type { IconName } from '../../lib/icons.generated.js'
 import { currentLocale, formatNumber, useT } from '../../lib/i18n.js'
 
 /**
@@ -280,12 +282,23 @@ export function LessonSummary({
         {result !== null && (
           <>
             <Animated.View style={[styles.hero, entrance]}>
+              {/* Gold clay, the material of the coin counter in the top bar: the reward
+                  looks like the reward everywhere. It was `journey.sand` behind gold
+                  text, which is a pale cream in the light theme and a muddy brown in the
+                  dark one (owner screenshot, 2026-10-09). Gold clay is the same bright
+                  gold in both, with its own dark ink, checked by `design:contrast`. */}
               <Card
                 level={2}
+                tone="gold"
                 accessibilityLabel={t('lesson:reward.xp', { amount: xp })}
                 style={styles.xpCard}
                 testID="summary-xp"
               >
+                {/* Named first, like the tiles below: what it is, then how much. */}
+                <View style={styles.xpHeader} aria-hidden>
+                  <Icon name="xp" size={space[4]} color={colors.clay.gold.muted} />
+                  <Text style={styles.xpUnit}>{t('lesson:summary.xpUnit')}</Text>
+                </View>
                 {/* Hidden from the reader, which already has the figure from the card's
                     label. Visible text only — a tally read aloud digit by digit is the
                     classic way this animation becomes an accessibility bug. */}
@@ -299,9 +312,6 @@ export function LessonSummary({
                 <Text style={styles.xpValue} maxFontSizeMultiplier={1.6} aria-hidden>
                   {`+${wasAbandoned ? xp : counted}`}
                 </Text>
-                <Text style={styles.xpUnit} aria-hidden>
-                  {t('lesson:summary.xpUnit')}
-                </Text>
               </Card>
             </Animated.View>
 
@@ -313,6 +323,7 @@ export function LessonSummary({
                 order={1}
                 value={t('lesson:summary.stat.percent', { value: accuracyPct })}
                 label={t('lesson:summary.stat.accuracy')}
+                icon="check"
                 tint={
                   result.accuracy >= STRONG_ACCURACY
                     ? colors.status.progress
@@ -333,6 +344,7 @@ export function LessonSummary({
                   seconds: formatNumber(time.seconds, currentLocale(), { minimumIntegerDigits: 2 }),
                 })}
                 label={t('lesson:summary.stat.time')}
+                icon="clock"
                 // Neutral: time is a fact about the lesson, not a score (see the header).
                 tint={colors.text.primary}
                 accessibilityLabel={t('lesson:summary.stat.time.a11y', time)}
@@ -343,6 +355,7 @@ export function LessonSummary({
                 value={`+${result.coinsAwarded}`}
                 countTo={wasAbandoned ? undefined : result.coinsAwarded}
                 label={t('lesson:summary.stat.coins')}
+                icon="coins"
                 tint={colors.reward.coin}
                 accessibilityLabel={t('lesson:reward.coins', { amount: result.coinsAwarded })}
                 testID="summary-coins"
@@ -354,6 +367,7 @@ export function LessonSummary({
                 order={4}
                 value={String(strengthened)}
                 label={t('lesson:summary.stat.stronger')}
+                icon="globe"
                 tint={colors.reward.gem}
                 accessibilityLabel={t('lesson:summary.stat.stronger.a11y', {
                   count: strengthened,
@@ -426,6 +440,7 @@ function StatTile({
   value,
   countTo,
   label,
+  icon,
   tint,
   accessibilityLabel,
   testID,
@@ -440,6 +455,8 @@ function StatTile({
    */
   countTo?: number | undefined
   label: string
+  /** Drawn in the tile's tint beside its label, so a tile is recognised before it is read. */
+  icon: IconName
   tint: string
   accessibilityLabel: string
   testID: string
@@ -461,12 +478,15 @@ function StatTile({
         style={styles.tileFace}
         testID={testID}
       >
+        {/* Label first, value under it: what it is, then how much. Duolingo's
+            end-of-lesson badges read the same way. */}
+        <View style={styles.tileHeader} aria-hidden>
+          <Icon name={icon} size={space[4]} color={tint} />
+          <Text style={styles.tileLabel}>{label}</Text>
+        </View>
         <Animated.Text style={[styles.tileValue, { color: tint, transform: [{ scale: landed }] }]} aria-hidden>
           {countTo === undefined ? value : `+${counted}`}
         </Animated.Text>
-        <Text style={styles.tileLabel} aria-hidden>
-          {label}
-        </Text>
       </Card>
     </Animated.View>
   )
@@ -509,9 +529,10 @@ const useThemeValues = createThemeStyles((colors) => {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  xpCard: { alignItems: 'center', paddingVertical: space[5], backgroundColor: colors.journey.sand },
-  xpValue: { ...text('hero'), color: colors.reward.xp },
-  xpUnit: { ...text('overline'), color: colors.text.secondary },
+  xpCard: { alignItems: 'center', paddingVertical: space[4], gap: space[1] },
+  xpHeader: { flexDirection: 'row', alignItems: 'center', gap: space[1] },
+  xpValue: { ...text('hero', { numeric: true }), color: colors.clay.gold.ink },
+  xpUnit: { ...text('overline'), color: colors.clay.gold.muted },
 
   // Two by two at every width. Four in a row is 64pt a tile at 320 — broken words — and
   // wrapping at a fixed width gave 2 + 2 on a small phone but 3 + 1 at 390, one tile
@@ -526,6 +547,7 @@ const useThemeValues = createThemeStyles((colors) => {
   },
   tile: { flexGrow: 1, flexBasis: '40%' },
   tileFace: { flexGrow: 1, alignItems: 'center', gap: space[1] },
+  tileHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[1], flexWrap: 'wrap' },
   tileValue: text('h2', { numeric: true }),
   tileLabel: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
 

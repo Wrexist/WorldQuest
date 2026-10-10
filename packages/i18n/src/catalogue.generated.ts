@@ -699,7 +699,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "intro.previous": "Previous",
       "intro.next": "Next discovery",
       "combo": "{count, plural, other {# in a row!}}",
-      "feedback.wrong.picture": "The right one has the tick."
+      "feedback.wrong.picture": "The right one:"
     },
     "nav": {
       "home": "Home",
@@ -1822,7 +1822,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "intro.previous": "Föregående",
       "intro.next": "Nästa upptäckt",
       "combo": "{count, plural, other {# i rad!}}",
-      "feedback.wrong.picture": "Rätt svar har bocken."
+      "feedback.wrong.picture": "Rätt svar:"
     },
     "nav": {
       "home": "Hem",

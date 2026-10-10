@@ -89,7 +89,7 @@ safe areas, Dynamic Type, haptics and VoiceOver itself.
 | 53 | P1 | Swedish: two different names for the freeze, one misspelt; "Enhet", "Öppna svit", the share line, the review line, two course lines | a11y 5 and 7 | ✅ fixed as proposed; a native speaker still signs off all Swedish (runbook 4) |
 | 54 | P1 | On a 375 or 320 pt phone Home opens with the top bar scrolled away | design review 4 | ✅ the bar is pinned above the scroll view, as Duolingo's is |
 | 55 | P1 | The age wheel opens with 2000 in its band, unchosen, beside a disabled Continue | design review 5 | ✅ the band says "Choose a year" until the wheel moves; tapping the prompt does not answer 2000 |
-| 56 | P1 | The feedback scroll cuts through the question or its map | design review 6 | ✅ it moves only when an option would be under the sheet, and stops in the gap above the options |
+| 56 | P1 | The feedback scroll cuts through the question or its map | design review 6 | ✅ superseded 2026-10-09: nothing scrolls on an answer; the sheet lies over a top-aligned lesson and shows the right answer itself |
 | 57 | P1 | The review round sends the progress bar backwards ("20 / 20" to "21 / 36") | design review 7 | ✅ the bar counts settled questions (`lessonProgress`): a miss is settled by its second look, so it only grows |
 | 58 | P1 | The quest cover says "Answer 5 questions" above five tasks and fourteen answers | design review 8 | ✅ "5 challenges today" |
 | 59 | P1 | The Shop lists the freeze after sixteen titles | design review 9 | ✅ first, as Duolingo's shop opens on it |

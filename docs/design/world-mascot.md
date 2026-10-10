@@ -103,7 +103,7 @@ and the Expedition props. Atlas is now a real 3D character built in Blender.
   breathes, wink winks.
 - **Render:** Cycles, AgX Punchy, key, fill, rim and top area lights, a shadow catcher,
   transparent film.
-- **Runtime:** `scripts/build-globe-mascot-art.cjs` packs each mood into a 6×6 sheet of
+- **Runtime (superseded October 2 by the liquid-clay stills, below):** `scripts/build-globe-mascot-art.cjs` packs each mood into a 6×6 sheet of
   320 px cells (rendered at 400) plus a 640 px still (`apps/mobile/assets/art/atlas-globe`,
   `src/lib/atlasGlobe.generated.ts`). `WorldMascot` steps through the sheet like the
   treasure chest: no 3D engine, no video. He plays his mood when he appears and again
@@ -130,3 +130,70 @@ The post-render component run passed 78 tests; `pnpm verify` passed in the origi
 working checkout. Browser E2E passed 107 checks, with one skipped because its lesson
 did not select an image question. Browser review covers the shared mascot in normal
 and reduced motion layouts; a native device pass for smoothness remains outstanding.
+
+## Liquid clay (October 2)
+
+The app's Atlas is now four complete clay poses (welcome, celebrate, thinking,
+resting) with the ten moods mapped onto them; prompts and provenance are in
+[`assets/atlas-liquid-clay/README.md`](assets/atlas-liquid-clay/README.md). The Blender
+sheets above stay as source history and are not imported. Each pose arrives with one
+finite native gesture (a hop for a cheer, a head tilt for a thought, a greeting
+otherwise) and then rests.
+
+## Alive: breath, blink and new faces (October 9)
+
+Personality: [`voice-and-tone.md`](voice-and-tone.md#atlas--the-mascot). The mascot
+research behind this pass: a character reads as alive through *subtle* idle motion (a
+breath, a blink), big motion belongs only to big moments (the gestures above), and a
+character needs a face for each moment rather than one face for all of them.
+
+- **New faces from his own clay.** `scripts/build-clay-mascot.cjs` derives six frames
+  from the four generated poses (`scripts/lib/clay-face.cjs`). It finds the open eyes
+  (and, for a new mouth, the mouth), fills them with the clay face around them (a
+  Laplace fill, so the light carries across without a seam), then lays on resting's own
+  closed eyes or closed smile, carried as the difference they make to his face, so they
+  bring their soft edges and highlights. Same sculpted navy clay as his brows; nothing
+  drawn on, and no new image model run that could drift off-model.
+
+  | Frame | Made from | Used for |
+  |---|---|---|
+  | `welcome-blink`, `celebrate-blink`, `thinking-blink` | lids flipped to curve down | the blink, over each open-eyed pose |
+  | `laughing` | celebrate + happy closed eyes | the lesson summary, a tap |
+  | `proud` | celebrate + happy closed eyes + closed smile | Achievements, Collection, Streak, Shop, Profile, quest complete |
+  | `wink` | welcome + his right eye shut happy | every second tap |
+
+  Not derived yet: `surprised` still shows celebrate and `encouraging` welcome (an "oh"
+  mouth warped from the open one did not hold up), and nothing uses either face
+  differently enough to need one. New *bodies* (thumbs up, hands on hips) need the image
+  model; prompts are in [`assets/atlas-liquid-clay/README.md`](assets/atlas-liquid-clay/README.md#next-poses).
+- **Invariant.** A derived frame differs from its pose only at the eyes and mouth it
+  changed; `scripts/lib/clay-face.test.cjs` (in `pnpm test`) fails on any other changed
+  pixel. For a blink frame that is the whole point: it is shown over the pose, so any
+  other difference would flicker every time he blinks.
+- **Taps.** Where a screen makes him a button, a tap laughs, the next winks, then he
+  laughs again: two reactions in turn read as a character playing along, one repeated
+  as a button.
+- **Idle runtime.** `useMascotIdle` loops ONE native timing over the blink cycle; the
+  lids and the breath are each an `interpolate` of it, so the JS thread does nothing
+  between mount and blur and there is one animation per Atlas. (On the web only, it runs
+  on the JS driver: react-native-web's `Animated.loop` otherwise plays a "native" loop
+  once.)
+  - *Blink:* the blink frame is a second `Image` laid over the pose, and a blink is its
+    opacity snapping to 1 for `motion.blink.duration` (120 ms) after each of
+    `motion.blink.restMs` (3.4, 4.8, 2.6, 0.16, 5.2 s: uneven, with one double blink).
+    A snap, not a fade: the first in-app capture faded over 45 ms and caught open eyes
+    showing through closed ones, a ghost. Poses whose eyes are shut (resting, laughing,
+    proud) and the wink have no blink frame.
+  - *Breath:* about `motion.breathe.duration` (3.4 s) per breath, rounded so a whole
+    number of breaths fits the cycle; 1.6 % taller and a little narrower at the top of
+    the breath, grown from his boots so his feet stay put. A cosine sampled into the
+    interpolation stops, because native interpolation has no easing. Every pose
+    breathes, including the eyes-shut ones.
+  - Both run only from `IDLE_MIN_SIDE` (`space[9]`, 64 pt) up, once his pose has
+    decoded, and stop at rest with his eyes open on blur, in the background and under
+    Reduce Motion.
+- **Cost.** One more 512 px image decoded per visible open-eyed Atlas (1 MiB of raw
+  RGBA) and one native transform, no layout, no swaps. This is the first idle on him
+  since #31 removed the sheet-stepping idle for a reported iPhone stutter. **Physical
+  iPhone check outstanding**: if it stutters, set `IDLE_MIN_SIDE` in `WorldMascot.tsx`
+  out of reach and both the breath and the blink are off everywhere, with no other change.

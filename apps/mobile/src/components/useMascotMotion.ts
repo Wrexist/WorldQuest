@@ -4,6 +4,12 @@ import { NavigationContext } from '@react-navigation/native'
 import { motion, useReducedMotion } from '@worldquest/design'
 import { ATLAS_CLAY, type AtlasClayMood } from '../lib/atlasClay.generated.js'
 
+/**
+ * What a tap does, in turn: he laughs, then winks, then laughs again. One reaction
+ * repeated is a button; two that alternate are a character playing along.
+ */
+const BOOPS = ['laughing', 'wink'] as const satisfies readonly AtlasClayMood[]
+
 /** A brief whole-character greeting, then rest. No sheet traversal or idle timers. */
 export function useMascotMotion(mood: AtlasClayMood, visibleSize: number, decodedArt: ReadonlySet<unknown>) {
   const reduced = useReducedMotion()
@@ -12,7 +18,7 @@ export function useMascotMotion(mood: AtlasClayMood, visibleSize: number, decode
   const [boop, setBoop] = useState<number | null>(null)
   const nextBoop = useRef(0)
   const previousBoop = useRef<number | null>(null)
-  const playing = boop !== null ? 'laughing' : mood
+  const playing = boop !== null ? BOOPS[(boop - 1) % BOOPS.length]! : mood
   const decoded = decodedArt.has(ATLAS_CLAY[playing])
 
   useEffect(() => {

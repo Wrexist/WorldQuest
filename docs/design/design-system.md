@@ -357,6 +357,8 @@ alone is never a control unless it is universally understood (back, close, setti
 | `motion.expressive` | 420 | `spring(damping 0.7, stiffness 180)` | Card entrance, mascot, celebration card |
 | `motion.celebrate` | 900 | Lottie | Correct answer, level up, unlock |
 | `motion.drift` | 4200 (looped) | `easeInOut` (sine) | Ambient float of decorative scenery (`useDrift`): path props, the island stage. Off under Reduce Motion, on screen blur and in the background |
+| `motion.breathe` | 3400 (looped) | cosine | Atlas's breath (`useMascotIdle`): 1.6 % taller from his boots. Shares one native loop with the blink. Off under Reduce Motion, on screen blur and in the background |
+| `motion.blink` | 120 shut, after each of `restMs` (looped) | snap | Atlas's blink (`useMascotIdle`): the closed-eye frame's opacity, snapped rather than faded. Off under Reduce Motion, on screen blur and in the background |
 
 **Principles**
 - Things **scale and spring**; they do not fade in place. Fade is for disappearing.
@@ -537,7 +539,10 @@ above the body-text floor; selected answers retain both a mark and selected stat
 
 Explore, Quests, Shop, Passport and private challenges share 16-point content
 gutters and section spacing. Wallet and daily rewards share the sand field; the
-streak-freeze panel uses sky. Friends uses the same AnswerOption and ProgressBar
+streak-freeze panel uses sky. Earned rewards themselves (the summary's XP card, the
++XP and +coin pills in a lesson, Profile's XP rule) are gold clay with gold ink, like
+the coin counter in the top bar, and XP is always the bolt: sand is a pale cream in the
+light theme but a muddy brown in the dark one (owner screenshot, 2026-10-09). Friends uses the same AnswerOption and ProgressBar
 as lessons, including their existing reduced-motion behavior. No new animation
 engine or decorative looping background was introduced.
 

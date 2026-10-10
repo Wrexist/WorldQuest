@@ -2,7 +2,7 @@
 
 Generated with the built-in OpenAI image-generation tool on 2026-10-03. The owner-provided WorldQuest profile mockup (`B5E225DB-B111-4BC1-9A1F-8B8D6857DBFF.png`) supplied the character and material reference. This replaces the runtime Blender sprite sheets, whose moving grid could expose neighbouring frames. Historical Blender sources remain archived, but are no longer imported by the app mascot.
 
-The four 1280px RGBA masters in this directory were inspected before use. Run `node scripts/build-clay-mascot.cjs` to produce complete 512px PNGs in `apps/mobile/assets/art/atlas-clay/` and the typed manifest. No frame slicing, cropping or body-part compositing. Reactions share four consistent whole-character poses across the existing ten logical moods. The app applies a finite native transform after decode, then rests; reduced motion retains expression changes without movement.
+The four 1280px RGBA masters in this directory were inspected before use. Run `node scripts/build-clay-mascot.cjs` to produce complete 512px PNGs in `apps/mobile/assets/art/atlas-clay/` and the typed manifest. No frame slicing, cropping or body-part compositing. Reactions share four consistent whole-character poses across the existing ten logical moods. The app applies a finite native transform after decode, then rests; reduced motion retains expression changes without movement. The same script derives new faces from these four (blink frames, laughing, proud, wink) using resting's own closed eyes and smile, every other pixel identical; see [`world-mascot.md`](../../world-mascot.md#alive-breath-blink-and-new-faces-october-9).
 
 Each active image has 262,144 pixels, compared with 3,686,400 pixels per former 1920px sheet. Raw RGBA pixel arithmetic is 1MiB versus 14.1MiB; this is not measured process RAM or iPhone frame-rate evidence.
 
@@ -27,3 +27,21 @@ Thinking suffix:
 Resting suffix:
 
 > Expression/pose: peacefully resting with eyes softly closed into two curved smiles, content small closed smile, both hands resting comfortably at sides, upright and relaxed. No sleep symbols. Both shoes remain planted at same height.
+
+## Next poses
+
+A new *face* is derived (above). A new *body* needs the image model. These are the
+two the app would use next, written to the same shared prefix so they stay on-model.
+Generate each with `welcome.png` as the reference and a transparent background, check
+it beside the four masters, save it here as `<name>.png` (square RGBA), and add it to
+`masters` and `moods` in `scripts/build-clay-mascot.cjs`. Its blink frame then comes
+for free, if `scripts/lib/clay-face.cjs` finds two open eyes; it says so if it cannot.
+
+Encouraging suffix (`encouraging`: Friends, League, Region, the lesson introduction):
+
+> Expression/pose: warm encouraging, one mitten raised in a friendly thumbs-up beside his body, other arm relaxed, both eyes bright and open, kind closed smile. Both shoes remain planted at same height. Hands never touch canvas edges.
+
+Surprised suffix (`surprised`: a fact worth a "wow"):
+
+> Expression/pose: delighted surprise, both mittens raised beside his cheeks, eyebrows lifted, both eyes wide open, small round open "oh" mouth. Happy, never scared. Both shoes remain planted at same height. Hands never touch canvas edges.
+
