@@ -18,5 +18,9 @@
   "atlas:explore.close": "Rensa val",
   "atlas:explore.all": "Alla",
   "atlas:explore.browse": "Bläddra bland länder ({count, number})",
-  "atlas:explore.listLabel": "Länder på kartan"
+  "atlas:explore.listLabel": "Länder på kartan",
+  "atlas:summary.locate": "Karta över {region}. Hitta landet som frågan nämner och tryck på det.",
+  "atlas:drill.start": "Hitta länder i {region}",
+  "atlas:drill.hint": "Ett kartquiz: varje fråga nämner ett land, och du trycker på det på kartan.",
+  "atlas:summary.locateRetry": "Karta över {region}. {chosen} är markerat. Hitta landet som frågan nämner och tryck på det."
 }

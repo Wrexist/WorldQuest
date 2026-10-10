@@ -17,7 +17,7 @@ export type D1Focus = { factIds?: string[]; attributes?: string[]; entities?: st
  * Worker counts finished lessons per step from it, which a focus alone cannot do when two
  * steps share one. Last in the object, as in the Worker's schema: the echo is compared as JSON.
  */
-export type D1PrepareInput = { lessonId: string; locale: 'en' | 'sv'; count: number; screenReader: boolean; focus?: D1Focus; node?: string; maxModifier?: number; introduceFrom?: number; placement?: true }
+export type D1PrepareInput = { lessonId: string; locale: 'en' | 'sv'; count: number; screenReader: boolean; focus?: D1Focus; node?: string; maxModifier?: number; introduceFrom?: number; placement?: true; input?: 'tap' }
 export type D1PreparedLesson = { lessonId: string; issuedAt: number; questions: ReturnType<typeof parseD1Question>[]; request: D1PrepareInput }
 const object = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === 'object' && !Array.isArray(v)
 const integer = (v: unknown): v is number => typeof v === 'number' && Number.isSafeInteger(v) && v >= 0
@@ -114,11 +114,13 @@ function prepareInput(value: unknown): D1PrepareInput {
   if (value.maxModifier !== undefined && (!integer(value.maxModifier) || value.maxModifier > 2)) throw new D1AuthError('INVALID_LESSON_REQUEST')
   const introduceFrom = band(value.introduceFrom)
   if (value.placement !== undefined && value.placement !== true) throw new D1AuthError('INVALID_LESSON_REQUEST')
+  if (value.input !== undefined && value.input !== 'tap') throw new D1AuthError('INVALID_LESSON_REQUEST')
   return { lessonId: value.lessonId, locale: value.locale, count: value.count, screenReader: value.screenReader,
     ...(f === undefined ? {} : { focus: f }), ...(value.node === undefined ? {} : { node: value.node }),
     ...(value.maxModifier === undefined ? {} : { maxModifier: value.maxModifier }),
     ...(introduceFrom === undefined ? {} : { introduceFrom }),
-    ...(value.placement === true ? { placement: true } : {}) }
+    ...(value.placement === true ? { placement: true } : {}),
+    ...(value.input === 'tap' ? { input: 'tap' as const } : {}) }
 }
 function prepared(value: unknown): D1PreparedLesson {
   if (!object(value) || typeof value.lessonId !== 'string' || !integer(value.issuedAt) || !Array.isArray(value.questions)

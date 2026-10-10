@@ -80,6 +80,13 @@ export type ComposeInput = {
    * only ever used at the gentle end of the ramp; a caller that cannot draw a board passes false.
    */
   readonly pairs?: boolean
+  /**
+   * `tap`: a map drill, answered by tapping the place on a map (`Template.input`). Only facts
+   * that CAN be asked that way are chosen, and only that way of asking is used — a drill that
+   * slipped in a flag question would be a different game halfway through. No pairs board.
+   * Screen-reader lessons get the same facts spoken (see `itemsForFact`).
+   */
+  readonly input?: 'tap'
 }
 
 export function composeLesson(input: ComposeInput): readonly Question[] {
@@ -90,7 +97,6 @@ export function composeLesson(input: ComposeInput): readonly Question[] {
     rng,
     locale,
     medianItemMs = 8_000,
-    topicFilter,
     screenReaderOnly,
     modalities,
     catchUpMode,
@@ -98,8 +104,10 @@ export function composeLesson(input: ComposeInput): readonly Question[] {
     maxModifier,
     introduceFrom,
     unshaped,
-    pairs = true,
+    input: answerBy,
   } = input
+  const pairs = answerBy === 'tap' ? false : (input.pairs ?? true)
+  const topicFilter = answerBy === 'tap' ? tapFilter(index, input.topicFilter) : input.topicFilter
 
   const seen = new Set(memory.map((m) => m.factId))
   const quizzableFacts = [...index.itemsByFact.keys()]
@@ -223,6 +231,7 @@ export function composeLesson(input: ComposeInput): readonly Question[] {
       ...(modalities !== undefined ? { modalities } : {}),
       ...(entityIsGiven !== undefined ? { deprioritizeEntityAnswers: entityIsGiven } : {}),
       ...(maxModifier !== undefined ? { preferModifierAtMost: maxModifier } : {}),
+      ...(answerBy !== undefined ? { input: answerBy } : {}),
     })) {
       if (!typedAllowed(item.templateId, factId)) continue
       const question = buildQuestion(index, item, locale, rng, { isNew: !seen.has(factId) })
@@ -238,6 +247,17 @@ export function composeLesson(input: ComposeInput): readonly Question[] {
   const shaped = shapeLesson(questions, { memory: new Map(memory.map((m) => [m.factId, m] as const)), now, attributeOf })
   // Matching is the gentle exercise: at the top of the ramp the learner is asked to TYPE instead.
   return pairs && (maxModifier ?? 0) <= 1 ? pairUp(shaped, { index, rng, attributeOf }) : shaped
+}
+
+/**
+ * The facts a map drill can ask: those with a tap way of asking, inside whatever else the
+ * caller narrowed to. Without it a drill over Europe would select capitals and flags too,
+ * find no tap template for them, and come out a third of its length.
+ */
+function tapFilter(index: ContentIndex, narrower: ((factId: FactId) => boolean) | undefined): (factId: FactId) => boolean {
+  return (factId) =>
+    (narrower === undefined || narrower(factId)) &&
+    (index.itemsByFact.get(factId) ?? []).some((item) => index.templates.get(item.templateId)?.input === 'tap')
 }
 
 /** Accuracy is not read before this many reviews: three lucky answers are not a trend. */

@@ -30,7 +30,9 @@ export const prepareLessonSchema = z.object({ lessonId: z.string().regex(/^[a-zA
   /** Where new facts start (the app's `difficultyRamp`): an ordering of unseen facts, never a filter. */
   introduceFrom: z.number().int().min(1).max(5).optional(),
   /** The level check (`composePlacement`): ten questions across the five levels. Ignores focus, count and the ramp. */
-  placement: z.literal(true).optional() }).strict()
+  placement: z.literal(true).optional(),
+  /** A map drill: answered by tapping the place (`Template.input: 'tap'`). Chooses the way of asking, and so which facts can be asked. */
+  input: z.literal('tap').optional() }).strict()
 type Input = z.infer<typeof prepareLessonSchema>
 /** Parsed focus, with absent fields absent rather than `undefined` (exact optional types). */
 function lessonFocus(f: z.infer<typeof focusSchema>): LessonFocus {
@@ -95,6 +97,7 @@ export async function prepareLesson(db: D1Database, owner: string, tokenHash: st
       ? composePlacement({ index: learningContent, rng: seededRng(seed), locale: input.locale, screenReaderOnly: input.screenReader, modalities: base.modalities })
       : composeLesson({ ...base, rng: seededRng(seed), count: input.count,
       ...(topicFilter ? { topicFilter } : {}),
+      ...(input.input === 'tap' ? { input: 'tap' as const } : {}),
       // One entity in focus means the entity is not the question (the app's own rule).
       entityIsGiven: input.focus?.entities?.length === 1 })
     /**

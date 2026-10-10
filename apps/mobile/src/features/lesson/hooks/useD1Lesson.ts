@@ -21,7 +21,7 @@ export function useD1Lesson(
   request: { readonly count: number; readonly locale: 'en' | 'sv'; readonly screenReader: boolean; readonly focus?: LessonFocus | undefined
     readonly explicitFocus?: boolean | undefined; readonly node?: string | undefined; readonly maxModifier?: number | undefined
     readonly introduceFrom?: number | undefined
-    readonly placement?: true | undefined },
+    readonly placement?: true | undefined; readonly input?: 'tap' | undefined },
 ): { readonly status: D1LessonStatus; readonly lesson: D1PreparedLesson | null; readonly retry: () => void } {
   const [status, setStatus] = useState<D1LessonStatus>(enabled ? 'loading' : 'idle')
   const [lesson, setLesson] = useState<D1PreparedLesson | null>(null)

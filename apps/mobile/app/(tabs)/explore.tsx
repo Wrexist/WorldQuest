@@ -58,7 +58,8 @@ export default function ExploreRoute() {
         coins={shown?.coinsIncludingPending ?? 0}
         streak={shown?.streak ?? 0}
         onOpenStreak={() => router.push('/streak')}
-        atlas={atlasOn ? { names } : undefined}
+        // A map drill over the chosen region: its countries, found by tapping them.
+        atlas={atlasOn ? { names, onDrill: (region) => router.push(`/lesson?region=${region}&input=tap`) } : undefined}
       />
     </ContentGate>
   )

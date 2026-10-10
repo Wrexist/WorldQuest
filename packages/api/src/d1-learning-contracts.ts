@@ -19,9 +19,14 @@ export function parseD1Memory(value: unknown): MemoryState {
     || !Number.isSafeInteger(state.lapses) || state.lapses < 0) return fail()
   return state
 }
+/** Africa's 54 and room to grow; a ticket is never larger than its continent. */
+const MAX_TAP_OPTIONS = 80
 export function parseD1Question(value: unknown): Question {
-  if (!object(value) || !object(value.item) || !object(value.promptParams) || !Array.isArray(value.options)
-    || value.options.length < 1 || value.options.length > 8) return fail()
+  if (!object(value) || !object(value.item) || !object(value.promptParams) || !Array.isArray(value.options)) return fail()
+  // A tapped answer offers every place on the map it may land on: a continent's countries.
+  if (value.tap !== undefined && value.tap !== true) return fail()
+  const most = value.tap === true ? MAX_TAP_OPTIONS : 8
+  if (value.options.length < 1 || value.options.length > most) return fail()
   // Typed questions carry one answer key, never a visible choice. Dropping `typed`
   // either rejected a valid issued lesson or exposed that answer as a choice.
   let typed: Question['typed']
@@ -55,6 +60,7 @@ export function parseD1Question(value: unknown): Question {
     promptKey: string(value.promptKey), promptParams: Object.fromEntries(Object.entries(value.promptParams).map(([key, val]) => [key, string(val)])),
     options, modality, timeLimitMs: value.timeLimitMs === null ? null : number(value.timeLimitMs), isNew: boolean(value.isNew),
     ...(typed === undefined ? {} : { typed }), ...(group === undefined ? {} : { group }),
+    ...(value.tap === true && typed === undefined && group === undefined ? { tap: true as const } : {}),
     ...(value.promptAsset === undefined ? {} : { promptAsset: string(value.promptAsset) }),
     ...(value.revealAsset === undefined ? {} : { revealAsset: string(value.revealAsset) }),
     ...(value.hint === undefined ? {} : { hint: string(value.hint) }),
