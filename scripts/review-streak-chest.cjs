@@ -30,7 +30,8 @@ async function main() {
     await walkOnboarding(learner)
     await learner.goto(base + '/lesson', { waitUntil: 'networkidle' })
     await learner.waitForTimeout(1800)
-    for (let i = 0; i < 45; i++) {
+    // Twenty questions, then up to three review tries per miss.
+    for (let i = 0; i < 80; i++) {
       const options = await learner.getByTestId('answer-option').all()
       if (!options.length) break
       await learner.waitForTimeout(600)

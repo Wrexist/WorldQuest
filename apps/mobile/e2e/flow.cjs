@@ -1099,10 +1099,11 @@ const skip = (name, why) => {
   await page.waitForTimeout(1800)
   await beginLesson(page)
   // Answer every question, then leave — the lesson must reach its summary for the
-  // completion event to fire at all. Up to 45 answers: a lesson is at most twenty
-  // questions, and the review round after them asks each missed one again, so always
-  // tapping the first option can take nearly twice that. The loop ends with the options.
-  for (let i = 0; i < 45; i++) {
+  // completion event to fire at all. Up to 80 answers: a lesson is at most twenty
+  // questions, and the review round asks each miss again until it is right, up to
+  // REVIEW_TRIES (3) times, so always tapping the first option can take 20 + 20 × 3.
+  // The loop ends with the options.
+  for (let i = 0; i < 80; i++) {
     await beginLesson(page)
     if (!(await questionShown(page))) break
     // Think first. `MIN_CREDIBLE_ANSWER_MS` is 400 and grading DISCARDS anything
@@ -1328,7 +1329,8 @@ const skip = (name, why) => {
     await page.waitForTimeout(1500)
     const node = new URL(page.url()).searchParams.get('node')
     const subjects = []
-    for (let i = 0; i < 25; i++) {
+    // A course step, plus the review round's up-to-three tries per miss.
+    for (let i = 0; i < 80; i++) {
       await beginLesson(page)
     const options = await page.getByTestId('answer-option').all()
       if (options.length === 0) break
