@@ -178,3 +178,34 @@ describe('Country — the star', () => {
     expect(screen.queryByRole('switch')).toBeNull()
   })
 })
+
+describe('a country page shelves its facts by category', () => {
+  const person = (i: number, attribute = 'athlete'): CountryFact => ({
+    id: `geo.SE.${attribute}-q${i}`, attribute, value: `Person ${i}`, mastery: i === 0 ? 'familiar' : 'unseen', due: false, quizzable: true,
+  })
+  const facts = [capital, flag, ...Array.from({ length: 6 }, (_, i) => person(i)), person(9, 'club')]
+
+  it('opens the basics and keeps the rest closed until asked', () => {
+    renderCountry(facts)
+    expect(screen.getByText('Stockholm')).toBeTruthy()
+    expect(screen.queryByText('Person 1')).toBeNull()
+    const sport = screen.getByTestId('country-category-sport')
+    expect(sport.getAttribute('aria-expanded')).toBe('false')
+    fireEvent.click(sport)
+    expect(sport.getAttribute('aria-expanded')).toBe('true')
+    expect(screen.getByText('Person 1')).toBeTruthy()
+    expect(screen.getByText('1 of 7 learned')).toBeTruthy()
+  })
+
+  it('practises one category with its own attributes, and only when there is a lesson in it', () => {
+    const onPractiseCategory = vi.fn()
+    render(
+      <CountryScreen name="Sweden" region="EU" facts={facts} progress={null} onPractise={() => {}} onPractiseCategory={onPractiseCategory} />,
+    )
+    // Two basics are too few for a lesson: no button.
+    expect(screen.queryByTestId('country-category-basics-practise')).toBeNull()
+    fireEvent.click(screen.getByTestId('country-category-sport'))
+    fireEvent.click(screen.getByTestId('country-category-sport-practise'))
+    expect(onPractiseCategory).toHaveBeenCalledWith(['athlete', 'club'])
+  })
+})

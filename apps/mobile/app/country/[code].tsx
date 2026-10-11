@@ -20,6 +20,8 @@ import { ContentGate } from '../../src/components/ContentGate.js'
 import { useReferenceContent } from '../../src/lib/referenceContent.js'
 import { useFavourites } from '../../src/features/favourites/useFavourites.js'
 import { currentLocale } from '../../src/lib/i18n.js'
+import { useContent } from '../../src/lib/content.js'
+import { isD1 } from '../../src/lib/backendConfig.js'
 import { track } from '../../src/lib/analytics.js'
 
 const isRegion = (value: string | undefined): value is RegionCode =>
@@ -29,6 +31,13 @@ export default function CountryRoute() {
   const { code } = useLocalSearchParams<{ code: string }>()
   const { index, memory, status, reload, isOffline } = useReferenceContent()
   const { isFavourite, toggle } = useFavourites()
+  // What a lesson can be composed from here. The Worker composes from everything; a build
+  // without it composes from the bundled packs, which do not carry the famous-people facts.
+  const local = useContent().index
+  const practisableAttributes = useMemo(
+    () => (isD1() || local === null ? undefined : new Set([...local.index.facts.values()].filter((f) => f.entity === code).map((f) => f.attribute))),
+    [local, code],
+  )
 
   const view = useMemo(() => {
     const entity = index === null || code === undefined ? undefined : index.index.entities.get(code)
@@ -101,6 +110,10 @@ export default function CountryRoute() {
         // with no relationship to the page it was on. The engine could always narrow
         // (`topicFilter`); nothing had ever asked it to.
         onPractise={() => router.push(`/lesson?entity=${encodeURIComponent(code ?? '')}`)}
+        // One shelf of it: the same focus, narrowed to that category's attributes.
+        practisableAttributes={practisableAttributes}
+        onPractiseCategory={(attributes) =>
+          router.push(`/lesson?entity=${encodeURIComponent(code ?? '')}&attr=${attributes.map(encodeURIComponent).join(',')}`)}
         {...(starrable
           ? { favourite: isFavourite(code), onToggleFavourite: () => toggle(code) }
           : {})}

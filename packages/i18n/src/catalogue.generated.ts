@@ -303,7 +303,17 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "attribute.artist": "Artist",
       "attribute.landmark": "Landmark",
       "attribute.club": "Sports club",
-      "attribute.highestPoint": "Highest point"
+      "attribute.highestPoint": "Highest point",
+      "category.basics": "The basics",
+      "category.map": "Map and borders",
+      "category.people": "Famous people",
+      "category.sport": "Sport",
+      "category.places": "Places to know",
+      "category.companies": "Companies and brands",
+      "category.other": "More",
+      "category.count": "{learned} of {total} learned",
+      "category.label": "{category}, {learned} of {total} learned",
+      "category.practise": "Practise {category}"
     },
     "course": {
       "firstWeek.title": "World foundations",
@@ -1449,7 +1459,17 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "attribute.artist": "Konstnär",
       "attribute.landmark": "Sevärdhet",
       "attribute.club": "Idrottsklubb",
-      "attribute.highestPoint": "Högsta punkt"
+      "attribute.highestPoint": "Högsta punkt",
+      "category.basics": "Grunderna",
+      "category.map": "Karta och gränser",
+      "category.people": "Kända personer",
+      "category.sport": "Sport",
+      "category.places": "Platser att känna till",
+      "category.companies": "Företag och märken",
+      "category.other": "Mer",
+      "category.count": "{learned} av {total} lärda",
+      "category.label": "{category}, {learned} av {total} lärda",
+      "category.practise": "Öva {category}"
     },
     "course": {
       "firstWeek.title": "Världen från grunden",
