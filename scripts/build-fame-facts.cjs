@@ -60,6 +60,22 @@ const topology = require('world-atlas/countries-50m.json')
 
 const PACKS = join(__dirname, '..', 'packages', 'content', 'packs', 'geography')
 const snapshot = JSON.parse(readFileSync(join(__dirname, 'data', 'fame-snapshot.json'), 'utf8'))
+/**
+ * Names come from the Wikipedia article title where there is one, the Wikidata label
+ * otherwise (`scripts/fetch-fame-titles.cjs` says why: a label is where a slip like "Andrcu
+ * Onana" survives, and a title is the common name a learner knows). Applied to every row
+ * before any check, so the give-away and duplicate-name rules judge the name that ships.
+ */
+const titles = JSON.parse(readFileSync(join(__dirname, 'data', 'fame-titles.json'), 'utf8')).titles
+for (const rows of Object.values(snapshot)) {
+  if (!Array.isArray(rows)) continue
+  for (const row of rows) {
+    const title = titles[row?.id]
+    if (title === undefined) continue
+    if (title.en) row.en = title.en
+    if (title.sv) row.sv = title.sv
+  }
+}
 const entities = JSON.parse(readFileSync(join(PACKS, 'entities.countries.v1.json'), 'utf8')).items
 const entityByCode = new Map(entities.map((e) => [e.id, e]))
 const LOCALES = ['en', 'sv']

@@ -829,8 +829,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -854,8 +855,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -929,8 +931,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -954,8 +957,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1029,8 +1033,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1054,8 +1059,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1129,8 +1135,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1154,8 +1161,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1229,8 +1237,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1254,8 +1263,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1329,8 +1339,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1354,8 +1365,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1429,8 +1441,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1454,8 +1467,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1529,8 +1543,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1554,8 +1569,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1629,8 +1645,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1654,8 +1671,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1729,8 +1747,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1754,8 +1773,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true

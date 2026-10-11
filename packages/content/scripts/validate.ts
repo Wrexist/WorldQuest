@@ -324,7 +324,10 @@ for (const file of packFiles) {
       item.distractors?.fallback === 'other-values'
     // `differentValueOnly` is what makes it safe: the pool is cut to entities whose own value
     // differs, so "any country on earth" shrinks to "any country that is not landlocked".
-    if (usesOtherValues && item.answer?.from === 'entity.names' && item.distractors?.differentValueOnly !== true) {
+    // `peersOnly` does the same job a different way: "any country on earth" becomes "any
+    // country this pack has footballers from", which is a field of real candidates.
+    if (usesOtherValues && item.answer?.from === 'entity.names' && item.distractors?.differentValueOnly !== true
+      && item.distractors?.peersOnly !== true) {
       errors.push({
         file: rel,
         message:

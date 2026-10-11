@@ -266,6 +266,9 @@ function quizzableFactsOf(index: ContentIndex, entityId: EntityId, attribute: st
   return attributes.get(attribute) ?? []
 }
 
+/** The closest a `nearest-values` distractor may sit to the answer: ten percent apart. */
+const NEAREST_MIN_GAP = Math.log(1.1)
+
 /** How far apart two counts or sizes are, on the scale a person judges them by. */
 const logDistance = (a: number, b: number): number => Math.abs(Math.log((a + 1) / (b + 1)))
 
@@ -357,7 +360,11 @@ function candidatePool(
       if (strategy === 'spread-values') {
         return [...figures].filter(([n]) => logDistance(n, mine) >= Math.log(4)).flatMap(([, es]) => es)
       }
+      // Close, but never within a measuring difference of the answer: "about 9,400,000 km²"
+      // beside "about 9,700,000 km²" for the United States is a question about which survey
+      // counted the lakes, and the distractor may be the figure another atlas prints.
       return [...figures]
+        .filter(([n]) => logDistance(n, mine) >= NEAREST_MIN_GAP)
         .sort(([a], [b]) => logDistance(a, mine) - logDistance(b, mine))
         .slice(0, 6)
         .flatMap(([, es]) => es)
@@ -946,6 +953,9 @@ export function buildQuestion(
         ) {
           continue
         }
+        // "Which country is the club Vålerenga from?" offered Vatican City: a place no club
+        // could come from is not a wrong answer, it is a free elimination. See `peersOnly`.
+        if (spec.peersOnly === true && quizzableFactsOf(index, candidate.id, fact.attribute).length === 0) continue
 
         const label = labelOf(candidate)
         if (label === undefined) continue

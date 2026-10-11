@@ -30,7 +30,7 @@ const template = (over: Partial<Template> & Pick<Template, 'id' | 'attribute' | 
   ...base, prompt: { key: 'test:prompt', params: ['entityName'] }, difficultyModifier: 0, ...over,
 })
 
-const FIGURES = [100, 110, 120, 130, 140, 150, 160, 1e6, 1e7, 1e8, 1e9, 1e10]
+const FIGURES = [100, 105, 120, 130, 140, 150, 160, 170, 1e7, 1e8, 1e9, 1e10]
 const sizes: Fact[] = ids.map((id, i) =>
   fact('size', id, 'size', { id: `size-${i}`, number: FIGURES[i]!, names: { en: `${FIGURES[i]} units` } }))
 
@@ -44,10 +44,11 @@ describe('numeric distractors', () => {
     distractors: { count: 3, strategy: 'spread-values', fallback: 'other-values' },
   })
 
-  it('nearest-values offers only figures close to the answer', () => {
+  it('nearest-values offers only figures close to the answer, and never one within ten percent of it', () => {
     const index = buildIndex({ entities, facts: sizes, templates: [nearest] })
     const item = index.itemsByFact.get('geo.A.size')![0]!
-    const near = new Set(['110 units', '120 units', '130 units', '140 units', '150 units', '160 units'])
+    // 105 is a measuring difference from 100, not a wrong answer: it is never offered.
+    const near = new Set(['120 units', '130 units', '140 units', '150 units', '160 units', '170 units'])
     for (let seed = 1; seed <= 60; seed++) {
       const q = buildQuestion(index, item, 'en', seededRng(seed))
       expect(q, `seed ${seed}`).not.toBeNull()

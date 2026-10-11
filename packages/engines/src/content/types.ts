@@ -188,6 +188,13 @@ export type Template = {
      * coastal, so exactly one option is landlocked.
      */
     readonly differentValueOnly?: boolean
+    /**
+     * Keep only candidates that have a fact of their own for this attribute: for "which
+     * country is this footballer from?", only countries that have footballers in the pack.
+     * Without it a famous name was asked beside three Pacific micro-states, and the
+     * question was answered by knowing which countries are small, not where anyone is from.
+     */
+    readonly peersOnly?: boolean
   }
   readonly a11y: {
     readonly screenReaderSafe: boolean

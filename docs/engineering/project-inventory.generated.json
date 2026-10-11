@@ -78,7 +78,7 @@
   },
   "packs": 31,
   "entities": 194,
-  "facts": 6747,
+  "facts": 6755,
   "templates": 95,
   "locales": [
     "en",
@@ -290,6 +290,7 @@
     "packages/design/src/tokens.test.ts",
     "packages/engines/src/achievements/achievements.test.ts",
     "packages/engines/src/content/deep.test.ts",
+    "packages/engines/src/content/peers.test.ts",
     "packages/engines/src/content/thesis.test.ts",
     "packages/engines/src/content/typed.test.ts",
     "packages/engines/src/course/course.test.ts",

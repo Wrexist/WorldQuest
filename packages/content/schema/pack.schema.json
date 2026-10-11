@@ -494,6 +494,11 @@
               "type": "boolean",
               "default": true
             },
+            "peersOnly": {
+              "type": "boolean",
+              "default": false,
+              "description": "Keep only wrong answers that have a fact of their own for this attribute: for 'which country is this footballer from?', only countries the pack has footballers from. Stops a famous name being asked beside three micro-states no footballer comes from."
+            },
             "differentValueOnly": {
               "type": "boolean",
               "default": false,
