@@ -357,6 +357,14 @@ describe('stored mastery agrees with masteryOf', () => {
 })
 
 describe('deriveRating', () => {
+  it('never rates a fast multiple-choice pick Easy: recognising is weaker evidence than recalling', () => {
+    const median = 8000
+    expect(deriveRating(true, median * 0.3, median)).toBe(4)
+    expect(deriveRating(true, median * 0.3, median, true)).toBe(3)
+    expect(deriveRating(true, median * 3, median, true)).toBe(2)
+    expect(deriveRating(false, median * 0.3, median, true)).toBe(1)
+  })
+
   const median = 3000
 
   it('returns Again for a wrong answer regardless of speed', () => {

@@ -116,7 +116,9 @@ describe('after two misses in a row', () => {
     s = answer(s, 'wrong')
     s = next(s)
     s = answer(s, 'wrong')
-    expect(order(s).slice(6)).toEqual(review)
+    // Not reordered: misses in the review only go to its back, to be asked again.
+    expect(order(s).slice(6, 6 + review.length)).toEqual(review)
+    expect(order(s).slice(6 + review.length)).toEqual(review.slice(0, 2))
   })
 
   it('can act again if the learner misses the easy one too', () => {

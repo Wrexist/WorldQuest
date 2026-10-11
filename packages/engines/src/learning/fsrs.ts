@@ -296,6 +296,13 @@ export function deriveRating(
   correct: boolean,
   elapsedMs: number,
   medianMs: number,
+  /**
+   * The answer was PICKED from options shown, not recalled. A fast right pick is still never
+   * Easy: recognising Paris among four is weaker evidence than producing it (testing effect
+   * g = 0.29 for recognition vs 0.61 for cued recall, Rowland 2014), and one time in four a
+   * guess is right. Typed and tapped-on-a-map answers keep Easy.
+   */
+  recognition = false,
 ): Rating {
   if (!correct) return 1
 
@@ -310,7 +317,7 @@ export function deriveRating(
   // they earn no XP and never reach the scheduler. See the anti-cheat table in
   // docs/engineering/security-privacy.md.
   if (elapsedMs > medianMs * 2.5) return 2
-  if (elapsedMs < medianMs * 0.6) return 4
+  if (elapsedMs < medianMs * 0.6) return recognition ? 3 : 4
   return 3
 }
 
