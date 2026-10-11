@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { act, render, renderHook, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, renderHook, screen, waitFor } from '@testing-library/react'
 import { expect, it, vi } from 'vitest'
 import { entityProgress } from '@worldquest/engines'
 
@@ -37,6 +37,8 @@ it('renders the full Swedish country reference, including facts that previously 
   render(<CountryRoute />)
   await waitFor(() => expect(screen.getByRole('progressbar', { name: '0 of 130 learned' })).toBeTruthy())
   expect(screen.getByText('Stockholm')).toBeTruthy()
+  // Shelved by category, the basics open: the rest are a tap away.
+  for (const category of ['map', 'sport', 'companies']) fireEvent.click(screen.getByTestId(`country-category-${category}`))
   expect(screen.getAllByText('Athlete').length).toBeGreaterThan(0)
   expect(screen.getAllByText('Company').length).toBeGreaterThan(0)
   expect(screen.getByText('Kebnekaise')).toBeTruthy()

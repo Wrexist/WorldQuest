@@ -174,6 +174,7 @@
     "apps/mobile/src/features/explore/ExploreScreen.test.tsx",
     "apps/mobile/src/features/explore/RegionScreen.test.tsx",
     "apps/mobile/src/features/explore/collapseRelations.test.ts",
+    "apps/mobile/src/features/explore/factCategories.test.ts",
     "apps/mobile/src/features/favourites/useFavourites.test.ts",
     "apps/mobile/src/features/friends/FriendsScreen.test.tsx",
     "apps/mobile/src/features/friends/useChallenges.test.tsx",
