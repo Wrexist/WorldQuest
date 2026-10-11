@@ -11,6 +11,7 @@
   ],
   "license": "CC-BY-4.0",
   "generatedAt": "2026-10-11",
+  "delivery": "server",
   "items": [
     {
       "id": "geo.US-AK.us-region",

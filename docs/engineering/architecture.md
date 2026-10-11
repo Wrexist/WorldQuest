@@ -184,7 +184,7 @@ Steps 4 and 7 run **the same module**. That's the point of the pure core.
 | Next-items selection | < 50 ms p95 | Prebuilt indexes; selection is in-memory over a small candidate set |
 | Item transition | < 100 ms | Next item prepared during the current one's feedback |
 | Frame rate | ≥ 58 fps | Reanimated on the UI thread; no JS-driven animation |
-| Bundle | < 5.21 MiB initial per platform | Current 2026-10-02 Hermes measurement: iOS 5,456,119 B, Android 5,453,594 B. Responsive motion adds 755/751 B since the cloud/Atlas pass, within the unchanged gate. The cloud feature allocated 0.01 MiB over the preceding 5.20 gate after measured registry packing. Artwork ships separately. August 4.1 MiB and later feature allocations remain in `scripts/bundle-native.cjs` history; [current evidence](../design/reviews/responsive-motion-2026-10-02/README.md). |
+| Bundle | < 5.30 MiB initial per platform | 2026-10-11: raised from 5.21 for the training work in PR #39 (US states and Swedish counties, map-quiz tries, categories, relearning), measured iOS 5.28 / Android 5.27 MiB; reasons in `scripts/bundle-native.cjs`. Earlier 2026-10-02 Hermes measurement: iOS 5,456,119 B, Android 5,453,594 B. Responsive motion adds 755/751 B since the cloud/Atlas pass, within the unchanged gate. The cloud feature allocated 0.01 MiB over the preceding 5.20 gate after measured registry packing. Artwork ships separately. August 4.1 MiB and later feature allocations remain in `scripts/bundle-native.cjs` history; [current evidence](../design/reviews/responsive-motion-2026-10-02/README.md). |
 
 **Rendering rules:** every list virtualised (FlashList) · images via `expo-image` with
 `contentFit` and a blurhash placeholder · memoise list rows · never a JS-thread

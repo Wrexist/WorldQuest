@@ -205,7 +205,7 @@ one — and it finds errors before users report them.
 | Cold start | Automated, real mid-tier Android | < 2.0 s |
 | Next-items query | Load test with 10 k synthetic users | p95 < 50 ms |
 | Frame rate in lessons | Instrumented profiling | ≥ 58 fps |
-| Bundle size | `pnpm bundle:native`, per-platform Hermes size gate | < 5.21 MiB, measured 2026-10-02; iOS 5,456,119 B / Android 5,453,594 B. Responsive motion adds 755/751 B since the cloud pass, within the unchanged gate; [current review](../design/reviews/responsive-motion-2026-10-02/README.md). The preceding 0.01 MiB cloud allocation and unchanged asset-mapping checks remain in its [review](../design/reviews/cloud-companions-2026-10-02/README.md). Historical budget decisions remain in `scripts/bundle-native.cjs`. |
+| Bundle size | `pnpm bundle:native`, per-platform Hermes size gate | < 5.30 MiB since 2026-10-11 (PR #39, measured 5.28/5.27 MiB); earlier 5.21 MiB, measured 2026-10-02; iOS 5,456,119 B / Android 5,453,594 B. Responsive motion adds 755/751 B since the cloud pass, within the unchanged gate; [current review](../design/reviews/responsive-motion-2026-10-02/README.md). The preceding 0.01 MiB cloud allocation and unchanged asset-mapping checks remain in its [review](../design/reviews/cloud-companions-2026-10-02/README.md). Historical budget decisions remain in `scripts/bundle-native.cjs`. |
 | Memory in a long session | 30-min soak | No unbounded growth |
 
 ## 7. Accessibility testing

@@ -124,7 +124,8 @@ export type CountryParts = {
   readonly title: TranslationKey
   readonly practise: TranslationKey
   readonly rows: readonly { readonly id: string; readonly name: string; readonly detail?: string | undefined; readonly mastery: Mastery }[]
-  readonly onPractise: () => void
+  /** Absent where no lesson can be composed from them (a build without the Worker). */
+  readonly onPractise?: (() => void) | undefined
 }
 
 export type CountryScreenProps = {
@@ -427,7 +428,9 @@ function PartsSection({ parts }: { parts: CountryParts }) {
         </View>
       </Pressable>
       {/* Practice first, then the list: fifty rows is a long way down to a button. */}
-      <Button label={t(parts.practise)} variant="secondary" size="sm" onPress={parts.onPractise} testID="country-parts-practise" />
+      {parts.onPractise !== undefined && (
+        <Button label={t(parts.practise)} variant="secondary" size="sm" onPress={parts.onPractise} testID="country-parts-practise" />
+      )}
       {open && (
         <SceneEntrance style={styles.list} testID="country-parts-list">
           {parts.rows.map((row) => (

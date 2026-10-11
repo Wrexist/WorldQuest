@@ -139,7 +139,8 @@ export default function CountryRoute() {
         progress={view.progress}
         {...(parts !== undefined
           // Every one of them: the lesson introduces states only when its focus names them.
-          ? { parts: { ...parts, onPractise: () => router.push(`/lesson?entity=${parts.ids.join(',')}`) } }
+          // Their lessons are the Worker's (server-delivered packs): no button where there is none.
+          ? { parts: { ...parts, ...(isD1() ? { onPractise: () => router.push(`/lesson?entity=${parts.ids.join(',')}`) } : {}) } }
           : {})}
         // The country. This button has said "Practise this country" since it was built
         // and pushed a plain `/lesson` — a generic mixed lesson about all sixty-five,

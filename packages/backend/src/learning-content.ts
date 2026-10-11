@@ -34,10 +34,10 @@ import templates from '../../content/packs/geography/templates.v1.json'
 const loadedEntities: Entity[] = [...entities.items, ...subdivisions.items].map(entity => ({ ...entity,
   assets: Object.fromEntries(Object.entries(entity.assets).map(([key, asset]) => [key, { path: asset.path, license: asset.licenseRef }])) }))
 /** The packs the mobile app ships too: what a learner can SEE on a screen of their own. */
-const appFacts = [capitals, flags, currencies, locations, languages, callingCodes, nativeNames, subdivisionCapitals, subdivisionRegions]
+const appFacts = [capitals, flags, currencies, locations, languages, callingCodes, nativeNames]
   .flatMap(pack => pack.items as Fact[])
 /** The `delivery: "server"` packs: ranked people, companies and places, composed here and nowhere else. */
-const serverFacts = [hemisphere, area, borderCount, landlocked, borders, tld, alpha3, currencyCodes, companies, athletes, musicians, actors, scientists, writers, artists, landmarks, clubs, highestPoints]
+const serverFacts = [hemisphere, area, borderCount, landlocked, borders, tld, alpha3, currencyCodes, companies, athletes, musicians, actors, scientists, writers, artists, landmarks, clubs, highestPoints, subdivisionCapitals, subdivisionRegions]
   .flatMap(pack => pack.items as Fact[])
 const templateList = templates.items as Template[]
 
