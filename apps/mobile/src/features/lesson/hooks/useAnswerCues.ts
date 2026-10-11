@@ -22,6 +22,10 @@ import { hapticCorrect, hapticWrong } from '../../../lib/haptics.js'
 import { soundCorrect, soundWrong } from '../../../lib/sound.js'
 import { track } from '../../../lib/analytics.js'
 
+/** Was this template's answer picked from options rather than recalled? See `deriveRating`. */
+const isPick = (questions: LessonState['questions'], templateId: string): boolean =>
+  questions.some((q) => q.item.templateId === templateId && q.typed === undefined && q.tap !== true)
+
 export function useAnswerCues(state: LessonState, itemMs: number, restoredAnswers = 0): void {
   // Every answer gets its cue, the review round's included.
   const announced = useRef(answerCount(state))
@@ -67,7 +71,7 @@ export function useAnswerCues(state: LessonState, itemMs: number, restoredAnswer
         fact_id: one.factId,
         correct: one.wasCorrect,
         elapsed_ms: one.elapsedMs,
-        rating: deriveRating(one.wasCorrect, one.elapsedMs, itemMs),
+        rating: deriveRating(one.wasCorrect, one.elapsedMs, itemMs, isPick(state.questions, one.templateId)),
         position: state.index - (fresh.length - 1 - i),
       })
     })

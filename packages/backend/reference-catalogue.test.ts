@@ -30,7 +30,7 @@ describe('the shipped full reference catalogue', () => {
       lastReviewAt: now, dueAt: now + 86_400_000, suspended: false }
     const memories = new Map([[deep.id, memory]])
     expect(entityProgress(index, 'SE', memories, now)).toMatchObject({ factsTotal: 130, factsLearned: 1, factsSeen: 1 })
-    expect(regionProgress(index, 'EU', memories, now)).toMatchObject({ factsTotal: 2778, factsLearned: 1 })
+    expect(regionProgress(index, 'EU', memories, now)).toMatchObject({ factsTotal: 2783, factsLearned: 1 })
     expect(entityProgress(index, 'SE', memories, now)).toEqual(entityProgress(learningContent, 'SE', memories, now))
     expect(reference.filter(fact => fact.entity === 'SE')).toHaveLength(130)
   })

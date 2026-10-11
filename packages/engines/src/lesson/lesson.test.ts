@@ -20,6 +20,7 @@ import {
   isFinished,
   lastAnswerOf,
   lessonProgress,
+  REVIEW_TRIES,
   transition,
   type LessonState,
 } from './machine.js'
@@ -175,11 +176,27 @@ describe('reviewing mistakes at the end', () => {
     expect(accuracy(s)).toBeCloseTo(2 / 3)
   })
 
-  it('ends on the summary after one round, however the review went', () => {
-    let s = answerWrongly(toReview(), T0 + 4000)
-    s = transition(s, { type: 'CONTINUE', now: T0 + 4100 })
+  it('asks a missed question again until it is right, and lets it go after REVIEW_TRIES', () => {
+    // Successive relearning: one correct recall is the criterion, three tries the cap.
+    let s = toReview()
+    for (let tries = 1; tries < REVIEW_TRIES; tries++) {
+      s = transition(answerWrongly(s, T0 + 4000 * tries), { type: 'CONTINUE', now: T0 + 4000 * tries + 100 })
+      expect(s.phase).toBe('presenting')
+      expect(inReview(s)).toBe(true)
+    }
+    s = transition(answerWrongly(s, T0 + 20_000), { type: 'CONTINUE', now: T0 + 20_100 })
     expect(s.phase).toBe('summary')
-    expect(s.questions).toHaveLength(4)
+    expect(s.questions).toHaveLength(3 + REVIEW_TRIES)
+    expect(s.answers).toHaveLength(3)
+  })
+
+  it('ends the review as soon as the missed question is answered right', () => {
+    let s = transition(answerWrongly(toReview(), T0 + 4000), { type: 'CONTINUE', now: T0 + 4100 })
+    s = transition(answerCorrectly(s, T0 + 8000), { type: 'CONTINUE', now: T0 + 8100 })
+    expect(s.phase).toBe('summary')
+    // Practice, never evidence: nothing in the review is graded or scheduled.
+    expect(s.answers).toHaveLength(3)
+    expect(s.reviewed).toHaveLength(2)
   })
 
   it('leaving the review is finishing the lesson, not abandoning it', () => {
@@ -217,8 +234,10 @@ describe('what the lesson summary and the progress bar read', () => {
     expect(inReview(s)).toBe(true)
     expect(s.questions).toHaveLength(4)
     expect(lessonProgress(s)).toEqual({ current: 2, total: 3 })
-    // The missed question's second look settles it, however it goes: the bar ends full.
-    s = answerWrongly(s, T0 + 4000)
+    // A miss in the review does not settle it — it comes round again — and a right answer does.
+    s = transition(answerWrongly(s, T0 + 4000), { type: 'CONTINUE', now: T0 + 4100 })
+    expect(lessonProgress(s)).toEqual({ current: 2, total: 3 })
+    s = answerCorrectly(s, T0 + 5000)
     expect(lessonProgress(s)).toEqual({ current: 3, total: 3 })
   })
 

@@ -102,13 +102,20 @@ FSRS takes a 1–4 rating. Our UI is binary (right/wrong), so we **derive** it �
 this mapping is one of the highest-leverage tuning knobs in the product:
 
 ```ts
-function deriveRating(correct: boolean, elapsedMs: number, medianMs: number): Rating {
+function deriveRating(correct: boolean, elapsedMs: number, medianMs: number, recognition = false): Rating {
   if (!correct) return 1                                  // Again
   if (elapsedMs > medianMs * 2.5) return 2                // Hard  — right, but slow
-  if (elapsedMs < medianMs * 0.6) return 4                // Easy  — instant recall
+  if (elapsedMs < medianMs * 0.6) return recognition ? 3 : 4  // Easy — instant RECALL only
   return 3                                                // Good
 }
 ```
+
+**A pick is not a recall** (2026-10-11). A right answer picked from options shown —
+multiple choice, a matching board — is never rated Easy, however fast: recognition is
+weaker evidence than recall (testing effect g = 0.29 vs 0.61, Rowland 2014) and one time
+in four a guess is right. Typed answers and taps on the map keep Easy. The grader takes
+`isRecognition(templateId)`; the Worker answers it from the template (`input` absent), the
+app from the question (`typed`/`tap` absent), so both rate alike.
 
 `medianMs` is per template type, computed from the user's own history with a global
 prior. Hesitation is real signal about memory strength — we'd be throwing it away by
@@ -254,8 +261,12 @@ The richer treatments — a mnemonic, an Atlas explanation — remain v3.0.
 
 ### The end-of-lesson review round
 
-An untimed lesson that ends with mistakes re-asks each missed question once, options
-rotated, before the summary (`reviewFrom`/`reviewed` in `lesson/machine.ts`). It is
+An untimed lesson that ends with mistakes re-asks each missed question, options
+rotated, before the summary (`reviewFrom`/`reviewed` in `lesson/machine.ts`). **Until it is
+right** (2026-10-11): a miss in the review goes to the back of the round and comes again,
+at most `REVIEW_TRIES` (3) times — successive relearning, practise to one correct recall
+and let later sessions do the rest (Rawson & Dunlosky 2011; Rohrer et al. 2005 on why not
+to drill past it). See `docs/plan/learning-system-research-2026-10-11.md`. It is
 practice, not evidence: review answers are never graded, submitted or scheduled, cost
 no heart and earn no XP, because the first answer is the observation and a second one
 seconds later would count one fact twice in FSRS. A speed round and a lesson that ran

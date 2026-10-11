@@ -170,7 +170,8 @@ export function worldProgress(
 ): WorldProgress {
   const byRegion = new Map<string, Entity[]>()
   for (const entity of index.entities.values()) {
-    if (entity.region === undefined) continue
+    // The world is its countries: a US state is the United States' progress, not the world's.
+    if (entity.region === undefined || entity.within !== undefined) continue
     const bucket = byRegion.get(entity.region)
     if (bucket) bucket.push(entity)
     else byRegion.set(entity.region, [entity])

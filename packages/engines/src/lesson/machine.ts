@@ -220,8 +220,34 @@ function reviewRound(s: LessonState): readonly Question[] | null {
     .filter((q, i, all) => all.findIndex((other) => other.item.id === q.item.id) === i)
     // A board's members come back as the plain questions they are: re-asking one pair of four
     // as a board of one would be a board with nothing to match.
-    .map(({ group: _group, ...q }) => ({ ...q, options: q.options.length > 1 ? [...q.options.slice(1), q.options[0]!] : q.options }))
+    .map(({ group: _group, ...q }) => rotated(q))
   return again.length > 0 ? again : null
+}
+
+/** The same question with its options moved round by one, so the answer is not where it sat. */
+const rotated = (q: Question): Question =>
+  ({ ...q, options: q.options.length > 1 ? [...q.options.slice(1), q.options[0]!] : q.options })
+
+/**
+ * How many times the review round asks one missed question before letting it go.
+ *
+ * Successive relearning: practise a missed fact to ONE correct recall, then stop — the
+ * next sessions do the rest (Rawson & Dunlosky 2011; recall a week later rose from about
+ * 20 % to 80 % with relearning, Rawson et al. 2018). A miss in the review goes to the back
+ * of the round, so other questions sit between the tries, and three tries is the cap: past
+ * it, more drilling the same minute fades fast (Rohrer et al. 2005) and the scheduler
+ * brings the fact back on another day. docs/plan/learning-system-research-2026-10-11.md §2.
+ */
+export const REVIEW_TRIES = 3
+
+/** Review-round questions that are done: answered right, or asked `REVIEW_TRIES` times. */
+function settledInReview(reviewed: readonly AnsweredItem[]): number {
+  const tries = new Map<string, { count: number; right: boolean }>()
+  for (const a of reviewed) {
+    const held = tries.get(a.itemId) ?? { count: 0, right: false }
+    tries.set(a.itemId, { count: held.count + 1, right: held.right || a.wasCorrect })
+  }
+  return [...tries.values()].filter((t) => t.right || t.count >= REVIEW_TRIES).length
 }
 
 export const currentQuestion = (s: LessonState): Question | null =>
@@ -230,8 +256,8 @@ export const currentQuestion = (s: LessonState): Question | null =>
 /**
  * The lesson's progress bar: questions settled, out of the lesson's own.
  *
- * A right answer settles its question; a missed one is settled by its second look in the
- * review round, as Duolingo's bar fills on what you get right and the mistakes fill the
+ * A right answer settles its question; a missed one is settled in the review round, once it
+ * is answered right there or has had its tries, as Duolingo's bar fills on what you get right and the mistakes fill the
  * rest. Counting the question on screen instead, with the review appended to the total,
  * sent the bar backwards at the worst moment: "20 / 20" became "21 / 36" and a nearly
  * full bar dropped to 58 % for the learner who had struggled most (round-3 design
@@ -244,7 +270,7 @@ export function lessonProgress(s: LessonState): { readonly current: number; read
   const settled =
     s.timeLimitMs !== null
       ? s.answers.length
-      : s.answers.filter((a) => a.wasCorrect).length + s.reviewed.length
+      : s.answers.filter((a) => a.wasCorrect).length + settledInReview(s.reviewed)
   return { current: Math.min(total, settled), total }
 }
 
@@ -572,9 +598,20 @@ function record(
     ...extra,
   }
 
-  // Practice, not evidence: kept apart from the graded answers, and it moves no heart.
+  // Practice, not evidence: kept apart from the graded answers, and it moves no heart. A
+  // miss goes to the back of the round until it is answered right (`REVIEW_TRIES`).
   if (inReview(state)) {
-    return { ...state, phase: 'answered', reviewed: [...state.reviewed, answer], selectedOptionId: null, typedText: '' }
+    const reviewed = [...state.reviewed, answer]
+    const tries = reviewed.filter((a) => a.itemId === answer.itemId).length
+    const again = !wasCorrect && tries < REVIEW_TRIES
+    return {
+      ...state,
+      phase: 'answered',
+      reviewed,
+      questions: again ? [...state.questions, rotated(question)] : state.questions,
+      selectedOptionId: null,
+      typedText: '',
+    }
   }
 
   let hearts = state.hearts

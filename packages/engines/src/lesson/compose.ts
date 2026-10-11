@@ -16,6 +16,7 @@ import { pairUp } from './pairs.js'
 import type { FactId, MemoryState } from '../learning/types.js'
 import {
   buildQuestion,
+  isNested,
   itemsForFact,
   type ContentIndex,
   type Question,
@@ -87,6 +88,12 @@ export type ComposeInput = {
    * Screen-reader lessons get the same facts spoken (see `itemsForFact`).
    */
   readonly input?: 'tap'
+  /**
+   * Introduce facts about nested entities (`Entity.within` — a US state, a Swedish county).
+   * Off by default: they are opt-in, so only a lesson whose focus names them sets this. Facts
+   * the learner has already met are reviewed either way.
+   */
+  readonly nested?: boolean
 }
 
 export function composeLesson(input: ComposeInput): readonly Question[] {
@@ -162,7 +169,7 @@ export function composeLesson(input: ComposeInput): readonly Question[] {
   // `selectItems` drops what is out of topic anyway; sorting 6,700 facts to throw 6,600 away
   // was most of what a topic-bound lesson cost, and a course check composes two thousand.
   const unseen = shuffle(
-    quizzableFacts.filter((id) => !seen.has(id)),
+    quizzableFacts.filter((id) => !seen.has(id) && (input.nested === true || !nestedFact(index, id))),
     rng,
   )
   const newFactIds = (topicFilter ? unseen.filter(topicFilter) : unseen).sort((a, b) => {
@@ -258,6 +265,12 @@ function tapFilter(index: ContentIndex, narrower: ((factId: FactId) => boolean) 
   return (factId) =>
     (narrower === undefined || narrower(factId)) &&
     (index.itemsByFact.get(factId) ?? []).some((item) => index.templates.get(item.templateId)?.input === 'tap')
+}
+
+/** Whether a fact is about a nested entity (`Entity.within`). */
+function nestedFact(index: ContentIndex, factId: FactId): boolean {
+  const entity = index.facts.get(factId)?.entity
+  return entity !== undefined && isNested(index, entity)
 }
 
 /** Accuracy is not read before this many reviews: three lucky answers are not a trend. */

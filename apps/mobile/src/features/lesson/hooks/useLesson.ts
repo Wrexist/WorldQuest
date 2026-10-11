@@ -193,11 +193,15 @@ export function useLesson({
   // prediction, and the server's answer replaces it on reconcile.
   const optimistic = useMemo<GradeResult | null>(() => {
     if (!isFinished(state) || state.answers.length === 0) return null
+    // Picked, not recalled: the questions say which (no `typed`, no `tap`), as the Worker's
+    // templates do, so the prediction rates exactly what the server will.
+    const recognition = new Set(state.questions.filter((q) => q.typed === undefined && q.tap !== true).map((q) => q.item.templateId))
     return gradeLesson({
       lessonId: state.lessonId,
       answers: state.answers,
       memory,
       now: now(),
+      isRecognition: (templateId) => recognition.has(templateId),
     })
   }, [state, memory])
 

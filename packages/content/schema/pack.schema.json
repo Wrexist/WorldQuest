@@ -243,6 +243,7 @@
           "type": "string",
           "enum": [
             "country",
+            "subdivision",
             "capital",
             "landmark",
             "region",
@@ -270,6 +271,11 @@
         },
         "subregion": {
           "type": "string"
+        },
+        "within": {
+          "type": "string",
+          "pattern": "^[A-Z0-9-]{2,12}$",
+          "description": "The entity this one is part of: a US state is within US, a Swedish county within SE. A nested entity is opt-in learning — its facts are introduced only in a lesson whose focus names it, never in a mixed lesson or a daily quest — and it is not counted among the top-level entities in progress."
         },
         "assets": {
           "description": "Licensed artwork for this entity, keyed by kind: `flag` and `map` today. There used to be a bare `geometry: \"geo/countries/XX.svg\"` property alongside this one; it was removed rather than corrected, because a path with no licence beside it is exactly what this object exists to prevent — and that one sat unread on all 65 entities for the life of the project while the outlines it promised were filed as blocked on an illustrator.",
@@ -493,6 +499,11 @@
             "excludeSimilarStrings": {
               "type": "boolean",
               "default": true
+            },
+            "peersOnly": {
+              "type": "boolean",
+              "default": false,
+              "description": "Keep only wrong answers that have a fact of their own for this attribute: for 'which country is this footballer from?', only countries the pack has footballers from. Stops a famous name being asked beside three micro-states no footballer comes from."
             },
             "differentValueOnly": {
               "type": "boolean",

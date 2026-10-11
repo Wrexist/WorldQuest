@@ -76,10 +76,10 @@
     "react-native-safe-area-context": "5.6.2",
     "react-native-screens": "~4.16.0"
   },
-  "packs": 31,
-  "entities": 194,
-  "facts": 6747,
-  "templates": 95,
+  "packs": 34,
+  "entities": 265,
+  "facts": 6896,
+  "templates": 105,
   "locales": [
     "en",
     "sv"
@@ -174,6 +174,7 @@
     "apps/mobile/src/features/explore/ExploreScreen.test.tsx",
     "apps/mobile/src/features/explore/RegionScreen.test.tsx",
     "apps/mobile/src/features/explore/collapseRelations.test.ts",
+    "apps/mobile/src/features/explore/factCategories.test.ts",
     "apps/mobile/src/features/favourites/useFavourites.test.ts",
     "apps/mobile/src/features/friends/FriendsScreen.test.tsx",
     "apps/mobile/src/features/friends/useChallenges.test.tsx",
@@ -290,6 +291,7 @@
     "packages/design/src/tokens.test.ts",
     "packages/engines/src/achievements/achievements.test.ts",
     "packages/engines/src/content/deep.test.ts",
+    "packages/engines/src/content/peers.test.ts",
     "packages/engines/src/content/thesis.test.ts",
     "packages/engines/src/content/typed.test.ts",
     "packages/engines/src/course/course.test.ts",
@@ -303,6 +305,7 @@
     "packages/engines/src/lesson/focus.test.ts",
     "packages/engines/src/lesson/lesson.test.ts",
     "packages/engines/src/lesson/machine.fuzz.test.ts",
+    "packages/engines/src/lesson/nested.test.ts",
     "packages/engines/src/lesson/pairs.test.ts",
     "packages/engines/src/lesson/placement.test.ts",
     "packages/engines/src/lesson/rescue.test.ts",

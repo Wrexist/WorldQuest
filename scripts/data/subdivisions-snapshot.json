@@ -1,0 +1,1117 @@
+{
+ "fetchedAt": "2026-10-11",
+ "source": "Wikidata (CC0), query in scripts/build-subdivisions.cjs",
+ "rows": {
+  "SE-AB": {
+   "code": "SE-AB",
+   "item": "Q104231",
+   "en": "Stockholm County",
+   "sv": "Stockholms län",
+   "sitelinks": 83,
+   "capitals": {
+    "Q1754": {
+     "en": "Stockholm",
+     "sv": "Stockholm"
+    }
+   },
+   "nuts": [
+    "SE110"
+   ]
+  },
+  "SE-AC": {
+   "code": "SE-AC",
+   "item": "Q104877",
+   "en": "Västerbotten County",
+   "sv": "Västerbottens län",
+   "sitelinks": 83,
+   "capitals": {
+    "Q25579": {
+     "en": "Umeå",
+     "sv": "Umeå"
+    }
+   },
+   "nuts": [
+    "SE331"
+   ]
+  },
+  "SE-BD": {
+   "code": "SE-BD",
+   "item": "Q103686",
+   "en": "Norrbotten County",
+   "sv": "Norrbottens län",
+   "sitelinks": 84,
+   "capitals": {
+    "Q26268": {
+     "en": "Luleå",
+     "sv": "Luleå"
+    }
+   },
+   "nuts": [
+    "SE332"
+   ]
+  },
+  "SE-C": {
+   "code": "SE-C",
+   "item": "Q104926",
+   "en": "Uppsala County",
+   "sv": "Uppsala län",
+   "sitelinks": 76,
+   "capitals": {
+    "Q25286": {
+     "en": "Uppsala",
+     "sv": "Uppsala"
+    }
+   },
+   "nuts": [
+    "SE121"
+   ]
+  },
+  "SE-D": {
+   "code": "SE-D",
+   "item": "Q106915",
+   "en": "Södermanland County",
+   "sv": "Södermanlands län",
+   "sitelinks": 74,
+   "capitals": {
+    "Q54356": {
+     "en": "Nyköping",
+     "sv": "Nyköping"
+    }
+   },
+   "nuts": [
+    "SE122"
+   ]
+  },
+  "SE-E": {
+   "code": "SE-E",
+   "item": "Q104940",
+   "en": "Östergötland County",
+   "sv": "Östergötlands län",
+   "sitelinks": 75,
+   "capitals": {
+    "Q25413": {
+     "en": "Linköping",
+     "sv": "Linköping"
+    }
+   },
+   "nuts": [
+    "SE123"
+   ]
+  },
+  "SE-F": {
+   "code": "SE-F",
+   "item": "Q103672",
+   "en": "Jönköping County",
+   "sv": "Jönköpings län",
+   "sitelinks": 77,
+   "capitals": {
+    "Q25415": {
+     "en": "Jönköping",
+     "sv": "Jönköping"
+    }
+   },
+   "nuts": [
+    "SE211"
+   ]
+  },
+  "SE-G": {
+   "code": "SE-G",
+   "item": "Q104746",
+   "en": "Kronoberg County",
+   "sv": "Kronobergs län",
+   "sitelinks": 79,
+   "capitals": {
+    "Q26152": {
+     "en": "Växjö",
+     "sv": "Växjö"
+    }
+   },
+   "nuts": [
+    "SE212"
+   ]
+  },
+  "SE-H": {
+   "code": "SE-H",
+   "item": "Q103707",
+   "en": "Kalmar County",
+   "sv": "Kalmar län",
+   "sitelinks": 79,
+   "capitals": {
+    "Q26345": {
+     "en": "Kalmar",
+     "sv": "Kalmar"
+    }
+   },
+   "nuts": [
+    "SE213"
+   ]
+  },
+  "SE-I": {
+   "code": "SE-I",
+   "item": "Q103738",
+   "en": "Gotland County",
+   "sv": "Gotlands län",
+   "sitelinks": 75,
+   "capitals": {
+    "Q54757": {
+     "en": "Visby",
+     "sv": "Visby"
+    }
+   },
+   "nuts": [
+    "SE214"
+   ]
+  },
+  "SE-K": {
+   "code": "SE-K",
+   "item": "Q102377",
+   "en": "Blekinge County",
+   "sv": "Blekinge län",
+   "sitelinks": 84,
+   "capitals": {
+    "Q25789": {
+     "en": "Karlskrona",
+     "sv": "Karlskrona"
+    }
+   },
+   "nuts": [
+    "SE221"
+   ]
+  },
+  "SE-M": {
+   "code": "SE-M",
+   "item": "Q103659",
+   "en": "Skåne County",
+   "sv": "Skåne län",
+   "sitelinks": 85,
+   "capitals": {
+    "Q2211": {
+     "en": "Malmö",
+     "sv": "Malmö"
+    }
+   },
+   "nuts": [
+    "SE224"
+   ]
+  },
+  "SE-N": {
+   "code": "SE-N",
+   "item": "Q103691",
+   "en": "Halland County",
+   "sv": "Hallands län",
+   "sitelinks": 81,
+   "capitals": {
+    "Q26521": {
+     "en": "Halmstad",
+     "sv": "Halmstad"
+    }
+   },
+   "nuts": [
+    "SE231"
+   ]
+  },
+  "SE-O": {
+   "code": "SE-O",
+   "item": "Q103093",
+   "en": "Västra Götaland County",
+   "sv": "Västra Götalands län",
+   "sitelinks": 82,
+   "capitals": {
+    "Q25287": {
+     "en": "Gothenburg",
+     "sv": "Göteborg"
+    }
+   },
+   "nuts": [
+    "SE232"
+   ]
+  },
+  "SE-S": {
+   "code": "SE-S",
+   "item": "Q106789",
+   "en": "Värmland County",
+   "sv": "Värmlands län",
+   "sitelinks": 78,
+   "capitals": {
+    "Q25457": {
+     "en": "Karlstad",
+     "sv": "Karlstad"
+    }
+   },
+   "nuts": [
+    "SE311"
+   ]
+  },
+  "SE-T": {
+   "code": "SE-T",
+   "item": "Q104257",
+   "en": "Örebro County",
+   "sv": "Örebro län",
+   "sitelinks": 77,
+   "capitals": {
+    "Q25732": {
+     "en": "Örebro",
+     "sv": "Örebro"
+    }
+   },
+   "nuts": [
+    "SE124"
+   ]
+  },
+  "SE-U": {
+   "code": "SE-U",
+   "item": "Q105075",
+   "en": "Västmanland County",
+   "sv": "Västmanlands län",
+   "sitelinks": 73,
+   "capitals": {
+    "Q25412": {
+     "en": "Västerås",
+     "sv": "Västerås"
+    }
+   },
+   "nuts": [
+    "SE125"
+   ]
+  },
+  "SE-W": {
+   "code": "SE-W",
+   "item": "Q103732",
+   "en": "Dalarna County",
+   "sv": "Dalarnas län",
+   "sitelinks": 81,
+   "capitals": {
+    "Q26509": {
+     "en": "Falun",
+     "sv": "Falun"
+    }
+   },
+   "nuts": [
+    "SE312"
+   ]
+  },
+  "SE-X": {
+   "code": "SE-X",
+   "item": "Q103699",
+   "en": "Gävleborg County",
+   "sv": "Gävleborgs län",
+   "sitelinks": 79,
+   "capitals": {
+    "Q25748": {
+     "en": "Gävle",
+     "sv": "Gävle"
+    }
+   },
+   "nuts": [
+    "SE313"
+   ]
+  },
+  "SE-Y": {
+   "code": "SE-Y",
+   "item": "Q104891",
+   "en": "Västernorrland County",
+   "sv": "Västernorrlands län",
+   "sitelinks": 77,
+   "capitals": {
+    "Q3240427": {
+     "en": "Härnösand",
+     "sv": "Härnösand"
+    }
+   },
+   "nuts": [
+    "SE321"
+   ]
+  },
+  "SE-Z": {
+   "code": "SE-Z",
+   "item": "Q103679",
+   "en": "Jämtland County",
+   "sv": "Jämtlands län",
+   "sitelinks": 79,
+   "capitals": {
+    "Q26515": {
+     "en": "Östersund",
+     "sv": "Östersund"
+    }
+   },
+   "nuts": [
+    "SE322"
+   ]
+  },
+  "US-AK": {
+   "code": "US-AK",
+   "item": "Q797",
+   "en": "Alaska",
+   "sv": "Alaska",
+   "sitelinks": 263,
+   "capitals": {
+    "Q29445": {}
+   },
+   "nuts": []
+  },
+  "US-AL": {
+   "code": "US-AL",
+   "item": "Q173",
+   "en": "Alabama",
+   "sv": "Alabama",
+   "sitelinks": 241,
+   "capitals": {
+    "Q29364": {
+     "en": "Montgomery",
+     "sv": "Montgomery"
+    }
+   },
+   "nuts": []
+  },
+  "US-AR": {
+   "code": "US-AR",
+   "item": "Q1612",
+   "en": "Arkansas",
+   "sv": "Arkansas",
+   "sitelinks": 223,
+   "capitals": {
+    "Q33405": {
+     "en": "Little Rock",
+     "sv": "Little Rock"
+    }
+   },
+   "nuts": []
+  },
+  "US-AS": {
+   "code": "US-AS",
+   "item": "Q16641",
+   "en": "American Samoa",
+   "sv": "Amerikanska Samoa",
+   "sitelinks": 178,
+   "capitals": {
+    "Q51678": {
+     "en": "Pago Pago",
+     "sv": "Pago Pago"
+    }
+   },
+   "nuts": []
+  },
+  "US-AZ": {
+   "code": "US-AZ",
+   "item": "Q816",
+   "en": "Arizona",
+   "sv": "Arizona",
+   "sitelinks": 245,
+   "capitals": {
+    "Q16556": {
+     "en": "Phoenix",
+     "sv": "Phoenix"
+    }
+   },
+   "nuts": []
+  },
+  "US-CA": {
+   "code": "US-CA",
+   "item": "Q99",
+   "en": "California",
+   "sv": "Kalifornien",
+   "sitelinks": 287,
+   "capitals": {
+    "Q18013": {
+     "en": "Sacramento",
+     "sv": "Sacramento"
+    }
+   },
+   "nuts": []
+  },
+  "US-CO": {
+   "code": "US-CO",
+   "item": "Q1261",
+   "en": "Colorado",
+   "sv": "Colorado",
+   "sitelinks": 230,
+   "capitals": {
+    "Q16554": {
+     "en": "Denver",
+     "sv": "Denver"
+    }
+   },
+   "nuts": []
+  },
+  "US-CT": {
+   "code": "US-CT",
+   "item": "Q779",
+   "en": "Connecticut",
+   "sv": "Connecticut",
+   "sitelinks": 222,
+   "capitals": {
+    "Q33486": {
+     "en": "Hartford",
+     "sv": "Hartford"
+    }
+   },
+   "nuts": []
+  },
+  "US-DC": {
+   "code": "US-DC",
+   "item": "Q3551781",
+   "en": "District of Columbia",
+   "sv": "District of Columbia",
+   "sitelinks": 23,
+   "capitals": {
+    "Q61": {
+     "en": "Washington, D.C.",
+     "sv": "Washington, D.C."
+    }
+   },
+   "nuts": []
+  },
+  "US-DE": {
+   "code": "US-DE",
+   "item": "Q1393",
+   "en": "Delaware",
+   "sv": "Delaware",
+   "sitelinks": 220,
+   "capitals": {
+    "Q33518": {
+     "en": "Dover",
+     "sv": "Dover"
+    }
+   },
+   "nuts": []
+  },
+  "US-FL": {
+   "code": "US-FL",
+   "item": "Q812",
+   "en": "Florida",
+   "sv": "Florida",
+   "sitelinks": 260,
+   "capitals": {
+    "Q37043": {
+     "en": "Tallahassee",
+     "sv": "Tallahassee"
+    }
+   },
+   "nuts": []
+  },
+  "US-GA": {
+   "code": "US-GA",
+   "item": "Q1428",
+   "en": "Georgia",
+   "sv": "Georgia",
+   "sitelinks": 231,
+   "capitals": {
+    "Q23556": {
+     "en": "Atlanta",
+     "sv": "Atlanta"
+    }
+   },
+   "nuts": []
+  },
+  "US-GU": {
+   "code": "US-GU",
+   "item": "Q16635",
+   "en": "Guam",
+   "sv": "Guam",
+   "sitelinks": 195,
+   "capitals": {
+    "Q30988": {
+     "en": "Hagåtña",
+     "sv": "Hagåtña"
+    }
+   },
+   "nuts": []
+  },
+  "US-HI": {
+   "code": "US-HI",
+   "item": "Q782",
+   "en": "Hawaii",
+   "sv": "Hawaii",
+   "sitelinks": 269,
+   "capitals": {
+    "Q18094": {
+     "en": "Honolulu",
+     "sv": "Honolulu"
+    }
+   },
+   "nuts": []
+  },
+  "US-IA": {
+   "code": "US-IA",
+   "item": "Q1546",
+   "en": "Iowa",
+   "sv": "Iowa",
+   "sitelinks": 224,
+   "capitals": {
+    "Q39709": {
+     "en": "Des Moines",
+     "sv": "Des Moines"
+    }
+   },
+   "nuts": []
+  },
+  "US-ID": {
+   "code": "US-ID",
+   "item": "Q1221",
+   "en": "Idaho",
+   "sv": "Idaho",
+   "sitelinks": 222,
+   "capitals": {
+    "Q35775": {
+     "en": "Boise",
+     "sv": "Boise"
+    }
+   },
+   "nuts": []
+  },
+  "US-IL": {
+   "code": "US-IL",
+   "item": "Q1204",
+   "en": "Illinois",
+   "sv": "Illinois",
+   "sitelinks": 238,
+   "capitals": {
+    "Q28515": {
+     "en": "Springfield",
+     "sv": "Springfield"
+    }
+   },
+   "nuts": []
+  },
+  "US-IN": {
+   "code": "US-IN",
+   "item": "Q1415",
+   "en": "Indiana",
+   "sv": "Indiana",
+   "sitelinks": 225,
+   "capitals": {
+    "Q6346": {
+     "en": "Indianapolis",
+     "sv": "Indianapolis"
+    }
+   },
+   "nuts": []
+  },
+  "US-KS": {
+   "code": "US-KS",
+   "item": "Q1558",
+   "en": "Kansas",
+   "sv": "Kansas",
+   "sitelinks": 225,
+   "capitals": {
+    "Q41057": {
+     "en": "Topeka",
+     "sv": "Topeka"
+    }
+   },
+   "nuts": []
+  },
+  "US-KY": {
+   "code": "US-KY",
+   "item": "Q1603",
+   "en": "Kentucky",
+   "sv": "Kentucky",
+   "sitelinks": 221,
+   "capitals": {
+    "Q28603": {
+     "en": "Frankfort",
+     "sv": "Frankfort"
+    }
+   },
+   "nuts": []
+  },
+  "US-LA": {
+   "code": "US-LA",
+   "item": "Q1588",
+   "en": "Louisiana",
+   "sv": "Louisiana",
+   "sitelinks": 224,
+   "capitals": {
+    "Q28218": {
+     "en": "Baton Rouge",
+     "sv": "Baton Rouge"
+    }
+   },
+   "nuts": []
+  },
+  "US-MA": {
+   "code": "US-MA",
+   "item": "Q771",
+   "en": "Massachusetts",
+   "sv": "Massachusetts",
+   "sitelinks": 229,
+   "capitals": {
+    "Q100": {
+     "en": "Boston",
+     "sv": "Boston"
+    }
+   },
+   "nuts": []
+  },
+  "US-MD": {
+   "code": "US-MD",
+   "item": "Q1391",
+   "en": "Maryland",
+   "sv": "Maryland",
+   "sitelinks": 229,
+   "capitals": {
+    "Q28271": {
+     "en": "Annapolis",
+     "sv": "Annapolis"
+    }
+   },
+   "nuts": []
+  },
+  "US-ME": {
+   "code": "US-ME",
+   "item": "Q724",
+   "en": "Maine",
+   "sv": "Maine",
+   "sitelinks": 216,
+   "capitals": {
+    "Q28206": {
+     "en": "Augusta",
+     "sv": "Augusta"
+    }
+   },
+   "nuts": []
+  },
+  "US-MI": {
+   "code": "US-MI",
+   "item": "Q1166",
+   "en": "Michigan",
+   "sv": "Michigan",
+   "sitelinks": 225,
+   "capitals": {
+    "Q28237": {
+     "en": "Lansing",
+     "sv": "Lansing"
+    }
+   },
+   "nuts": []
+  },
+  "US-MN": {
+   "code": "US-MN",
+   "item": "Q1527",
+   "en": "Minnesota",
+   "sv": "Minnesota",
+   "sitelinks": 223,
+   "capitals": {
+    "Q28848": {
+     "en": "Saint Paul",
+     "sv": "Saint Paul"
+    }
+   },
+   "nuts": []
+  },
+  "US-MO": {
+   "code": "US-MO",
+   "item": "Q1581",
+   "en": "Missouri",
+   "sv": "Missouri",
+   "sitelinks": 223,
+   "capitals": {
+    "Q28180": {
+     "en": "Jefferson City",
+     "sv": "Jefferson City"
+    }
+   },
+   "nuts": []
+  },
+  "US-MP": {
+   "code": "US-MP",
+   "item": "Q16644",
+   "en": "Northern Mariana Islands",
+   "sv": "Nordmarianerna",
+   "sitelinks": 163,
+   "capitals": {
+    "Q49755159": {
+     "en": "Saipan"
+    }
+   },
+   "nuts": []
+  },
+  "US-MS": {
+   "code": "US-MS",
+   "item": "Q1494",
+   "en": "Mississippi",
+   "sv": "Mississippi",
+   "sitelinks": 220,
+   "capitals": {
+    "Q28198": {
+     "en": "Jackson",
+     "sv": "Jackson"
+    }
+   },
+   "nuts": []
+  },
+  "US-MT": {
+   "code": "US-MT",
+   "item": "Q1212",
+   "en": "Montana",
+   "sv": "Montana",
+   "sitelinks": 216,
+   "capitals": {
+    "Q38733": {
+     "en": "Helena",
+     "sv": "Helena"
+    }
+   },
+   "nuts": []
+  },
+  "US-NC": {
+   "code": "US-NC",
+   "item": "Q1454",
+   "en": "North Carolina",
+   "sv": "North Carolina",
+   "sitelinks": 216,
+   "capitals": {
+    "Q41087": {
+     "en": "Raleigh",
+     "sv": "Raleigh"
+    }
+   },
+   "nuts": []
+  },
+  "US-ND": {
+   "code": "US-ND",
+   "item": "Q1207",
+   "en": "North Dakota",
+   "sv": "North Dakota",
+   "sitelinks": 211,
+   "capitals": {
+    "Q37066": {
+     "en": "Bismarck",
+     "sv": "Bismarck"
+    }
+   },
+   "nuts": []
+  },
+  "US-NE": {
+   "code": "US-NE",
+   "item": "Q1553",
+   "en": "Nebraska",
+   "sv": "Nebraska",
+   "sitelinks": 221,
+   "capitals": {
+    "Q28260": {
+     "en": "Lincoln",
+     "sv": "Lincoln"
+    }
+   },
+   "nuts": []
+  },
+  "US-NH": {
+   "code": "US-NH",
+   "item": "Q759",
+   "en": "New Hampshire",
+   "sv": "New Hampshire",
+   "sitelinks": 216,
+   "capitals": {
+    "Q28249": {
+     "en": "Concord",
+     "sv": "Concord"
+    }
+   },
+   "nuts": []
+  },
+  "US-NJ": {
+   "code": "US-NJ",
+   "item": "Q1408",
+   "en": "New Jersey",
+   "sv": "New Jersey",
+   "sitelinks": 231,
+   "capitals": {
+    "Q25330": {
+     "en": "Trenton",
+     "sv": "Trenton"
+    }
+   },
+   "nuts": []
+  },
+  "US-NM": {
+   "code": "US-NM",
+   "item": "Q1522",
+   "en": "New Mexico",
+   "sv": "New Mexico",
+   "sitelinks": 223,
+   "capitals": {
+    "Q38555": {
+     "en": "Santa Fe",
+     "sv": "Santa Fe"
+    }
+   },
+   "nuts": []
+  },
+  "US-NV": {
+   "code": "US-NV",
+   "item": "Q1227",
+   "en": "Nevada",
+   "sv": "Nevada",
+   "sitelinks": 231,
+   "capitals": {
+    "Q40881": {
+     "en": "Carson City",
+     "sv": "Carson City"
+    }
+   },
+   "nuts": []
+  },
+  "US-NY": {
+   "code": "US-NY",
+   "item": "Q1384",
+   "en": "New York",
+   "sv": "New York",
+   "sitelinks": 247,
+   "capitals": {
+    "Q24861": {
+     "en": "Albany",
+     "sv": "Albany"
+    }
+   },
+   "nuts": []
+  },
+  "US-OH": {
+   "code": "US-OH",
+   "item": "Q1397",
+   "en": "Ohio",
+   "sv": "Ohio",
+   "sitelinks": 235,
+   "capitals": {
+    "Q16567": {
+     "en": "Columbus",
+     "sv": "Columbus"
+    }
+   },
+   "nuts": []
+  },
+  "US-OK": {
+   "code": "US-OK",
+   "item": "Q1649",
+   "en": "Oklahoma",
+   "sv": "Oklahoma",
+   "sitelinks": 222,
+   "capitals": {
+    "Q34863": {
+     "en": "Oklahoma City",
+     "sv": "Oklahoma City"
+    }
+   },
+   "nuts": []
+  },
+  "US-OR": {
+   "code": "US-OR",
+   "item": "Q824",
+   "en": "Oregon",
+   "sv": "Oregon",
+   "sitelinks": 226,
+   "capitals": {
+    "Q43919": {
+     "en": "Salem",
+     "sv": "Salem"
+    }
+   },
+   "nuts": []
+  },
+  "US-PA": {
+   "code": "US-PA",
+   "item": "Q1400",
+   "en": "Pennsylvania",
+   "sv": "Pennsylvania",
+   "sitelinks": 235,
+   "capitals": {
+    "Q25280": {
+     "en": "Harrisburg",
+     "sv": "Harrisburg"
+    }
+   },
+   "nuts": []
+  },
+  "US-PR": {
+   "code": "US-PR",
+   "item": "Q1183",
+   "en": "Puerto Rico",
+   "sv": "Puerto Rico",
+   "sitelinks": 222,
+   "capitals": {
+    "Q41211": {
+     "en": "San Juan",
+     "sv": "San Juan"
+    }
+   },
+   "nuts": []
+  },
+  "US-RI": {
+   "code": "US-RI",
+   "item": "Q1387",
+   "en": "Rhode Island",
+   "sv": "Rhode Island",
+   "sitelinks": 214,
+   "capitals": {
+    "Q18383": {
+     "en": "Providence",
+     "sv": "Providence"
+    }
+   },
+   "nuts": []
+  },
+  "US-SC": {
+   "code": "US-SC",
+   "item": "Q1456",
+   "en": "South Carolina",
+   "sv": "South Carolina",
+   "sitelinks": 217,
+   "capitals": {
+    "Q38453": {
+     "en": "Columbia",
+     "sv": "Columbia"
+    }
+   },
+   "nuts": []
+  },
+  "US-SD": {
+   "code": "US-SD",
+   "item": "Q1211",
+   "en": "South Dakota",
+   "sv": "South Dakota",
+   "sitelinks": 213,
+   "capitals": {
+    "Q40747": {
+     "en": "Pierre",
+     "sv": "Pierre"
+    }
+   },
+   "nuts": []
+  },
+  "US-TN": {
+   "code": "US-TN",
+   "item": "Q1509",
+   "en": "Tennessee",
+   "sv": "Tennessee",
+   "sitelinks": 226,
+   "capitals": {
+    "Q23197": {
+     "en": "Nashville",
+     "sv": "Nashville"
+    }
+   },
+   "nuts": []
+  },
+  "US-TX": {
+   "code": "US-TX",
+   "item": "Q1439",
+   "en": "Texas",
+   "sv": "Texas",
+   "sitelinks": 259,
+   "capitals": {
+    "Q16559": {
+     "en": "Austin",
+     "sv": "Austin"
+    }
+   },
+   "nuts": []
+  },
+  "US-UM": {
+   "code": "US-UM",
+   "item": "Q16645",
+   "en": "United States Minor Outlying Islands",
+   "sv": "Förenta staternas mindre öar i Oceanien och Västindien",
+   "sitelinks": 69,
+   "capitals": {},
+   "nuts": []
+  },
+  "US-UT": {
+   "code": "US-UT",
+   "item": "Q829",
+   "en": "Utah",
+   "sv": "Utah",
+   "sitelinks": 227,
+   "capitals": {
+    "Q23337": {
+     "en": "Salt Lake City",
+     "sv": "Salt Lake City"
+    }
+   },
+   "nuts": []
+  },
+  "US-VA": {
+   "code": "US-VA",
+   "item": "Q1370",
+   "en": "Virginia",
+   "sv": "Virginia",
+   "sitelinks": 234,
+   "capitals": {
+    "Q43421": {
+     "en": "Richmond",
+     "sv": "Richmond"
+    }
+   },
+   "nuts": []
+  },
+  "US-VT": {
+   "code": "US-VT",
+   "item": "Q16551",
+   "en": "Vermont",
+   "sv": "Vermont",
+   "sitelinks": 219,
+   "capitals": {
+    "Q26426": {
+     "en": "Montpelier",
+     "sv": "Montpelier"
+    }
+   },
+   "nuts": []
+  },
+  "US-WA": {
+   "code": "US-WA",
+   "item": "Q1223",
+   "en": "Washington",
+   "sv": "Washington",
+   "sitelinks": 223,
+   "capitals": {
+    "Q42735": {
+     "en": "Olympia",
+     "sv": "Olympia"
+    }
+   },
+   "nuts": []
+  },
+  "US-WI": {
+   "code": "US-WI",
+   "item": "Q1537",
+   "en": "Wisconsin",
+   "sv": "Wisconsin",
+   "sitelinks": 225,
+   "capitals": {
+    "Q43788": {
+     "en": "Madison",
+     "sv": "Madison"
+    }
+   },
+   "nuts": []
+  },
+  "US-WV": {
+   "code": "US-WV",
+   "item": "Q1371",
+   "en": "West Virginia",
+   "sv": "West Virginia",
+   "sitelinks": 215,
+   "capitals": {
+    "Q44564": {
+     "en": "Charleston",
+     "sv": "Charleston"
+    }
+   },
+   "nuts": []
+  },
+  "US-WY": {
+   "code": "US-WY",
+   "item": "Q1214",
+   "en": "Wyoming",
+   "sv": "Wyoming",
+   "sitelinks": 217,
+   "capitals": {
+    "Q39042": {
+     "en": "Cheyenne",
+     "sv": "Cheyenne"
+    }
+   },
+   "nuts": []
+  }
+ }
+}

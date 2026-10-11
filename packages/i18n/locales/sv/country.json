@@ -33,5 +33,19 @@
   "country:attribute.artist": "Konstnär",
   "country:attribute.landmark": "Sevärdhet",
   "country:attribute.club": "Idrottsklubb",
-  "country:attribute.highestPoint": "Högsta punkt"
+  "country:attribute.highestPoint": "Högsta punkt",
+  "country:category.basics": "Grunderna",
+  "country:category.map": "Karta och gränser",
+  "country:category.people": "Kända personer",
+  "country:category.sport": "Sport",
+  "country:category.places": "Platser att känna till",
+  "country:category.companies": "Företag och märken",
+  "country:category.other": "Mer",
+  "country:category.count": "{learned} av {total} lärda",
+  "country:category.label": "{category}, {learned} av {total} lärda",
+  "country:category.practise": "Öva {category}",
+  "country:parts.us.title": "De 50 delstaterna",
+  "country:parts.us.practise": "Öva delstaterna",
+  "country:parts.se.title": "Sveriges 21 län",
+  "country:parts.se.practise": "Öva länen"
 }

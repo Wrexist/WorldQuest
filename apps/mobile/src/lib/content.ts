@@ -15,6 +15,7 @@ import { currentLocale } from './i18n.js'
 import {
   buildIndex,
   composeLesson,
+  isNested,
   focusFilter,
   seededRng,
   type ContentIndex,
@@ -27,6 +28,12 @@ import {
 } from '@worldquest/engines'
 
 import entitiesPack from '../../../../packages/content/packs/geography/entities.countries.v1.json'
+/**
+ * The fifty US states and Sweden's twenty-one counties (`scripts/build-subdivisions.cjs`):
+ * the entities only, for their names and outline maps. Their facts are `delivery: "server"` —
+ * the Worker issues those lessons and the reference catalogue carries them for reading.
+ */
+import subdivisionsPack from '../../../../packages/content/packs/geography/entities.subdivisions.v1.json'
 import capitalsPack from '../../../../packages/content/packs/geography/facts.capitals.v1.json'
 import currenciesPack from '../../../../packages/content/packs/geography/facts.currencies.v1.json'
 import flagsPack from '../../../../packages/content/packs/geography/facts.flags.v1.json'
@@ -194,7 +201,7 @@ export function useContent() {
   const index = useMemo<LoadedContent | null>(() => {
     try {
       const built = buildIndex({
-        entities: entitiesPack.items as unknown as Entity[],
+        entities: [...entitiesPack.items, ...subdivisionsPack.items] as unknown as Entity[],
         facts: [
           ...(capitalsPack.items as unknown as Fact[]),
           ...(flagsPack.items as unknown as Fact[]),
@@ -225,6 +232,8 @@ export function useContent() {
             ...(maxModifier !== undefined ? { maxModifier } : {}),
             ...(introduceFrom !== undefined ? { introduceFrom } : {}),
             ...(input !== undefined ? { input } : {}),
+            // A state or county is opt-in: introduced only when the focus names one.
+            ...(focus?.entities?.some((id) => isNested(built, id)) ? { nested: true } : {}),
             modalities: PRESENTABLE,
             // Swaps `tpl.flag-to-country.mc4` for `tpl.flag-describe.mc4` — same fact,
             // same `user_facts` row, same scheduler, described in words instead of

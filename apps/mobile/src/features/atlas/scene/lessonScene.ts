@@ -66,6 +66,9 @@ export const MAP_SAFE: ReadonlySet<string> = new Set([
   'landmark',
   'club',
   'highest-point',
+  // A state's capital or a county's seat: the outline says where it is, not what the town is.
+  'state-capital',
+  'county-seat',
 ])
 
 export type LessonAtlasPolicy = { readonly mode: AtlasMode; readonly beforeAnswer: boolean } | null

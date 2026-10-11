@@ -829,8 +829,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -854,8 +855,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -929,8 +931,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -954,8 +957,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1029,8 +1033,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1054,8 +1059,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1129,8 +1135,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1154,8 +1161,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1229,8 +1237,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1254,8 +1263,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1329,8 +1339,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1354,8 +1365,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1429,8 +1441,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1454,8 +1467,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1529,8 +1543,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1554,8 +1569,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1629,8 +1645,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1654,8 +1671,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1729,8 +1747,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-subregion",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -1754,8 +1773,9 @@
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
-        "fallback": "same-region",
-        "excludeSimilarStrings": true
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "peersOnly": true
       },
       "a11y": {
         "screenReaderSafe": true
@@ -2272,6 +2292,242 @@
       },
       "timeLimitMs": null,
       "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.state-capital.mc4",
+      "attribute": "state-capital",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.capital_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "excludeSimilarStrings": true,
+        "fallback": "same-region"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.state-capital-reverse.mc4",
+      "attribute": "state-capital",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.state_capital_reverse",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "excludeSimilarStrings": true,
+        "fallback": "same-region"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.state-capital-typed.type",
+      "attribute": "state-capital",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.capital_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "input": "typed",
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.state-map.mc4",
+      "attribute": "us-region",
+      "modality": "map",
+      "prompt": {
+        "key": "lesson:prompt.which_state_map",
+        "params": []
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "excludeSimilarStrings": true,
+        "fallback": "same-region"
+      },
+      "a11y": {
+        "screenReaderSafe": false,
+        "equivalentTemplate": "tpl.state-region.mc4"
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.state-region.mc4",
+      "attribute": "us-region",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.state_region",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.county-seat.mc4",
+      "attribute": "county-seat",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.county_seat_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "excludeSimilarStrings": true,
+        "fallback": "same-region"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.county-seat-reverse.mc4",
+      "attribute": "county-seat",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.county_seat_reverse",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "excludeSimilarStrings": true,
+        "fallback": "same-region"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.county-seat-typed.type",
+      "attribute": "county-seat",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.county_seat_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "input": "typed",
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.county-map.mc4",
+      "attribute": "se-region",
+      "modality": "map",
+      "prompt": {
+        "key": "lesson:prompt.which_county_map",
+        "params": []
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "excludeSimilarStrings": true,
+        "fallback": "same-region"
+      },
+      "a11y": {
+        "screenReaderSafe": false,
+        "equivalentTemplate": "tpl.county-region.mc4"
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.county-region.mc4",
+      "attribute": "se-region",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.county_region",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 2,
+        "strategy": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
     }
   ]
 }

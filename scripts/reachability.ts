@@ -149,6 +149,7 @@ const ALLOWED: Record<string, string> = {
    *   gets a decision, not the numbers behind it (the same rule as the notification budget).
    */
   TYPED_WRONG: 'the typed-answer sentinel; used by the machine and the Worker; see the block above',
+  REVIEW_TRIES: 'the cap the lesson machine applies to re-asking a miss in the review round; a screen sees its effect (the question comes back), never the number',
   matchTyped: 'applied by the lesson machine on CHECK; see the block above',
   normaliseTyped: 'the fold `matchTyped` applies; see the block above',
   acceptedSpellings: 'applied by `buildQuestion`; see the block above',

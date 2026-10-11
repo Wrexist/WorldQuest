@@ -8,8 +8,8 @@ import { EdgeScrollView } from '../../components/ScrollEdges.js'
  * Flags and map geometry come from the validated content pack, never generated art.
  */
 
-import { useState } from 'react'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { useEffect, useRef, useState } from 'react'
+import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { StickyFooter } from '../../components/StickyFooter.js'
 import { Flag } from '../../components/Flag.js'
@@ -18,10 +18,15 @@ import {
   Button,
   Card,
   ProgressBar,
+  motion,
   palette,
+  radius,
   space,
   text,
+  useReducedMotion,
 } from '@worldquest/design'
+import { SceneEntrance } from '../../components/SceneEntrance.js'
+import { MIN_PRACTISABLE, shelveFacts, type Shelf } from './factCategories.js'
 import type { EntityProgress, Mastery } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import type { RegionCode } from './ExploreScreen.js'
@@ -105,7 +110,22 @@ export type CountryFact = {
   readonly value: string
   readonly mastery: Mastery
   readonly due: boolean
+  /** Askable in a lesson. A withdrawn fact is shown for reference and never counted for practice. */
+  readonly quizzable?: boolean
   readonly source?: { readonly name: string; readonly url?: string; readonly verifiedAt: string }
+}
+
+/**
+ * The places inside a country that the packs teach on their own — the fifty US states,
+ * Sweden's twenty-one counties (`Entity.within`). One row each: its name, and its capital or
+ * county seat when there is one.
+ */
+export type CountryParts = {
+  readonly title: TranslationKey
+  readonly practise: TranslationKey
+  readonly rows: readonly { readonly id: string; readonly name: string; readonly detail?: string | undefined; readonly mastery: Mastery }[]
+  /** Absent where no lesson can be composed from them (a build without the Worker). */
+  readonly onPractise?: (() => void) | undefined
 }
 
 export type CountryScreenProps = {
@@ -120,6 +140,19 @@ export type CountryScreenProps = {
   readonly facts: readonly CountryFact[]
   readonly progress: EntityProgress | null
   readonly onPractise: () => void
+  /**
+   * Practise one category — its attributes, for this country. Absent draws no per-category
+   * button (the screenshot renderer and older tests).
+   */
+  readonly onPractiseCategory?: ((attributes: readonly string[]) => void) | undefined
+  /**
+   * The attributes a lesson can actually be composed from on this build. Absent: all of them.
+   * A build without the Worker composes locally, and the famous-people packs are delivered by
+   * the Worker, so there "Practise Sport" would open an empty lesson.
+   */
+  readonly practisableAttributes?: ReadonlySet<string> | undefined
+  /** The states or counties inside this country, when the packs teach them. */
+  readonly parts?: CountryParts | undefined
   /**
    * Both optional together: the screenshot renderer and the component tests mount this
    * without a store, and a heart that cannot be toggled should not be drawn at all.
@@ -153,6 +186,9 @@ export function CountryScreen({
   facts,
   progress,
   onPractise,
+  onPractiseCategory,
+  practisableAttributes,
+  parts,
   favourite = false,
   onToggleFavourite,
 }: CountryScreenProps) {
@@ -255,15 +291,24 @@ export function CountryScreen({
         />
       )}
 
+      {/* What there is to know, shelved: the basics, the map, famous people, sport, places,
+          companies — each one opens, and each can be practised on its own (owner,
+          2026-10-11). The basics start open; the rest are a tap away, so a country with a
+          hundred facts reads as six things rather than a hundred. */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle} role="heading">
           {t('country:facts.title')}
         </Text>
-        <Card style={styles.list}>
-          {facts.map((fact) => (
-            <FactRow key={fact.id} fact={fact} />
-          ))}
-        </Card>
+        {shelveFacts(facts).map((shelf, i) => (
+          <CategorySection
+            key={shelf.category.id}
+            shelf={shelf}
+            initiallyOpen={i === 0}
+            {...(onPractiseCategory !== undefined ? { onPractise: onPractiseCategory } : {})}
+            {...(practisableAttributes !== undefined ? { practisable: practisableAttributes } : {})}
+          />
+        ))}
+        {parts !== undefined && parts.rows.length > 0 && <PartsSection parts={parts} />}
       </View>
 
     </EdgeScrollView>
@@ -272,6 +317,134 @@ export function CountryScreen({
         <Button label={t('country:practice')} onPress={onPractise} fullWidth />
       </StickyFooter>
     </View>
+  )
+}
+
+/**
+ * One category: a header that opens and closes, and inside it the facts and a practice button.
+ *
+ * The chevron turns and the rows arrive with the app's own entrance (`SceneEntrance`), on the
+ * `quick` token, and both stand still under Reduce Motion — the state is in the words and
+ * `aria-expanded`, never only in the movement.
+ */
+function CategorySection({ shelf, initiallyOpen, onPractise, practisable: askable }: {
+  shelf: Shelf<CountryFact>
+  initiallyOpen: boolean
+  onPractise?: (attributes: readonly string[]) => void
+  practisable?: ReadonlySet<string>
+}) {
+  const { colors, styles } = useThemeValues()
+  const t = useT()
+  const reduced = useReducedMotion()
+  const [open, setOpen] = useState(initiallyOpen)
+  const turn = useRef(new Animated.Value(initiallyOpen ? 1 : 0)).current
+  useEffect(() => {
+    if (reduced) {
+      turn.setValue(open ? 1 : 0)
+      return
+    }
+    const animation = Animated.timing(turn, {
+      toValue: open ? 1 : 0,
+      duration: motion.quick.duration,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    })
+    animation.start()
+    return () => animation.stop()
+  }, [open, reduced, turn])
+
+  const title = t(shelf.category.title)
+  const learned = shelf.facts.filter((fact) => fact.mastery !== 'unseen').length
+  const lessonFacts = shelf.facts.filter((fact) => fact.quizzable !== false && (askable === undefined || askable.has(fact.attribute)))
+  const practisable = lessonFacts.length >= MIN_PRACTISABLE
+  const practiseAttributes = [...new Set(lessonFacts.map((fact) => fact.attribute))]
+  return (
+    <Card style={styles.category}>
+      <Pressable
+        role="button"
+        aria-expanded={open}
+        aria-label={t('country:category.label', { category: title, learned, total: shelf.facts.length })}
+        onPress={() => setOpen(!open)}
+        style={({ pressed }) => [styles.categoryHeader, pressed && styles.pressed]}
+        testID={`country-category-${shelf.category.id}`}
+      >
+        <View style={styles.categoryIcon}>
+          <Icon name={shelf.category.icon} size={20} color={colors.text.secondary} />
+        </View>
+        <View style={styles.factText}>
+          <Text style={styles.categoryTitle}>{title}</Text>
+          <Text style={styles.factAttribute}>{t('country:category.count', { learned, total: shelf.facts.length })}</Text>
+        </View>
+        <Animated.View style={{ transform: [{ rotate: turn.interpolate({ inputRange: [0, 1], outputRange: ['90deg', '270deg'] }) }] }}>
+          <Icon name="chevron" size={20} color={colors.text.secondary} />
+        </Animated.View>
+      </Pressable>
+      {open && (
+        <SceneEntrance style={styles.list} testID={`country-category-${shelf.category.id}-facts`}>
+          {shelf.facts.map((fact) => (
+            <FactRow key={fact.id} fact={fact} />
+          ))}
+          {practisable && onPractise !== undefined && (
+            <Button
+              label={t('country:category.practise', { category: title })}
+              variant="secondary"
+              size="sm"
+              onPress={() => onPractise(practiseAttributes)}
+              testID={`country-category-${shelf.category.id}-practise`}
+            />
+          )}
+        </SceneEntrance>
+      )}
+    </Card>
+  )
+}
+
+/** The country's states or counties, as one more shelf that opens, with its own practice. */
+function PartsSection({ parts }: { parts: CountryParts }) {
+  const { colors, styles } = useThemeValues()
+  const t = useT()
+  const [open, setOpen] = useState(false)
+  const title = t(parts.title)
+  const learned = parts.rows.filter((row) => row.mastery !== 'unseen').length
+  return (
+    <Card style={styles.category}>
+      <Pressable
+        role="button"
+        aria-expanded={open}
+        aria-label={t('country:category.label', { category: title, learned, total: parts.rows.length })}
+        onPress={() => setOpen(!open)}
+        style={({ pressed }) => [styles.categoryHeader, pressed && styles.pressed]}
+        testID="country-parts"
+      >
+        <View style={styles.categoryIcon}>
+          <Icon name="map" size={20} color={colors.text.secondary} />
+        </View>
+        <View style={styles.factText}>
+          <Text style={styles.categoryTitle}>{title}</Text>
+          <Text style={styles.factAttribute}>{t('country:category.count', { learned, total: parts.rows.length })}</Text>
+        </View>
+        <View style={{ transform: [{ rotate: open ? '270deg' : '90deg' }] }}>
+          <Icon name="chevron" size={20} color={colors.text.secondary} />
+        </View>
+      </Pressable>
+      {/* Practice first, then the list: fifty rows is a long way down to a button. */}
+      {parts.onPractise !== undefined && (
+        <Button label={t(parts.practise)} variant="secondary" size="sm" onPress={parts.onPractise} testID="country-parts-practise" />
+      )}
+      {open && (
+        <SceneEntrance style={styles.list} testID="country-parts-list">
+          {parts.rows.map((row) => (
+            <View key={row.id} accessible aria-label={row.detail === undefined ? row.name : `${row.name}, ${row.detail}`} style={styles.factRow}>
+              <View style={styles.factText}>
+                <Text style={styles.factValue}>{row.name}</Text>
+                {row.detail !== undefined && <Text style={styles.factAttribute}>{row.detail}</Text>}
+              </View>
+              <Text style={styles.factAttribute}>{t(MASTERY_LABEL[row.mastery])}</Text>
+            </View>
+          ))}
+        </SceneEntrance>
+      )}
+    </Card>
   )
 }
 
@@ -336,7 +509,19 @@ const useThemeValues = createThemeStyles((colors) => {
 
   star: { minWidth: 44, minHeight: 44, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
 
-  section: { gap: space[2] },
+  section: { gap: space[3] },
+  category: { gap: space[3] },
+  categoryHeader: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  categoryIcon: {
+    width: space[7],
+    height: space[7],
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.bg.surfaceRaised,
+  },
+  categoryTitle: { ...text('bodyStrong'), color: colors.text.primary },
+  pressed: { opacity: 0.7 },
   sectionTitle: { ...text('overline'), color: colors.text.tertiary },
   list: { gap: space[3] },
 

@@ -43,6 +43,17 @@ export type Entity = {
   readonly aliases?: readonly string[]
   readonly region?: string
   readonly subregion?: string
+  /**
+   * The entity this one is part of — a US state's is `US`, a Swedish county's `SE`. Absent on
+   * a top-level entity.
+   *
+   * A nested entity is opt-in learning: its facts are introduced only in a lesson whose focus
+   * names it (`ComposeInput.nested`), never in a mixed lesson or a daily quest, and it is not
+   * counted among the top-level entities a progress summary reports. Once met, its facts are
+   * reviewed like any other — spacing is what keeps them. A Swedish ten-year-old's practice
+   * does not fill up with Wyoming; one who chose the United States' states keeps them.
+   */
+  readonly within?: EntityId
   readonly assets?: Readonly<Record<string, { path: string; license: string }>>
 }
 
@@ -188,6 +199,13 @@ export type Template = {
      * coastal, so exactly one option is landlocked.
      */
     readonly differentValueOnly?: boolean
+    /**
+     * Keep only candidates that have a fact of their own for this attribute: for "which
+     * country is this footballer from?", only countries that have footballers in the pack.
+     * Without it a famous name was asked beside three Pacific micro-states, and the
+     * question was answered by knowing which countries are small, not where anyone is from.
+     */
+    readonly peersOnly?: boolean
   }
   readonly a11y: {
     readonly screenReaderSafe: boolean

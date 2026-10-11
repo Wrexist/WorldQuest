@@ -345,7 +345,13 @@ const EXPO_CLI = require.resolve('expo/bin/cli', { paths: [MOBILE] })
 // 2026-10-02, responsive motion pass: iOS 5,456,119 B; Android 5,453,594 B,
 // net +755/+751 B from the cloud/Atlas measurement above, within the unchanged gate.
 // See docs/design/reviews/responsive-motion-2026-10-02/README.md. Compile proof only.
-const BUDGET_MB = 5.21
+// 2026-10-11: 5.21 → 5.30 MiB for the owner-requested training work (PR #39), measured at
+// iOS 5.28 / Android 5.27 MiB. What bought it: the 50 US states and 21 Swedish counties
+// (entities only — their 141 facts were moved to `delivery: "server"`, which recovered
+// ~0.04 MiB of the first measurement), the outline-map index, ten templates and their en/sv
+// copy, the map-quiz tries and direction hints, country categories, and relearning. The
+// lever named above — lazy per-fact citations — still recovers more than this costs.
+const BUDGET_MB = 5.3
 
 /** Warn from 90 % of the budget, so the wall is visible before it is hit. */
 const WARN_AT = BUDGET_MB * 0.9

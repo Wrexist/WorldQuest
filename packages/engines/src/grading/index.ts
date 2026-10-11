@@ -37,6 +37,12 @@ export type GradeInput = {
   readonly targetRetention?: number
   /** Per-template median answer time, for deriving a 1–4 rating. */
   readonly medianMsByTemplate?: ReadonlyMap<string, number>
+  /**
+   * Whether a template's answer is picked from options shown (multiple choice, a board)
+   * rather than recalled (typed, tapped on a map). A picked answer is never rated Easy —
+   * see `deriveRating`. Absent: every answer is treated as recall, as before.
+   */
+  readonly isRecognition?: (templateId: string) => boolean
   /** XP already earned today, for the soft cap. */
   readonly xpEarnedToday?: number
   readonly isFirstLessonOfDay?: boolean
@@ -174,6 +180,7 @@ export function gradeLesson(input: GradeInput): GradeResult {
     memory,
     targetRetention,
     medianMsByTemplate,
+    isRecognition,
     xpEarnedToday = 0,
     isFirstLessonOfDay = false,
     masteredBefore = new Set<FactId>(),
@@ -216,7 +223,7 @@ export function gradeLesson(input: GradeInput): GradeResult {
     }
 
     const medianMs = medianMsByTemplate?.get(answer.templateId) ?? DEFAULT_MEDIAN_MS
-    const rating = deriveRating(answer.wasCorrect, answer.elapsedMs, medianMs)
+    const rating = deriveRating(answer.wasCorrect, answer.elapsedMs, medianMs, isRecognition?.(answer.templateId) ?? false)
 
     const before = updatedMemory.get(answer.factId) ?? null
     const wasOverdue = before !== null && before.dueAt <= answer.answeredAt

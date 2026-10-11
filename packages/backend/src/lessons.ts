@@ -5,6 +5,12 @@ import { applyLesson, composeQuest, readQuestRow, type QuestRow } from './quests
 import { learningContent } from './learning-content'
 import { applyAchievements } from './achievements'
 
+/** A multiple-choice pick, not a recall: never rated Easy (`deriveRating`). Typed and tapped answers are recall. */
+const isRecognition = (templateId: string): boolean => {
+  const template = learningContent.templates.get(templateId)
+  return template !== undefined && template.input === undefined
+}
+
 /**
  * The learner's local date for the day rules, and whether it opens a new day.
  *
@@ -103,11 +109,11 @@ export async function submitLesson(db: D1Database, owner: string, tokenHash: str
     // the grader's own heart replay decides. Only a finished lesson is the day's
     // activity: it extends the streak, takes the first-lesson bonus and meets the
     // quest's perform goal. A lesson ended early still grades what was answered.
-    const provisional = gradeLesson({ lessonId: input.lessonId, answers, memory, now,
+    const provisional = gradeLesson({ lessonId: input.lessonId, answers, memory, now, isRecognition,
       xpEarnedToday: sameDay ? account.daily_xp : 0, isFirstLessonOfDay: false, masteredBefore })
     const finished = ordered.length === slots.length || provisional.heartsDepleted
     const graded = finished && (!sameDay || account.lessons_today === 0)
-      ? gradeLesson({ lessonId: input.lessonId, answers, memory, now,
+      ? gradeLesson({ lessonId: input.lessonId, answers, memory, now, isRecognition,
         xpEarnedToday: sameDay ? account.daily_xp : 0, isFirstLessonOfDay: true, masteredBefore })
       : provisional
     // The engine decides the streak; this carries it. A second lesson on a day returns
