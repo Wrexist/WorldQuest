@@ -1,5 +1,8 @@
 import { buildIndex, type Entity, type Fact, type Template } from '@worldquest/engines'
 import entities from '../../content/packs/geography/entities.countries.v1.json'
+import subdivisions from '../../content/packs/geography/entities.subdivisions.v1.json'
+import subdivisionCapitals from '../../content/packs/geography/facts.subdivision-capitals.v1.json'
+import subdivisionRegions from '../../content/packs/geography/facts.subdivision-regions.v1.json'
 import capitals from '../../content/packs/geography/facts.capitals.v1.json'
 import flags from '../../content/packs/geography/facts.flags.v1.json'
 import currencies from '../../content/packs/geography/facts.currencies.v1.json'
@@ -28,10 +31,10 @@ import highestPoints from '../../content/packs/geography/facts.highest-points.v1
 import templates from '../../content/packs/geography/templates.v1.json'
 
 // Static packs pass the repository's schema/crosscheck gate before deployment.
-const loadedEntities: Entity[] = entities.items.map(entity => ({ ...entity,
+const loadedEntities: Entity[] = [...entities.items, ...subdivisions.items].map(entity => ({ ...entity,
   assets: Object.fromEntries(Object.entries(entity.assets).map(([key, asset]) => [key, { path: asset.path, license: asset.licenseRef }])) }))
 /** The packs the mobile app ships too: what a learner can SEE on a screen of their own. */
-const appFacts = [capitals, flags, currencies, locations, languages, callingCodes, nativeNames]
+const appFacts = [capitals, flags, currencies, locations, languages, callingCodes, nativeNames, subdivisionCapitals, subdivisionRegions]
   .flatMap(pack => pack.items as Fact[])
 /** The `delivery: "server"` packs: ranked people, companies and places, composed here and nowhere else. */
 const serverFacts = [hemisphere, area, borderCount, landlocked, borders, tld, alpha3, currencyCodes, companies, athletes, musicians, actors, scientists, writers, artists, landmarks, clubs, highestPoints]

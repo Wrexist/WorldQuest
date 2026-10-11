@@ -43,6 +43,8 @@ export default function CollectionRoute() {
     const attribute = which === 'flags' ? 'flag' : 'capital'
 
     return [...index.index.entities.values()]
+      // The world's flags and capitals: states and counties are their countries' business.
+      .filter((entity) => entity.within === undefined)
       .map((entity) => {
         const fact = [...index.index.facts.values()].find(
           (candidate) => candidate.entity === entity.id && candidate.attribute === attribute,

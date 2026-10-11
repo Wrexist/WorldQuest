@@ -94,7 +94,7 @@ function focus(value: unknown): D1Focus | undefined {
   const out: D1Focus = {}
   if (value.factIds !== undefined) out.factIds = strings(value.factIds, /^[a-zA-Z0-9._-]{1,120}$/, 60)
   if (value.attributes !== undefined) out.attributes = strings(value.attributes, /^[a-z-]{1,40}$/, 12)
-  if (value.entities !== undefined) out.entities = strings(value.entities, /^[A-Z]{2}$/, 300)
+  if (value.entities !== undefined) out.entities = strings(value.entities, /^[A-Z]{2}(-[A-Z0-9]{1,3})?$/, 300)
   if (value.difficulty !== undefined) {
     const d = value.difficulty
     if (!object(d) || Object.keys(d).some(k => k !== 'min' && k !== 'max')) throw new D1AuthError('INVALID_LESSON_REQUEST')

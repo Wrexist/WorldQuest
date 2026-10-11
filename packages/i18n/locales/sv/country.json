@@ -43,5 +43,9 @@
   "country:category.other": "Mer",
   "country:category.count": "{learned} av {total} lärda",
   "country:category.label": "{category}, {learned} av {total} lärda",
-  "country:category.practise": "Öva {category}"
+  "country:category.practise": "Öva {category}",
+  "country:parts.us.title": "De 50 delstaterna",
+  "country:parts.us.practise": "Öva delstaterna",
+  "country:parts.se.title": "Sveriges 21 län",
+  "country:parts.se.practise": "Öva länen"
 }

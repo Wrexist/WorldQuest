@@ -35,7 +35,8 @@ export default function ExploreRoute() {
     [index, memory],
   )
 
-  const countries = useMemo(() => index === null ? [] : [...index.index.entities.values()].map(entity => ({
+  // Countries only: a US state or Swedish county lives on its country's page (`Entity.within`).
+  const countries = useMemo(() => index === null ? [] : [...index.index.entities.values()].filter(entity => entity.within === undefined).map(entity => ({
     id: entity.id,
     name: entity.names[currentLocale()] ?? entity.names.en ?? entity.id,
     region: entity.region ?? '',

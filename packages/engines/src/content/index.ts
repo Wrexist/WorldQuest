@@ -49,6 +49,11 @@ export function isQuizzable(
   return true
 }
 
+/** Whether an entity is part of another (`Entity.within`): opt-in learning. See the type. */
+export function isNested(index: ContentIndex, entityId: EntityId): boolean {
+  return index.entities.get(entityId)?.within !== undefined
+}
+
 /**
  * Build the index a lesson is composed from.
  *
@@ -279,7 +284,9 @@ function candidatePool(
   strategy: DistractorStrategy,
   fact: Fact,
 ): Entity[] {
-  const all = [...index.entities.values()].filter((e) => e.id !== correct.id)
+  // Like with like: a state's wrong answers are other states, a country's other countries.
+  // "Sacramento" offered for the capital of Canada would be a free elimination.
+  const all = [...index.entities.values()].filter((e) => e.id !== correct.id && e.type === correct.type && e.within === correct.within)
 
   switch (strategy) {
     case 'same-subregion':

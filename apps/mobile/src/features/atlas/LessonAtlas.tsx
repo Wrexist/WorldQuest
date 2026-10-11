@@ -19,6 +19,7 @@ import { AtlasFallbackView } from './AtlasFallbackView.js'
 import { buildLessonScene, lessonAtlasPolicy } from './scene/lessonScene.js'
 import { buildLocateScene } from './scene/locateScene.js'
 import { isAtlasRegion, REGION_KEY } from './regions.js'
+import { isLocatorPath, LocatorMap } from '../../components/LocatorMap.js'
 import type { AtlasEvent, AtlasSceneSpec } from './scene/types.js'
 import { useAtlasNames } from './useAtlasNames.js'
 import { useAtlasEnabled } from './atlasAvailability.js'
@@ -131,7 +132,15 @@ export function LessonAtlas({
     if (event.type === 'countrySelected' && event.sceneKey === sceneKey && !answered) onSelectCountry?.(event.countryId)
   }, [sceneKey, answered, onSelectCountry])
 
-  if (spec === null) return null
+  if (spec === null) {
+    // A place the globe has no geometry for — a US state, a Swedish county — under the same
+    // disclosure policy: its flat outline map, drawn from the question's own locator.
+    const locator = question.locator
+    if (locator !== undefined && isLocatorPath(locator.path)) {
+      return <LocatorMap path={locator.path} contextPath={locator.contextPath} width={Math.min(width, height * (4 / 3))} />
+    }
+    return null
+  }
 
   if (unavailable) {
     return <AtlasFallbackView spec={spec} locator={question.locator} width={Math.min(width, height * (4 / 3))} />

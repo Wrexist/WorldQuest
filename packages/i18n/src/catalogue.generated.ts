@@ -313,7 +313,11 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "category.other": "More",
       "category.count": "{learned} of {total} learned",
       "category.label": "{category}, {learned} of {total} learned",
-      "category.practise": "Practise {category}"
+      "category.practise": "Practise {category}",
+      "parts.us.title": "The 50 states",
+      "parts.us.practise": "Practise the states",
+      "parts.se.title": "Sweden's 21 counties",
+      "parts.se.practise": "Practise the counties"
     },
     "course": {
       "firstWeek.title": "World foundations",
@@ -732,7 +736,14 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "drill.tryAgain": "{count, plural, one {One more try.} other {# more tries.}}",
       "drill.retryFound.title": "Found it on try {count}.",
       "drill.retryFound.body": "The first tap is the one that counts, so {country} will come back soon.",
-      "drill.reveal.title": "Here's {country}."
+      "drill.reveal.title": "Here's {country}.",
+      "prompt.state_capital_reverse": "{valueName} is the capital of which US state?",
+      "prompt.which_state_map": "Which US state is highlighted?",
+      "prompt.state_region": "Which part of the United States is {entityName} in?",
+      "prompt.county_seat_of": "Which town is the seat of {entityName}?",
+      "prompt.county_seat_reverse": "{valueName} is the seat of which Swedish county?",
+      "prompt.which_county_map": "Which Swedish county is highlighted?",
+      "prompt.county_region": "Which part of Sweden is {entityName} in?"
     },
     "nav": {
       "home": "Home",
@@ -1469,7 +1480,11 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "category.other": "Mer",
       "category.count": "{learned} av {total} lärda",
       "category.label": "{category}, {learned} av {total} lärda",
-      "category.practise": "Öva {category}"
+      "category.practise": "Öva {category}",
+      "parts.us.title": "De 50 delstaterna",
+      "parts.us.practise": "Öva delstaterna",
+      "parts.se.title": "Sveriges 21 län",
+      "parts.se.practise": "Öva länen"
     },
     "course": {
       "firstWeek.title": "Världen från grunden",
@@ -1888,7 +1903,14 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "drill.tryAgain": "{count, plural, one {Ett försök till.} other {# försök till.}}",
       "drill.retryFound.title": "Hittat på försök {count}.",
       "drill.retryFound.body": "Det är första trycket som räknas, så {country} kommer tillbaka snart.",
-      "drill.reveal.title": "Här ligger {country}."
+      "drill.reveal.title": "Här ligger {country}.",
+      "prompt.state_capital_reverse": "{valueName} är huvudstad i vilken delstat i USA?",
+      "prompt.which_state_map": "Vilken delstat i USA är markerad?",
+      "prompt.state_region": "I vilken del av USA ligger {entityName}?",
+      "prompt.county_seat_of": "Vilken är residensstaden i {entityName}?",
+      "prompt.county_seat_reverse": "{valueName} är residensstad i vilket län?",
+      "prompt.which_county_map": "Vilket län är markerat?",
+      "prompt.county_region": "I vilken del av Sverige ligger {entityName}?"
     },
     "nav": {
       "home": "Hem",

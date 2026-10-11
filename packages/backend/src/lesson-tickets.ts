@@ -11,7 +11,8 @@ import { learningContent } from './learning-content'
 const focusSchema = z.object({
   factIds: z.array(z.string().regex(/^[a-zA-Z0-9._-]{1,120}$/)).max(60).optional(),
   attributes: z.array(z.string().regex(/^[a-z-]{1,40}$/)).max(12).optional(),
-  entities: z.array(z.string().regex(/^[A-Z]{2}$/)).max(300).optional(),
+  // A country (ISO 3166-1, `SE`) or a first-level division of one (ISO 3166-2, `US-CA`, `SE-AB`).
+  entities: z.array(z.string().regex(/^[A-Z]{2}(-[A-Z0-9]{1,3})?$/)).max(300).optional(),
   difficulty: z.object({ min: z.number().int().min(1).max(5).optional(), max: z.number().int().min(1).max(5).optional() }).strict().optional(),
 }).strict()
 /**
@@ -98,6 +99,8 @@ export async function prepareLesson(db: D1Database, owner: string, tokenHash: st
       : composeLesson({ ...base, rng: seededRng(seed), count: input.count,
       ...(topicFilter ? { topicFilter } : {}),
       ...(input.input === 'tap' ? { input: 'tap' as const } : {}),
+      // A state or county is opt-in learning: introduced only when the focus names it.
+      ...(input.focus?.entities?.some(id => learningContent.entities.get(id)?.within !== undefined) ? { nested: true } : {}),
       // One entity in focus means the entity is not the question (the app's own rule).
       entityIsGiven: input.focus?.entities?.length === 1 })
     /**

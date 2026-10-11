@@ -34,7 +34,7 @@ const packsDir = join(import.meta.dirname, '..', '..', '..', 'content', 'packs',
 const read = <T>(file: string): T[] =>
   (JSON.parse(readFileSync(join(packsDir, file), 'utf8')) as { items: T[] }).items
 
-const entities = read<Entity>('entities.countries.v1.json')
+const entities = [...read<Entity>('entities.countries.v1.json'), ...read<Entity>('entities.subdivisions.v1.json')]
 /**
  * EVERY fact pack, not a chosen two.
  *
@@ -72,6 +72,8 @@ const facts = [
   ...read<Fact>('facts.landmarks.v1.json'),
   ...read<Fact>('facts.clubs.v1.json'),
   ...read<Fact>('facts.highest-points.v1.json'),
+  ...read<Fact>('facts.subdivision-capitals.v1.json'),
+  ...read<Fact>('facts.subdivision-regions.v1.json'),
 ]
 const templates = read<Template>('templates.v1.json')
 

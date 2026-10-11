@@ -115,6 +115,18 @@ export type CountryFact = {
   readonly source?: { readonly name: string; readonly url?: string; readonly verifiedAt: string }
 }
 
+/**
+ * The places inside a country that the packs teach on their own — the fifty US states,
+ * Sweden's twenty-one counties (`Entity.within`). One row each: its name, and its capital or
+ * county seat when there is one.
+ */
+export type CountryParts = {
+  readonly title: TranslationKey
+  readonly practise: TranslationKey
+  readonly rows: readonly { readonly id: string; readonly name: string; readonly detail?: string | undefined; readonly mastery: Mastery }[]
+  readonly onPractise: () => void
+}
+
 export type CountryScreenProps = {
   readonly name: string | null
   readonly region: RegionCode | null
@@ -138,6 +150,8 @@ export type CountryScreenProps = {
    * the Worker, so there "Practise Sport" would open an empty lesson.
    */
   readonly practisableAttributes?: ReadonlySet<string> | undefined
+  /** The states or counties inside this country, when the packs teach them. */
+  readonly parts?: CountryParts | undefined
   /**
    * Both optional together: the screenshot renderer and the component tests mount this
    * without a store, and a heart that cannot be toggled should not be drawn at all.
@@ -173,6 +187,7 @@ export function CountryScreen({
   onPractise,
   onPractiseCategory,
   practisableAttributes,
+  parts,
   favourite = false,
   onToggleFavourite,
 }: CountryScreenProps) {
@@ -292,6 +307,7 @@ export function CountryScreen({
             {...(practisableAttributes !== undefined ? { practisable: practisableAttributes } : {})}
           />
         ))}
+        {parts !== undefined && parts.rows.length > 0 && <PartsSection parts={parts} />}
       </View>
 
     </EdgeScrollView>
@@ -376,6 +392,53 @@ function CategorySection({ shelf, initiallyOpen, onPractise, practisable: askabl
               testID={`country-category-${shelf.category.id}-practise`}
             />
           )}
+        </SceneEntrance>
+      )}
+    </Card>
+  )
+}
+
+/** The country's states or counties, as one more shelf that opens, with its own practice. */
+function PartsSection({ parts }: { parts: CountryParts }) {
+  const { colors, styles } = useThemeValues()
+  const t = useT()
+  const [open, setOpen] = useState(false)
+  const title = t(parts.title)
+  const learned = parts.rows.filter((row) => row.mastery !== 'unseen').length
+  return (
+    <Card style={styles.category}>
+      <Pressable
+        role="button"
+        aria-expanded={open}
+        aria-label={t('country:category.label', { category: title, learned, total: parts.rows.length })}
+        onPress={() => setOpen(!open)}
+        style={({ pressed }) => [styles.categoryHeader, pressed && styles.pressed]}
+        testID="country-parts"
+      >
+        <View style={styles.categoryIcon}>
+          <Icon name="map" size={20} color={colors.text.secondary} />
+        </View>
+        <View style={styles.factText}>
+          <Text style={styles.categoryTitle}>{title}</Text>
+          <Text style={styles.factAttribute}>{t('country:category.count', { learned, total: parts.rows.length })}</Text>
+        </View>
+        <View style={{ transform: [{ rotate: open ? '270deg' : '90deg' }] }}>
+          <Icon name="chevron" size={20} color={colors.text.secondary} />
+        </View>
+      </Pressable>
+      {/* Practice first, then the list: fifty rows is a long way down to a button. */}
+      <Button label={t(parts.practise)} variant="secondary" size="sm" onPress={parts.onPractise} testID="country-parts-practise" />
+      {open && (
+        <SceneEntrance style={styles.list} testID="country-parts-list">
+          {parts.rows.map((row) => (
+            <View key={row.id} accessible aria-label={row.detail === undefined ? row.name : `${row.name}, ${row.detail}`} style={styles.factRow}>
+              <View style={styles.factText}>
+                <Text style={styles.factValue}>{row.name}</Text>
+                {row.detail !== undefined && <Text style={styles.factAttribute}>{row.detail}</Text>}
+              </View>
+              <Text style={styles.factAttribute}>{t(MASTERY_LABEL[row.mastery])}</Text>
+            </View>
+          ))}
         </SceneEntrance>
       )}
     </Card>

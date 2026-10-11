@@ -15,6 +15,7 @@ import { currentLocale } from './i18n.js'
 import {
   buildIndex,
   composeLesson,
+  isNested,
   focusFilter,
   seededRng,
   type ContentIndex,
@@ -27,6 +28,14 @@ import {
 } from '@worldquest/engines'
 
 import entitiesPack from '../../../../packages/content/packs/geography/entities.countries.v1.json'
+/**
+ * The fifty US states and Sweden's twenty-one counties, their capitals and seats, and which
+ * part of the country each is in (`scripts/build-subdivisions.cjs`). Opt-in: every one is
+ * `within` its country, so a lesson introduces them only when its focus names them.
+ */
+import subdivisionsPack from '../../../../packages/content/packs/geography/entities.subdivisions.v1.json'
+import subdivisionCapitalsPack from '../../../../packages/content/packs/geography/facts.subdivision-capitals.v1.json'
+import subdivisionRegionsPack from '../../../../packages/content/packs/geography/facts.subdivision-regions.v1.json'
 import capitalsPack from '../../../../packages/content/packs/geography/facts.capitals.v1.json'
 import currenciesPack from '../../../../packages/content/packs/geography/facts.currencies.v1.json'
 import flagsPack from '../../../../packages/content/packs/geography/facts.flags.v1.json'
@@ -149,6 +158,8 @@ const FACT_FIELDS: ReadonlyMap<string, { readonly entityId: string; readonly att
         languagesPack,
         callingCodesPack,
         nativeNamesPack,
+        subdivisionCapitalsPack,
+        subdivisionRegionsPack,
       ] as unknown as { items: readonly { id: string; entity: string; attribute: string }[] }[]
     ).flatMap((pack) =>
       pack.items.map(
@@ -194,7 +205,7 @@ export function useContent() {
   const index = useMemo<LoadedContent | null>(() => {
     try {
       const built = buildIndex({
-        entities: entitiesPack.items as unknown as Entity[],
+        entities: [...entitiesPack.items, ...subdivisionsPack.items] as unknown as Entity[],
         facts: [
           ...(capitalsPack.items as unknown as Fact[]),
           ...(flagsPack.items as unknown as Fact[]),
@@ -203,6 +214,8 @@ export function useContent() {
           ...(languagesPack.items as unknown as Fact[]),
           ...(callingCodesPack.items as unknown as Fact[]),
           ...(nativeNamesPack.items as unknown as Fact[]),
+          ...(subdivisionCapitalsPack.items as unknown as Fact[]),
+          ...(subdivisionRegionsPack.items as unknown as Fact[]),
         ],
         templates: templatesPack.items as unknown as Template[],
       })
@@ -225,6 +238,8 @@ export function useContent() {
             ...(maxModifier !== undefined ? { maxModifier } : {}),
             ...(introduceFrom !== undefined ? { introduceFrom } : {}),
             ...(input !== undefined ? { input } : {}),
+            // A state or county is opt-in: introduced only when the focus names one.
+            ...(focus?.entities?.some((id) => isNested(built, id)) ? { nested: true } : {}),
             modalities: PRESENTABLE,
             // Swaps `tpl.flag-to-country.mc4` for `tpl.flag-describe.mc4` — same fact,
             // same `user_facts` row, same scheduler, described in words instead of

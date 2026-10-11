@@ -190,5 +190,12 @@
   "lesson:drill.tryAgain": "{count, plural, one {Ett försök till.} other {# försök till.}}",
   "lesson:drill.retryFound.title": "Hittat på försök {count}.",
   "lesson:drill.retryFound.body": "Det är första trycket som räknas, så {country} kommer tillbaka snart.",
-  "lesson:drill.reveal.title": "Här ligger {country}."
+  "lesson:drill.reveal.title": "Här ligger {country}.",
+  "lesson:prompt.state_capital_reverse": "{valueName} är huvudstad i vilken delstat i USA?",
+  "lesson:prompt.which_state_map": "Vilken delstat i USA är markerad?",
+  "lesson:prompt.state_region": "I vilken del av USA ligger {entityName}?",
+  "lesson:prompt.county_seat_of": "Vilken är residensstaden i {entityName}?",
+  "lesson:prompt.county_seat_reverse": "{valueName} är residensstad i vilket län?",
+  "lesson:prompt.which_county_map": "Vilket län är markerat?",
+  "lesson:prompt.county_region": "I vilken del av Sverige ligger {entityName}?"
 }

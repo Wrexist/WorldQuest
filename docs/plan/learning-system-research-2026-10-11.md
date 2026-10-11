@@ -108,8 +108,12 @@ Each phase is one PR, verified and merged before the next.
    means recalled (typed or tapped) on separate days, the last at ≥ 21 days.
 3. **Categories on every country** — the country page lists what there is to learn about it
    (basics, map, famous people, places, companies, clubs…), each practisable on its own.
-4. **More to learn** — subdivisions with maps (US states first), capitals on the map, physical
-   features, driving side and demonyms; each with sources and a cross-check.
+4. **More to learn** — *started 2026-10-11:* the fifty US states and Sweden's twenty-one
+   counties with capitals/seats, regions and outline maps (`scripts/build-subdivisions.cjs`,
+   opt-in from the country page). Next: other countries' first-level divisions, capitals on
+   the map, physical features. Demonyms were tried and dropped: Wikidata has Swedish forms for
+   29 countries only, and every fact must ship in both languages. Driving side has no second
+   independent source yet.
 5. **Feedback that teaches** — contrast notes for look-alike flags; a sourced "why" line on misses.
 6. **Motion** — one pass over every screen for smooth, consistent, reduced-motion-safe movement.
 

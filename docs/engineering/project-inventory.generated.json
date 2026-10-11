@@ -76,10 +76,10 @@
     "react-native-safe-area-context": "5.6.2",
     "react-native-screens": "~4.16.0"
   },
-  "packs": 31,
-  "entities": 194,
-  "facts": 6755,
-  "templates": 95,
+  "packs": 34,
+  "entities": 265,
+  "facts": 6896,
+  "templates": 105,
   "locales": [
     "en",
     "sv"
@@ -305,6 +305,7 @@
     "packages/engines/src/lesson/focus.test.ts",
     "packages/engines/src/lesson/lesson.test.ts",
     "packages/engines/src/lesson/machine.fuzz.test.ts",
+    "packages/engines/src/lesson/nested.test.ts",
     "packages/engines/src/lesson/pairs.test.ts",
     "packages/engines/src/lesson/placement.test.ts",
     "packages/engines/src/lesson/rescue.test.ts",

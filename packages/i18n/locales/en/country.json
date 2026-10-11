@@ -86,5 +86,13 @@
   "country:category.label": "{category}, {learned} of {total} learned",
   "country:category.label__note": "Screen-reader label for a category header button; its open or closed state is announced separately.",
   "country:category.practise": "Practise {category}",
-  "country:category.practise__note": "Button inside an open category on the country page: a lesson about just this category of this country. {category} is the category title, e.g. Practise Famous people. Keep it short."
+  "country:category.practise__note": "Button inside an open category on the country page: a lesson about just this category of this country. {category} is the category title, e.g. Practise Famous people. Keep it short.",
+  "country:parts.us.title": "The 50 states",
+  "country:parts.us.title__note": "Section on the United States country page listing the states, each with its capital, with a practice button.",
+  "country:parts.us.practise": "Practise the states",
+  "country:parts.us.practise__note": "Button: a lesson about the US states — their capitals, where they are, and their outlines on the map.",
+  "country:parts.se.title": "Sweden's 21 counties",
+  "country:parts.se.title__note": "Section on the Sweden country page listing the counties (län), each with its seat (residensstad).",
+  "country:parts.se.practise": "Practise the counties",
+  "country:parts.se.practise__note": "Button: a lesson about Sweden's counties — their seats, where they are, and their outlines on the map."
 }

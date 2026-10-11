@@ -344,5 +344,19 @@
   "lesson:drill.retryFound.body": "The first tap is the one that counts, so {country} will come back soon.",
   "lesson:drill.retryFound.body__note": "Under lesson:drill.retryFound.title. True about grading (only the first tap is scored, so no XP here) and says why that is fine: the country returns for practice. Never shame.",
   "lesson:drill.reveal.title": "Here's {country}.",
-  "lesson:drill.reveal.title__note": "Answer sheet headline after three wrong taps in a map quiz: the map now lights and names the country. {country} is its localised name. Calm, never 'Wrong'."
+  "lesson:drill.reveal.title__note": "Answer sheet headline after three wrong taps in a map quiz: the map now lights and names the country. {country} is its localised name. Calm, never 'Wrong'.",
+  "lesson:prompt.state_capital_reverse": "{valueName} is the capital of which US state?",
+  "lesson:prompt.state_capital_reverse__note": "Reverse US state capital question. {valueName} is a city, e.g. 'Sacramento'.",
+  "lesson:prompt.which_state_map": "Which US state is highlighted?",
+  "lesson:prompt.which_state_map__note": "Map question for US states: a map with one state picked out among its neighbours. Never shown to a screen-reader user; tpl.state-region.mc4 asks the same fact by ear.",
+  "lesson:prompt.state_region": "Which part of the United States is {entityName} in?",
+  "lesson:prompt.state_region__note": "Answers are the US Census Bureau's four regions: the Northeast, the Midwest, the South, the West.",
+  "lesson:prompt.county_seat_of": "Which town is the seat of {entityName}?",
+  "lesson:prompt.county_seat_of__note": "Swedish county (län) question. The seat is the residensstad, where the county administrative board sits. {entityName} is e.g. 'Skåne County'.",
+  "lesson:prompt.county_seat_reverse": "{valueName} is the seat of which Swedish county?",
+  "lesson:prompt.county_seat_reverse__note": "Reverse county seat question. {valueName} is a town, e.g. 'Falun'.",
+  "lesson:prompt.which_county_map": "Which Swedish county is highlighted?",
+  "lesson:prompt.which_county_map__note": "Map question for Swedish counties (län). Never shown to a screen-reader user; tpl.county-region.mc4 asks the same fact by ear.",
+  "lesson:prompt.county_region": "Which part of Sweden is {entityName} in?",
+  "lesson:prompt.county_region__note": "Answers are Eurostat's three NUTS-1 regions of Sweden: East Sweden, South Sweden, North Sweden."
 }

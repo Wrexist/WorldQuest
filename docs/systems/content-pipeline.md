@@ -503,6 +503,26 @@ ONLY in a lesson that asks for one (`ComposeInput.input: 'tap'`, the Worker's `i
 prepare), and a lesson that asks uses nothing else; a screen-reader lesson gets the template's
 `equivalentTemplate` for the same facts. Design and research: `docs/design/map-drill.md`.
 
+### Inside a country: US states and Swedish counties
+
+`scripts/build-subdivisions.cjs` (2026-10-11) builds the fifty US states and Sweden's
+twenty-one counties (län) as entities of type `subdivision`, each `within` its country, with
+three kinds of fact: the capital or county seat (`state-capital`, `county-seat`), which part
+of the country it is in (`us-region` — the Census Bureau's four regions; `se-region` —
+Eurostat's three NUTS-1 regions), and an outline map (Natural Earth admin-1, rasterised as two
+masks per place and drawn by `LocatorMap`, since the globe's raster knows only countries).
+
+- **Two sources each, or no fact:** names and codes Natural Earth == Wikidata (by ISO 3166-2
+  and NE's own `wikidataid`); seats Wikidata P36 == GeoNames PPLA/PPLC for that division;
+  regions Census Bureau == Natural Earth, Eurostat == Wikidata P605. Alaska's capital is
+  missing because Wikidata's statement points at an item with no name — dropped, not guessed.
+- **Opt-in:** a `within` entity's facts are introduced only when a lesson's focus names it
+  (`ComposeInput.nested`), never in a mixed lesson or a daily quest; once met they are
+  reviewed like any other. They do not count toward the world's countries.
+- **Self-naming seats** (Uppsala, Kalmar, Oklahoma City…) are kept for the country page and
+  marked `quizzable: false`: the question would name its answer.
+- Entry: the country page's "The 50 states" / "Sveriges 21 län" section and its practice button.
+
 ### The fame packs: ranked, measured, server-delivered
 
 Ten more attributes — `company`, `athlete`, `musician`, `actor`, `scientist`, `writer`,

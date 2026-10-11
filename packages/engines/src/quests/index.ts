@@ -81,7 +81,8 @@ export function generateDailyQuest(input: GenerateInput): DailyQuest {
     if ((index.itemsByFact.get(fact.id)?.length ?? 0) === 0) continue
     const state = memory.get(fact.id)
     if (state === undefined) {
-      unseen.push(fact.id)
+      // A state's or county's facts are opt-in (`Entity.within`): a quest never introduces one.
+      if (index.entities.get(fact.entity)?.within === undefined) unseen.push(fact.id)
       continue
     }
     if (state.suspended) continue
